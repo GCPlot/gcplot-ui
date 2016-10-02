@@ -1,0 +1,7 @@
+{
+  "generator-react-webpack": {
+    "appName": "adminReact",
+    "style": "scss",
+    "postcss": false
+  }
+}
