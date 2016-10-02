@@ -1,0 +1,57 @@
+//google fonts
+@import url(https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic);
+
+//Bootstrap Variables & Mixins
+//The core bootstrap code have not been modified. These files
+//are included only for reference.
+@import "~bootstrap-sass/assets/stylesheets/bootstrap/variables";
+@import "~bootstrap-sass/assets/stylesheets/bootstrap/mixins";
+
+//MISC
+//----
+@import "variables";
+@import "mixins";
+@import "default";
+
+// SKINS
+@import "skins/skin-blue";
+
+//COMPONENTS
+//-----------
+@import "panels";
+@import "tabs";
+@import "navs";
+@import "header";
+@import "sidebar";
+@import "dropdown";
+@import "forms";
+@import "progress-bars";
+@import "buttons";
+@import "buttons-social";
+@import "alerts";
+@import "products";
+@import "userlist";
+@import "table";
+@import "labels";
+@import "direct-chat";
+@import "users-list";
+@import "modal";
+@import "widget";
+@import "social-widgets";
+@import "callout";
+
+//PAGES
+//------
+@import "sample-page";
+@import "mailbox";
+
+//Plugins
+//--------
+// @import "bootstrap-social";
+@import "fullcalendar";
+// @import "select2";
+
+//Miscellaneous
+//-------------
+@import "miscellaneous";
+// @import "print";

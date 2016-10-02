@@ -1,0 +1,4 @@
+#world-map,
+#line-chart {
+  @include gradient-horizontal(lighten($light-blue, 20%), lighten($blue, 20%));
+}

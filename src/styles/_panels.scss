@@ -1,0 +1,43 @@
+$panel-list: (
+  primary: $light-blue,
+  info: $aqua,
+  success: $green,
+  warning: $yellow,
+  danger: $red
+);
+
+@each $panel-type, $panel-color in $panel-list {
+  .panel-#{$panel-type} {
+    @include panel-variant($panel-color, $white, $panel-color, $panel-color);
+    & > .panel-footer {
+      color: $white;
+      background-color: $panel-color;
+    }
+  }
+}
+
+.panel-default {
+  @include panel-variant($panel-default-border, $panel-default-text, $white, $panel-default-border);
+
+  & > .panel-footer {
+    background-color: $white;
+  }
+}
+
+.panel-no-padding {
+  .panel-body {
+    padding: 0;
+  }
+}
+
+.panel-no-border {
+  .panel-heading {
+    border: 0;
+  }
+  .panel-body {
+    border: 0;
+  }
+  .panel-footer {
+    border: 0;
+  }
+}
