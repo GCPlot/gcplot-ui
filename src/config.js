@@ -1,16 +1,17 @@
 function GCPlotConfig() {
 
+  this.currentProtocol = function() {
+    return 'http' + (document.location.protocol === 'https:' ? 's://' : '://');
+  };
+
   this.apiUrl = function() {
-    if (GCPlotConfig.prototype.API_HOST.startsWith('{')) {
-      return GCPlotConfig.prototype.PROTOCOL + 'gs-dev.gcplot.com';
+    if (window.api_host.startsWith('[')) {
+      return this.currentProtocol() + 'gs-dev.gcplot.com';
     } else {
-      return GCPlotConfig.prototype.PROTOCOL + GCPlotConfig.prototype.API_HOST;
+      return this.currentProtocol() + window.api_host;
     }
   };
 
 }
-
-GCPlotConfig.prototype.PROTOCOL = 'http' + (document.location.protocol === 'https:' ? 's://' : '://');
-GCPlotConfig.prototype.API_HOST = '{{ api_host }}';
 
 export default GCPlotConfig;
