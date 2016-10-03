@@ -152,16 +152,6 @@ class SidebarLeft extends React.Component {
       <aside className="main-sidebar">
         {/* sidebar: style can be found in sidebar.scss */}
         <section className="sidebar">
-          {/* SidebarLeft user panel */}
-          <div className="user-panel">
-            <div className="pull-left image">
-              <img src="img/user2-160x160.jpg" className="img-circle" alt="User Image" />
-            </div>
-            <div className="pull-left info">
-              <p>John Doe</p>
-              <a href="#"><I name="circle text-success" /> Online</a>
-            </div>
-          </div>
           {/* sidebar menu: : style can be found in sidebar.less */}
           <ul className="sidebar-menu">
             <li>
