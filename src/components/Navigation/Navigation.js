@@ -20,7 +20,6 @@ class Navigation extends React.Component {
               className="user user-menu"
               title={
                 <span>
-                  <img src="img/user2-160x160.jpg" className="user-image" alt="User Image" />
                   <span className="hidden-xs">John Doe</span>
                 </span>
               }

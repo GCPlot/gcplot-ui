@@ -1,10 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import RARoutes from './routes';
+import WelcomeLayout from './layouts/WelcomeLayout'
 
-require('bootstrap/dist/css/bootstrap.css');
-require('font-awesome/css/font-awesome.css');
-require('./styles/Reactive-Admin.scss');
+import GCPlotCore from './core'
 
 // Render the main component into the dom
-ReactDOM.render(<RARoutes />, document.getElementById('app'));
+ReactDOM.render(<WelcomeLayout />, document.getElementById('app'));
