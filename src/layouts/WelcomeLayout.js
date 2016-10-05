@@ -4,27 +4,93 @@ require('../styles/skeleton/custom.css');
 require('../styles/skeleton/normalize.css');
 require('../styles/skeleton/skeleton.css');
 
+var update = require('react-addons-update');
 var Recaptcha = require('react-recaptcha');
-
-var callback = function () {
-  console.log('Done!!!!');
-};
-
-// specifying verify callback function
-var verifyCallback = function (response) {
-  console.log(response);
-};
+import GCPlotCore from '../core'
 
 class WelcomeLayout extends React.Component {
-  constructor(props) {
-      super(props);
+   constructor(props) {
+     super(props);
 
-      this.state = {
-        loginErrorStyle: {
-          display: "none",
-          color: 'red'
-        }
-      };
+     this.state = {
+       loginErrorStyle: {
+         display: "none",
+         color: 'red'
+       },
+       signupErrorStyle: {
+         display: "hidden",
+         value: "",
+         color: 'red'
+       },
+       captchaVerified: false
+     };
+     this.verifyCallback = this.verifyCallback.bind(this);
+   }
+
+   onloadCallback() {
+   }
+
+   updateState(delta) {
+     this.setState(update(this.state, delta));
+   }
+
+   verifyCallback(resp) {
+     if (resp.length > 0) {
+       this.updateState({
+         captchaVerified: {$set: true}
+       });
+     }
+   }
+
+   submitClicked(data) {
+     if (!this.state.captchaVerified) {
+       this.updateState({
+         signupErrorStyle: {
+           display: {$set: "block"},
+           value: {$set: "You should verify you are not a robot."}
+         }
+       });
+     } else if (this.usernameText.value.length == 0 || this.firstNameText.value.length == 0 ||
+       this.lastNameText.value.length == 0 || this.emailText.value.length == 0 ||
+        this.passwordText.value.length == 0 || this.repeatPasswordText.value.length == 0) {
+          this.updateState({
+            signupErrorStyle: {
+              display: {$set: "block"},
+              value: {$set: "You should fill all fields."}
+            }
+          });
+     } else if (this.passwordText.value != this.repeatPasswordText.value) {
+       this.updateState({
+         signupErrorStyle: {
+           display: {$set: "block"},
+           value: {$set: "The passwords doesn't match."}
+         }
+       });
+     } else {
+       this.updateState({
+         signupErrorStyle: {
+           display: {$set: "hidden"},
+           value: {$set: ""}
+         }
+       });
+       var t = this;
+       GCPlotCore.register({
+         username: t.usernameText.value,
+         first_name: t.firstNameText.value,
+         last_name: t.lastNameText.value,
+         password: t.passwordText.value,
+         email: t.emailText.value
+       }, function() {
+         location.reload();
+       }, function(code, title, message) {
+         t.updateState({
+           signupErrorStyle: {
+             display: {$set: "block"},
+             value: {$set: title + " (" + message + ")"}
+           }
+         });
+       });
+     }
    }
 
   render() {
@@ -59,24 +125,26 @@ class WelcomeLayout extends React.Component {
       </section></div>
     <div className="three columns">
       <section className="header">
-      <h2>Sign in</h2>
-      <input className="u-full-width" type="email" placeholder="Username or email" id="loginEmailInput"/>
-      <input className="u-full-width" type="password" placeholder="Password" id="loginPasswordInput"/>
+      <h2>Log In</h2>
+      <input className="u-full-width" type="email" placeholder="Username or email" ref={(r) => this.liLoginText = r}/>
+      <input className="u-full-width" type="password" placeholder="Password" ref={(r) => this.liPasswordText = r}/>
       <p style={this.state.loginErrorStyle}>Incorrect login or password.</p>
       <input className="button-primary" type="submit" value="Login"/>
       <h2>Sign up</h2>
-      <input className="u-full-width" type="text" placeholder="Username" id="usernameInput"/>
-      <input className="u-full-width" type="text" placeholder="First Name" id="firstNameInput"/>
-      <input className="u-full-width" type="text" placeholder="Last Name" id="lastNameInput"/>
-      <input className="u-full-width" type="email" placeholder="Email" id="emailInput"/>
-      <input className="u-full-width" type="password" placeholder="Password" id="passwordInput"/>
+      <input className="u-full-width" type="text" placeholder="Username" ref={(r) => this.usernameText = r}/>
+      <input className="u-full-width" type="text" placeholder="First Name" ref={(r) => this.firstNameText = r}/>
+      <input className="u-full-width" type="text" placeholder="Last Name" ref={(r) => this.lastNameText = r}/>
+      <input className="u-full-width" type="email" placeholder="Email" ref={(r) => this.emailText = r}/>
+      <input className="u-full-width" type="password" placeholder="Password" ref={(r) => this.passwordText = r}/>
+      <input className="u-full-width" type="password" placeholder="Repeat Password" ref={(r) => this.repeatPasswordText = r}/>
       <Recaptcha
           sitekey="6LcxXwgUAAAAAO7z8CIDSZmWg0kTf7vgzB1eei1F"
           render="explicit"
-          verifyCallback={verifyCallback}
-          onloadCallback={callback}
+          verifyCallback={this.verifyCallback}
+          onloadCallback={this.onloadCallback}
         />
-      <input className="button-primary" type="submit" value="Submit"/>
+      <p style={this.state.signupErrorStyle}>{this.state.signupErrorStyle.value}</p>
+      <input className="button-primary" type="submit" onClick={this.submitClicked.bind(this)} value="Submit"/>
       </section>
     </div>
   </div>

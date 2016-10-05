@@ -82,6 +82,35 @@ GCPlotCore.login = function(username, password, callback, errorCallback) {
       }));
 };
 
+/*
+* userData -> {
+*   username, first_name, last_name, password, email
+* }
+*/
+GCPlotCore.register = function(userData, callback, errorCallback) {
+  console.log("registering " + JSON.stringify(userData));
+  $.ajax({
+    type: "POST",
+    url: GCPlotCore.url("/user/register"),
+    data: JSON.stringify(userData),
+    contentType: "application/json",
+    success: function(data) {
+      var r = JSON.parse(data);
+      console.log("register response " + data);
+      if (r.hasOwnProperty('error')) {
+        errorCallback(r.error, GCPlotCore.ERRORS[r.error], r.message);
+      } else {
+        GCPlotCore.login(userData.username, userData.password, function() {
+          console.log("login after register successful");
+          callback();
+        }, function(code, title, msg) {
+          errorCallback(code, title, msg);
+        });
+      }
+    }
+  });
+}
+
 GCPlotCore.logoff = function() {
   localStorage.removeItem(GCPlotCore.TOKEN_KEY);
   sessionStorage.removeItem(GCPlotCore.USER_INFO);
