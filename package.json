@@ -82,6 +82,7 @@
     "react-recaptcha": "^2.1.1",
     "react-addons-update": "^0.14.0",
     "react-router": "^2.0.0",
+    "react-spinkit": "^1.1.11",
     "script-loader": "^0.6.1",
     "select2": "^4.0.2",
     "timepicker": "^1.8.11"

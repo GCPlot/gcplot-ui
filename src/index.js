@@ -6,4 +6,8 @@ import WelcomeLayout from './layouts/WelcomeLayout'
 import GCPlotCore from './core'
 
 // Render the main component into the dom
-ReactDOM.render(<WelcomeLayout />, document.getElementById('app'));
+if (!GCPlotCore.isLoggedIn()) {
+  ReactDOM.render(<WelcomeLayout />, document.getElementById('app'));
+} else {
+  ReactDOM.render(<RARoutes />, document.getElementById('app'));
+}
