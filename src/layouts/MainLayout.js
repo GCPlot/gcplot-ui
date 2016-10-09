@@ -9,18 +9,8 @@ require('font-awesome/css/font-awesome.css');
 require('../styles/Reactive-Admin.scss');
 
 class MainLayout extends React.Component {
-  /*componentDidMount() {
-    GCPlotCore.logoff();
-    alert("0 " + GCPlotCore.isLoggedIn());
-    GCPlotCore.login("dmart28", "admin", function() {
-      alert("1 " + GCPlotCore.isLoggedIn());
-      GCPlotCore.userInfo(function(ui) {
-        alert("2" + ui);
-      });
-    }, function(code, title, msg) {
-      alert(code + "|" + title + "|" + msg);
-    });
-  }*/
+  componentDidMount() {
+  }
   render() {
     return (
       <div className="wrapper">

@@ -7,10 +7,14 @@ function GCPlotCore() {
 
 GCPlotCore.TOKEN_KEY = "token";
 GCPlotCore.USER_INFO = "user_info";
+GCPlotCore.ANALYSES = "analyses";
 
 GCPlotCore.INTERNAL_ERROR_HANDLER = function(status) {
   alert(status);
 }
+
+GCPlotCore.PROFILE_CHANGED_EVENT = "profile.changed.event";
+GCPlotCore.ANALYSES_CHANGED_EVENT = "analyses.changed.event";
 
 GCPlotCore.ERRORS = {
   '1': 'Undefined error',
@@ -29,6 +33,18 @@ GCPlotCore.ERRORS = {
   '514': 'Unknown JVM Id',
   '769': 'Invalid request param'
 };
+
+GCPlotCore.on = function(event, handler) {
+  $(document).on(event, handler);
+}
+
+GCPlotCore.off = function(event, handler) {
+  $(document).off(event, handler);
+}
+
+GCPlotCore.trigger = function(event) {
+  $(document).trigger(event);
+}
 
 GCPlotCore.currentProtocol = function() {
   return 'http' + (document.location.protocol === 'https:' ? 's://' : '://');
@@ -114,6 +130,23 @@ GCPlotCore.register = function(userData, callback, errorCallback) {
 GCPlotCore.logoff = function() {
   localStorage.removeItem(GCPlotCore.TOKEN_KEY);
   sessionStorage.removeItem(GCPlotCore.USER_INFO);
+}
+
+GCPlotCore.analyses = function(callback, errorCallback) {
+  var analysesJson = sessionStorage.getItem(GCPlotCore.ANALYSES);
+  if ((typeof analysesJson != "undefined") && analysesJson != null) {
+    return callback(JSON.parse(analysesJson));
+  } else {
+    $.get(GCPlotCore.authUrl("/analyse/all"), GCPlotCore.dataHandler(function(data) {
+      var r = JSON.parse(data);
+      if (r.hasOwnProperty('error')) {
+        errorCallback(r.error, GCPlotCore.ERRORS[r.error], r.message);
+      } else {
+        sessionStorage.setItem(GCPlotCore.ANALYSES, JSON.stringify(r.result));
+        callback(r.result);
+      }
+    }));
+  }
 }
 
 GCPlotCore.url = function(path) {

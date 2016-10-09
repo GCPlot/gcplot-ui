@@ -3,8 +3,42 @@
 import React from 'react';
 import I from 'react-fontawesome';
 import NavLink from '../NavLink/NavLink';
+import GCPlotCore from '../../core'
+
+var update = require('react-addons-update');
 
 class SidebarLeft extends React.Component {
+  constructor(props) {
+      super(props);
+      this.state = {
+        analyses: []
+      };
+  }
+
+  onAnalysesChange() {
+    var t = this;
+    GCPlotCore.analyses(function(r) {
+      t.setState(update(t.state, {
+        analyses: {$set: r.analyses}
+      }))
+    }, function(code, title, msg) {
+      alert(code + "|" + title + "|" + msg);
+    });
+  }
+
+  componentWillMount() {
+    GCPlotCore.on(GCPlotCore.ANALYSES_CHANGED_EVENT, this.onAnalysesChange.bind(this));
+    GCPlotCore.trigger(GCPlotCore.ANALYSES_CHANGED_EVENT);
+  }
+
+  componentWillUnmount() {
+    GCPlotCore.off(GCPlotCore.ANALYSES_CHANGED_EVENT, this.onAnalysesChange.bind(this));
+  }
+
+  analyseEditClicked(analyse) {
+    alert(analyse.id);
+  }
+
   componentDidMount () {
     function _fix () {
       //Get window height and the wrapper height
@@ -39,6 +73,10 @@ class SidebarLeft extends React.Component {
     $('.sidebar li a').on('click', function (e) {
       //Get the clicked link and the next element
       const $this = $(this);
+      if ($this.children('.edit-toggle').length !== 0 && $this.children('.edit-toggle').is(':hover')) {
+        e.preventDefault();
+        return;
+      }
       const checkElement = $this.next();
 
       //Check if the next element is a menu and is visible
@@ -152,22 +190,71 @@ class SidebarLeft extends React.Component {
       <aside className="main-sidebar">
         {/* sidebar: style can be found in sidebar.scss */}
         <section className="sidebar">
+        <ul className="sidebar-menu">
+          <li className="header">General</li>
+          <li className="treeview">
+            <NavLink to="/dashboard">
+              <I name="home" />
+              <span>Home</span>
+            </NavLink>
+          </li>
+          <li className="treeview">
+            <NavLink to="/charts">
+              <I name="upload" /> Quick process
+            </NavLink>
+          </li>
+          <li className="header">Control Panel</li>
+          <li className="treeview">
+            <NavLink to="/charts/chartjs">
+              <I name="plus" /> New Analyse
+            </NavLink>
+          </li>
+          <li className="treeview">
+            <NavLink to="/charts/flot">
+              <I name="plus" /> New JVM
+            </NavLink>
+          </li>
+          <li className="header">Analyses</li>
+          {this.state.analyses.map(function (item, i) {
+            return (
+              <ul className="sidebar-menu" key={i}>
+              <li>
+              <NavLink to={"/analyses/" + item.id}>
+                <I name="pie-chart" /> <span>{item.name}</span>
+                <I name="angle-left pull-right" />
+                <small className="label pull-right bg-green edit-toggle" onClick={this.analyseEditClicked.bind(this, item)}>info</small>
+              </NavLink>
+              <ul className="treeview-menu">
+                {item.jvm_ids.map(function (jvm, o) {
+                  return (<li key={o}>
+                    <NavLink to={"/analyses/" + item.id + "/jvm/" + encodeURIComponent(jvm)}>
+                      <I name="server" /> {jvm}
+                    </NavLink>
+                  </li>);
+                }.bind(this))}
+              </ul>
+              </li>
+              </ul>
+            );
+          }.bind(this))}
+          <li className="header">Help</li>
+          <li className="treeview">
+            <NavLink to="/forms/editor">
+              <I name="plug" /> Realtime Connection
+            </NavLink>
+          </li>
+          <li className="treeview">
+            <NavLink to="/ui/buttons">
+              <I name="question-circle" /> Documentation and FAQ
+            </NavLink>
+          </li>
+        </ul>
           {/* sidebar menu: : style can be found in sidebar.less */}
-          <ul className="sidebar-menu">
-            <li>
-              <NavLink to="/dashboard">
-                <I name="dashboard" /> <span>Dashboard</span>
-              </NavLink>
-            </li>
-            <li>
-              <NavLink to="/widgets">
-                <I name="th" /> <span>Widgets</span> <small className="label pull-right bg-green">new</small>
-              </NavLink>
-            </li>
+          {/*<ul className="sidebar-menu">
             <li className="treeview">
-              <NavLink to="/charts">
-                <I name="pie-chart" />
-                <span>Charts</span>
+              <NavLink to="/dashboard">
+                <I name="dashboard" />
+                <span>General</span>
                 <I name="angle-left pull-right" />
               </NavLink>
               <ul className="treeview-menu">
@@ -182,6 +269,11 @@ class SidebarLeft extends React.Component {
                   </NavLink>
                 </li>
               </ul>
+            </li>
+            <li className="treeview">
+                  <NavLink to="/charts/chartjs">
+                    <I name="circle-o" /> ChartJS
+                  </NavLink>
             </li>
             <li className="treeview">
               <NavLink to="/uis">
@@ -214,7 +306,7 @@ class SidebarLeft extends React.Component {
                   <NavLink to="/ui/sliders">
                     <I name="circle-o" /> Sliders
                   </NavLink>
-                </li>*/}
+                </li>
               </ul>
             </li>
             <li className="treeview">
@@ -297,7 +389,7 @@ class SidebarLeft extends React.Component {
             <li><a href="#"><I name="circle-o text-red" /> <span>Important</span></a></li>
             <li><a href="#"><I name="circle-o text-yellow" /> <span>Warning</span></a></li>
             <li><a href="#"><I name="circle-o text-aqua" /> <span>Information</span></a></li>
-          </ul>
+          </ul>*/}
         </section>
         {/* /.sidebar */}
       </aside>
