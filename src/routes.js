@@ -11,6 +11,8 @@ import UIPanelTabPage from './pages/UIPanelTabPage';
 import UIIconsPage from './pages/UIIconsPage';
 import UIButtonsPage from './pages/UIButtonsPage';
 
+import NewAnalysePage from './pages/NewAnalysePage';
+
 // import UISlidersPage from './pages/UISlidersPage';
 import TableSimplePage from './pages/TableSimplePage';
 import TableFixedDataTablePage from './pages/TableFixedDataTablePage';
@@ -31,6 +33,7 @@ export default () => {
         <Route path="/forms/general" component={FormGeneralPage} />
         <Route path="/forms/advanced" component={FormAdvancedPage} />
         <Route path="/forms/editor" component={EditorPage} />
+        <Route path="/analyse/new" component={NewAnalysePage} />
 
         <Route path="/ui/general" component={UIGeneralPage} />
         <Route path="/ui/paneltab" component={UIPanelTabPage} />

@@ -5,6 +5,10 @@ import { Row, Col, Panel, Input, ButtonInput, Button, DropdownButton, MenuItem }
 import I from 'react-fontawesome';
 
 class FormGeneralPage extends React.Component {
+  constructor(props) {
+      super(props);
+      this.state = {};
+  }
 
   render() {
     return (

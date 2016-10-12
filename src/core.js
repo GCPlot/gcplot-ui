@@ -130,6 +130,7 @@ GCPlotCore.register = function(userData, callback, errorCallback) {
 GCPlotCore.logoff = function() {
   localStorage.removeItem(GCPlotCore.TOKEN_KEY);
   sessionStorage.removeItem(GCPlotCore.USER_INFO);
+  sessionStorage.removeItem(GCPlotCore.ANALYSES);
 }
 
 GCPlotCore.analyses = function(callback, errorCallback) {
@@ -147,6 +148,26 @@ GCPlotCore.analyses = function(callback, errorCallback) {
       }
     }));
   }
+}
+
+GCPlotCore.addAnalyse = function(req, callback, errorCallback) {
+  $.ajax({
+    type: "POST",
+    url: GCPlotCore.authUrl("/analyse/new"),
+    data: JSON.stringify(req),
+    contentType: "application/json",
+    success: function(data) {
+      var r = JSON.parse(data);
+      console.log("add analyse response " + data);
+      if (r.hasOwnProperty('error')) {
+        errorCallback(r.error, GCPlotCore.ERRORS[r.error], r.message);
+      } else {
+        sessionStorage.removeItem(GCPlotCore.ANALYSES);
+        GCPlotCore.trigger(GCPlotCore.ANALYSES_CHANGED_EVENT);
+        callback();
+      }
+    }
+  });
 }
 
 GCPlotCore.url = function(path) {
@@ -177,6 +198,13 @@ GCPlotCore.isLoggedIn = function() {
   var token = GCPlotCore.getToken();
   return (typeof token != "undefined") && token != null;
 };
+
+GCPlotCore.rstr = function(length) {
+  var chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  var result = '';
+  for (var i = length; i > 0; --i) result += chars[Math.floor(Math.random() * chars.length)];
+  return result;
+}
 
 GCPlotCore.defaultProps = {
 };

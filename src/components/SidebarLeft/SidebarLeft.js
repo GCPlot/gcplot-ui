@@ -20,7 +20,8 @@ class SidebarLeft extends React.Component {
     GCPlotCore.analyses(function(r) {
       t.setState(update(t.state, {
         analyses: {$set: r.analyses}
-      }))
+      }));
+      t.componentDidMount();
     }, function(code, title, msg) {
       alert(code + "|" + title + "|" + msg);
     });
@@ -70,9 +71,11 @@ class SidebarLeft extends React.Component {
     }
 
     const animationSpeed = 500;
+    $('.sidebar li a').unbind('click');
     $('.sidebar li a').on('click', function (e) {
       //Get the clicked link and the next element
       const $this = $(this);
+      console.log($this);
       if ($this.children('.edit-toggle').length !== 0 && $this.children('.edit-toggle').is(':hover')) {
         e.preventDefault();
         return;
@@ -123,6 +126,7 @@ class SidebarLeft extends React.Component {
     };
     var toggleBtn = '.sidebar-toggle';
     //Enable sidebar toggle
+    $(toggleBtn).unbind('click');
     $(toggleBtn).on('click', function (e) {
       e.preventDefault();
       //Enable sidebar push menu
@@ -143,6 +147,7 @@ class SidebarLeft extends React.Component {
       }
     });
 
+    $('.content-wrapper').unbind('click');
     $('.content-wrapper').click(function () {
       //Enable hide menu when clicking on the content-wrapper on small screens
       if ($(window).width() <= (screenSizes.sm - 1) && $('body').hasClass('sidebar-open')) {
@@ -160,6 +165,7 @@ class SidebarLeft extends React.Component {
     function expandOnHover() {
       var screenWidth = screenSizes.sm - 1;
       //Expand sidebar on hover
+      $('.main-sidebar').unbind('hover');
       $('.main-sidebar').hover(function () {
         if ($('body').hasClass('sidebar-mini')
                 && $('body').hasClass('sidebar-collapse')
@@ -205,7 +211,7 @@ class SidebarLeft extends React.Component {
           </li>
           <li className="header">Control Panel</li>
           <li className="treeview">
-            <NavLink to="/charts/chartjs">
+            <NavLink to="/analyse/new">
               <I name="plus" /> New Analyse
             </NavLink>
           </li>
