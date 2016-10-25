@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { browserHistory } from 'react-router'
-import { Row, Col, Panel, Input, ButtonInput, Button, DropdownButton, MenuItem } from 'react-bootstrap';
+import { Row, Col, Panel, Input, ButtonInput, Popover, Modal, Button, DropdownButton, MenuItem } from 'react-bootstrap';
 import I from 'react-fontawesome';
 import CreateJvm from '../components/Jvm/CreateJvm'
 import GCPlotCore from '../core'

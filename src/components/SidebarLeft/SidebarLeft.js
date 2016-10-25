@@ -1,6 +1,7 @@
 'use strict';
 
 import React from 'react';
+import { browserHistory } from 'react-router'
 import I from 'react-fontawesome';
 import NavLink from '../NavLink/NavLink';
 import GCPlotCore from '../../core'
@@ -37,7 +38,7 @@ class SidebarLeft extends React.Component {
   }
 
   analyseEditClicked(analyse) {
-    alert(analyse.id);
+    browserHistory.push('/analyse/info/' + analyse.id);
   }
 
   componentDidMount () {
@@ -75,7 +76,6 @@ class SidebarLeft extends React.Component {
     $('.sidebar li a').on('click', function (e) {
       //Get the clicked link and the next element
       const $this = $(this);
-      console.log($this);
       if ($this.children('.edit-toggle').length !== 0 && $this.children('.edit-toggle').is(':hover')) {
         e.preventDefault();
         return;

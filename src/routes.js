@@ -22,6 +22,7 @@ import MailReadPage from './pages/MailReadPage';
 import MailWritePage from './pages/MailWritePage';
 import ChartChartJSPage from './pages/ChartChartJSPage';
 import ChartFlotPage from './pages/ChartFlotPage';
+import AnalyseInfoPage from './pages/AnalyseInfoPage';
 
 export default () => {
   return (
@@ -34,6 +35,7 @@ export default () => {
         <Route path="/forms/advanced" component={FormAdvancedPage} />
         <Route path="/forms/editor" component={EditorPage} />
         <Route path="/analyse/new" component={NewAnalysePage} />
+        <Route path="/analyse/info/:analyseId" component={AnalyseInfoPage} />
 
         <Route path="/ui/general" component={UIGeneralPage} />
         <Route path="/ui/paneltab" component={UIPanelTabPage} />

@@ -150,6 +150,25 @@ GCPlotCore.analyses = function(callback, errorCallback) {
   }
 }
 
+GCPlotCore.updateAnalyse = function(msg, callback, errorCallback) {
+  $.ajax({
+    type: "POST",
+    url: GCPlotCore.authUrl("/analyse/update"),
+    data: JSON.stringify(msg),
+    contentType: "application/json",
+    success: function(data) {
+      var r = JSON.parse(data);
+      if (r.hasOwnProperty('error')) {
+        errorCallback(r.error, GCPlotCore.ERRORS[r.error], r.message);
+      } else {
+        sessionStorage.removeItem(GCPlotCore.ANALYSES);
+        GCPlotCore.trigger(GCPlotCore.ANALYSES_CHANGED_EVENT);
+        callback();
+      }
+    }
+  });
+}
+
 GCPlotCore.addAnalyse = function(req, callback, errorCallback) {
   $.ajax({
     type: "POST",
@@ -159,6 +178,24 @@ GCPlotCore.addAnalyse = function(req, callback, errorCallback) {
     success: function(data) {
       var r = JSON.parse(data);
       console.log("add analyse response " + data);
+      if (r.hasOwnProperty('error')) {
+        errorCallback(r.error, GCPlotCore.ERRORS[r.error], r.message);
+      } else {
+        sessionStorage.removeItem(GCPlotCore.ANALYSES);
+        GCPlotCore.trigger(GCPlotCore.ANALYSES_CHANGED_EVENT);
+        callback();
+      }
+    }
+  });
+}
+
+GCPlotCore.deleteAnalyse = function(id, callback, errorCallback) {
+  $.ajax({
+    type: "DELETE",
+    url: GCPlotCore.authUrl("/analyse/delete?id=" + id),
+    success: function(data) {
+      var r = JSON.parse(data);
+      console.log("delete analyse response " + data);
       if (r.hasOwnProperty('error')) {
         errorCallback(r.error, GCPlotCore.ERRORS[r.error], r.message);
       } else {
