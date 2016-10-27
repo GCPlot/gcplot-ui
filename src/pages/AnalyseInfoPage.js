@@ -42,17 +42,21 @@ class AnalyseInfoPage extends React.Component {
 
   componentDidUpdate() {
     if (this.state.analyse.id != this.props.params.analyseId) {
-      this.setState(update(this.state, {
-        jvmsAdded: {$set: []},
-        jvmsRemoved: {$set: []},
-        /*cmps: {$set: {}},*/
-        initialJvmIds: {$set: []},
-        save: {
-          message: {$set: ""}
-        }
-      }));
-      this.componentWillMount();
+      this.updateAll();
     }
+  }
+
+  updateAll() {
+    this.setState(update(this.state, {
+      jvmsAdded: {$set: []},
+      jvmsRemoved: {$set: []},
+      /*cmps: {$set: {}},*/
+      initialJvmIds: {$set: []},
+      save: {
+        message: {$set: ""}
+      }
+    }));
+    this.componentWillMount();
   }
 
   componentWillMount() {
@@ -147,7 +151,7 @@ class AnalyseInfoPage extends React.Component {
       if ($.inArray(jvm, this.state.jvmsAdded) < 0 && $.inArray(jvm, this.state.jvmsRemoved) < 0) {
         jvmsToUpdate.push({
           an_id: "",
-          jvm_id: jvm,
+          jvm_id: cmp.jvmIdText.getValue(),
           vm_ver: parseInt(cmp.versionSelector.getValue()),
           gc_type: parseInt(cmp.typeSelector.getValue()),
         });
@@ -162,6 +166,7 @@ class AnalyseInfoPage extends React.Component {
     console.log(JSON.stringify(msg));
     GCPlotCore.updateAnalyseBulk(msg, function() {
       this.setState(update(this.state, { showSave: {$set: false}, save: { message: {$set: ""}}}));
+      this.updateAll();
     }.bind(this), function(code, title, msg) {
       this.setState(update(this.state, { save: { message: {$set: title + " (" + msg + ")"}}}));
     }.bind(this));

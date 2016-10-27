@@ -143,6 +143,13 @@ GCPlotCore.analyses = function(callback, errorCallback) {
       if (r.hasOwnProperty('error')) {
         errorCallback(r.error, GCPlotCore.ERRORS[r.error], r.message);
       } else {
+        try {
+          for (var i = 0; i < r.result.analyses.length; i++) {
+            r.result.analyses[i].jvm_ids.sort();
+          }
+        } catch(ex) {
+          console.log(ex);
+        }
         sessionStorage.setItem(GCPlotCore.ANALYSES, JSON.stringify(r.result));
         callback(r.result);
       }
