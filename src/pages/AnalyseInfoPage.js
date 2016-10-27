@@ -1,8 +1,12 @@
 'use strict';
 
+import $ from 'jquery';
+
 import React from 'react';
-import { Row, Col, Panel, Tabs, Tab, Input, Modal, ButtonInput, Button } from 'react-bootstrap';
+import { Row, Col, Panel, Tabs, Tab, ButtonGroup, Input, Modal, ButtonInput, Button } from 'react-bootstrap';
 import { browserHistory } from 'react-router'
+import I from 'react-fontawesome';
+import CreateJvm from '../components/Jvm/CreateJvm'
 import GCPlotCore from '../core'
 
 var update = require('react-addons-update');
@@ -12,7 +16,10 @@ class AnalyseInfoPage extends React.Component {
       super(props);
       this.state = {
         analyse: {
-          name: ""
+          name: "",
+          jvm_ids: [],
+          jvm_vers: [],
+          jvm_gcts: []
         },
         updateDisabled: false,
         errorStyle: {
@@ -21,12 +28,29 @@ class AnalyseInfoPage extends React.Component {
             color: 'red'
         },
         updateCaption: "Update",
-        show: false
+        show: false,
+        showSave: false,
+        cmps: {},
+        initialJvmIds: [],
+        jvmsAdded: [],
+        jvmsRemoved: [],
+        save: {
+          message: ""
+        }
       };
   }
 
   componentDidUpdate() {
     if (this.state.analyse.id != this.props.params.analyseId) {
+      this.setState(update(this.state, {
+        jvmsAdded: {$set: []},
+        jvmsRemoved: {$set: []},
+        /*cmps: {$set: {}},*/
+        initialJvmIds: {$set: []},
+        save: {
+          message: {$set: ""}
+        }
+      }));
       this.componentWillMount();
     }
   }
@@ -37,7 +61,8 @@ class AnalyseInfoPage extends React.Component {
       for (var i = 0; i < analyses.length; i++) {
         if (analyses[i].id == this.props.params.analyseId) {
           this.setState(update(this.state, {
-            analyse: {$set: analyses[i]}
+            analyse: {$set: analyses[i]},
+            initialJvmIds: {$set: analyses[i].jvm_ids}
           }));
           break;
         }
@@ -102,8 +127,95 @@ class AnalyseInfoPage extends React.Component {
     }.bind(this));
   }
 
+  onSaveClick() {
+    var jvmsToAdd = [];
+    for (var i = 0; i < this.state.jvmsAdded.length; i++) {
+      var cmp = this.state.cmps[this.state.jvmsAdded[i]];
+      jvmsToAdd.push({
+        id: cmp.jvmIdText.getValue(),
+        an_id: "",
+        vm_ver: parseInt(cmp.versionSelector.getValue()),
+        gc_type: parseInt(cmp.typeSelector.getValue()),
+        headers: ""
+      });
+    }
+    var jvmsToUpdate = [];
+    for (var i = 0; i < this.state.analyse.jvm_ids.length; i++) {
+      var jvm = this.state.analyse.jvm_ids[i];
+      console.log(this.state.cmps);
+      var cmp = this.state.cmps[jvm];
+      if ($.inArray(jvm, this.state.jvmsAdded) < 0 && $.inArray(jvm, this.state.jvmsRemoved) < 0) {
+        jvmsToUpdate.push({
+          an_id: "",
+          jvm_id: jvm,
+          vm_ver: parseInt(cmp.versionSelector.getValue()),
+          gc_type: parseInt(cmp.typeSelector.getValue()),
+        });
+      }
+    }
+    var msg = {
+      an_id: this.state.analyse.id,
+      add_jvms: jvmsToAdd,
+      remove_jvms: this.state.jvmsRemoved,
+      update_jvms: jvmsToUpdate
+    }
+    console.log(JSON.stringify(msg));
+    GCPlotCore.updateAnalyseBulk(msg, function() {
+      this.setState(update(this.state, { showSave: {$set: false}, save: { message: {$set: ""}}}));
+    }.bind(this), function(code, title, msg) {
+      this.setState(update(this.state, { save: { message: {$set: title + " (" + msg + ")"}}}));
+    }.bind(this));
+  }
+
+  jvmCloseClicked(cid) {
+    if ($.inArray(cid, this.state.analyse.jvm_ids) >= 0) {
+      var jvmIds = this.state.analyse.jvm_ids.slice();
+      jvmIds.splice($.inArray(cid, jvmIds), 1);
+      var delta = {
+        analyse: {
+          jvm_ids: {$set: jvmIds}
+        }
+      };
+      if ($.inArray(cid, this.state.jvmsAdded) < 0) {
+        delta["jvmsRemoved"] = {$push: [cid]};
+      } else {
+        var jvmsAdded = this.state.jvmsAdded.slice();
+        jvmsAdded.splice($.inArray(cid, jvmsAdded), 1);
+        delta["jvmsAdded"] = {$set: [cid]};
+      }
+      this.setState(update(this.state, delta));
+    }
+  }
+
+  resetClicked() {
+    this.setState(update(this.state, {
+      analyse: {
+        jvm_ids: {$set: this.state.initialJvmIds}
+      },
+      jvmsAdded: {$set: []},
+      jvmsRemoved: {$set: []}
+    }));
+  }
+
+  addJvmClicked() {
+    var newId = "vm-" + GCPlotCore.rstr(7); // TODO move to utils with uniqueness checks
+    var newVer = {};
+    var newCol = {};
+    newVer[newId] = "7";
+    newCol[newId] = "3";
+    this.setState(update(this.state, {
+      analyse: {
+        jvm_ids: {$push: [newId]},
+        jvm_vers: {$merge: newVer},
+        jvm_gcts: {$merge: newCol}
+      },
+      jvmsAdded: {$push: [newId]}
+    }));
+  }
+
   render() {
     let close = () => this.setState(update(this.state, { show: {$set: false}}));
+    let closeSave = () => this.setState(update(this.state, { showSave: {$set: false}}));
 
     return (
       <div className="content-wrapper">
@@ -115,7 +227,7 @@ class AnalyseInfoPage extends React.Component {
       </section>
         <section className="content">
         <Row>
-        <Col md={8}>
+        <Col md={12}>
           <Panel>
             <Tabs defaultActiveKey={1}>
               <Tab eventKey={1} title="Info">
@@ -147,6 +259,42 @@ class AnalyseInfoPage extends React.Component {
                 </Modal>
               </div>
               </Panel>
+              </Tab>
+              <Tab eventKey={3} title="JVMs">
+              <div className="static-modal">
+                <Modal container={this} show={this.state.showSave} onHide={closeSave}>
+                  <Modal.Header closeButton>
+                    <Modal.Title>Confirm update</Modal.Title>
+                  </Modal.Header>
+                  <Modal.Body>
+                    <h4>Are you sure you want to save the changes?</h4>
+                    <p>{this.state.save.message}</p>
+                  </Modal.Body>
+                  <Modal.Footer>
+                    <Button bsStyle="danger" onClick={this.onSaveClick.bind(this)}>Save</Button>
+                    <Button onClick={closeSave}>Close</Button>
+                  </Modal.Footer>
+                </Modal>
+              </div>
+              <Row>
+              <Col md={2}>
+              <ButtonGroup>
+                <Button bsStyle="success" onClick={this.addJvmClicked.bind(this)}>Add</Button>
+                <Button bsStyle="primary" onClick={this.resetClicked.bind(this)}>Reset</Button>
+              </ButtonGroup>
+              </Col>
+              <Col>
+              <Button bsStyle="danger" onClick={() => this.setState(update(this.state, { showSave: {$set: true}}))}>Save changes</Button>
+              </Col>
+              </Row>
+              <p/>
+                 <Row>
+                   {(function() {
+                     return this.state.analyse.jvm_ids.map(function(r, i) {
+                       return <CreateJvm md={3} cid={r} key={r} pp={this} title="JVM" versionValue={this.state.analyse.jvm_vers[r]} collectorValue={this.state.analyse.jvm_gcts[r]} jvmName={r} closeClickHandler={this.jvmCloseClicked.bind(this, r)}></CreateJvm>;
+                   }.bind(this));
+                 }.bind(this))()}
+                 </Row>
               </Tab>
             </Tabs>
           </Panel>

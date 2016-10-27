@@ -150,10 +150,14 @@ GCPlotCore.analyses = function(callback, errorCallback) {
   }
 }
 
-GCPlotCore.updateAnalyse = function(msg, callback, errorCallback) {
+GCPlotCore.updateAnalyseBulk = function(msg, callback, errorCallback) {
+  GCPlotCore.updateAnalyse(msg, callback, errorCallback, "/analyse/jvm/update/bulk");
+}
+
+GCPlotCore.updateAnalyse = function(msg, callback, errorCallback, url) {
   $.ajax({
     type: "POST",
-    url: GCPlotCore.authUrl("/analyse/update"),
+    url: GCPlotCore.authUrl(url || "/analyse/update"),
     data: JSON.stringify(msg),
     contentType: "application/json",
     success: function(data) {
