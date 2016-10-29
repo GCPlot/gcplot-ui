@@ -75,6 +75,7 @@ class NewAnalysePage extends React.Component {
         jvms.push({
           id: jvm.jvmIdText.getValue(),
           an_id: "",
+          name: jvm.jvmNameText.getValue(),
           vm_ver: parseInt(jvm.versionSelector.getValue()),
           gc_type: parseInt(jvm.typeSelector.getValue()),
           headers: ""

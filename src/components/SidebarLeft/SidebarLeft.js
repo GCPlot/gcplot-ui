@@ -234,7 +234,7 @@ class SidebarLeft extends React.Component {
                 {item.jvm_ids.map(function (jvm, o) {
                   return (<li key={o}>
                     <NavLink to={"/analyses/" + item.id + "/jvm/" + encodeURIComponent(jvm)}>
-                      <I name="server" /> {jvm}
+                      <I name="server" /> {item.jvm_names[jvm] || jvm}
                     </NavLink>
                   </li>);
                 }.bind(this))}

@@ -145,7 +145,22 @@ GCPlotCore.analyses = function(callback, errorCallback) {
       } else {
         try {
           for (var i = 0; i < r.result.analyses.length; i++) {
-            r.result.analyses[i].jvm_ids.sort();
+            var jvms = r.result.analyses[i].jvm_ids || [];
+            var namesByJvm = r.result.analyses[i].jvm_names || {};
+            var jvmByName = {};
+
+            var namesArr = [];
+            var sortedJvms = [];
+            for (var j = 0; j < jvms.length; j++) {
+              var name = namesByJvm[jvms[j]] || jvms[j];
+              jvmByName[name] = jvms[j];
+              namesArr.push(name);
+            }
+            namesArr.sort();
+            for (var j = 0; j < namesArr.length; j++) {
+              sortedJvms.push(jvmByName[namesArr[j]])
+            }
+            r.result.analyses[i].jvm_ids = sortedJvms;
           }
         } catch(ex) {
           console.log(ex);

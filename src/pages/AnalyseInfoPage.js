@@ -18,8 +18,9 @@ class AnalyseInfoPage extends React.Component {
         analyse: {
           name: "",
           jvm_ids: [],
-          jvm_vers: [],
-          jvm_gcts: []
+          jvm_vers: {},
+          jvm_names: {},
+          jvm_gcts: {}
         },
         updateDisabled: false,
         errorStyle: {
@@ -50,8 +51,8 @@ class AnalyseInfoPage extends React.Component {
     this.setState(update(this.state, {
       jvmsAdded: {$set: []},
       jvmsRemoved: {$set: []},
-      /*cmps: {$set: {}},*/
-      initialJvmIds: {$set: []},
+      /*cmps: {$set: {}},
+      initialJvmIds: {$set: []},*/
       save: {
         message: {$set: ""}
       }
@@ -62,6 +63,7 @@ class AnalyseInfoPage extends React.Component {
   componentWillMount() {
     GCPlotCore.analyses((function(r) {
       var analyses = r.analyses;
+      console.log(analyses);
       for (var i = 0; i < analyses.length; i++) {
         if (analyses[i].id == this.props.params.analyseId) {
           this.setState(update(this.state, {
@@ -132,12 +134,14 @@ class AnalyseInfoPage extends React.Component {
   }
 
   onSaveClick() {
+    console.log(this.state);
     var jvmsToAdd = [];
     for (var i = 0; i < this.state.jvmsAdded.length; i++) {
       var cmp = this.state.cmps[this.state.jvmsAdded[i]];
       jvmsToAdd.push({
         id: cmp.jvmIdText.getValue(),
         an_id: "",
+        name: cmp.jvmNameText.getValue(),
         vm_ver: parseInt(cmp.versionSelector.getValue()),
         gc_type: parseInt(cmp.typeSelector.getValue()),
         headers: ""
@@ -146,12 +150,12 @@ class AnalyseInfoPage extends React.Component {
     var jvmsToUpdate = [];
     for (var i = 0; i < this.state.analyse.jvm_ids.length; i++) {
       var jvm = this.state.analyse.jvm_ids[i];
-      console.log(this.state.cmps);
       var cmp = this.state.cmps[jvm];
       if ($.inArray(jvm, this.state.jvmsAdded) < 0 && $.inArray(jvm, this.state.jvmsRemoved) < 0) {
         jvmsToUpdate.push({
           an_id: "",
           jvm_id: cmp.jvmIdText.getValue(),
+          name: cmp.jvmNameText.getValue(),
           vm_ver: parseInt(cmp.versionSelector.getValue()),
           gc_type: parseInt(cmp.typeSelector.getValue()),
         });
@@ -186,7 +190,7 @@ class AnalyseInfoPage extends React.Component {
       } else {
         var jvmsAdded = this.state.jvmsAdded.slice();
         jvmsAdded.splice($.inArray(cid, jvmsAdded), 1);
-        delta["jvmsAdded"] = {$set: [cid]};
+        delta["jvmsAdded"] = {$set: jvmsAdded};
       }
       this.setState(update(this.state, delta));
     }
@@ -203,16 +207,20 @@ class AnalyseInfoPage extends React.Component {
   }
 
   addJvmClicked() {
-    var newId = "vm-" + GCPlotCore.rstr(7); // TODO move to utils with uniqueness checks
+    var rstr = GCPlotCore.rstr(7);
+    var newId = "vm-" + rstr; // TODO move to utils with uniqueness checks
     var newVer = {};
     var newCol = {};
+    var newName = {};
     newVer[newId] = "7";
     newCol[newId] = "3";
+    newName[newId] = "VM " + rstr;
     this.setState(update(this.state, {
       analyse: {
         jvm_ids: {$push: [newId]},
         jvm_vers: {$merge: newVer},
-        jvm_gcts: {$merge: newCol}
+        jvm_gcts: {$merge: newCol},
+        jvm_names: {$merge: newName}
       },
       jvmsAdded: {$push: [newId]}
     }));
@@ -296,7 +304,11 @@ class AnalyseInfoPage extends React.Component {
                  <Row>
                    {(function() {
                      return this.state.analyse.jvm_ids.map(function(r, i) {
-                       return <CreateJvm md={3} cid={r} key={r} pp={this} title="JVM" versionValue={this.state.analyse.jvm_vers[r]} collectorValue={this.state.analyse.jvm_gcts[r]} jvmName={r} closeClickHandler={this.jvmCloseClicked.bind(this, r)}></CreateJvm>;
+                       console.log(r + "|" + ($.inArray(r, this.state.initialJvmIds) >= 0));
+                       return <CreateJvm md={3} cid={r} key={r} pp={this} title="JVM" versionValue={this.state.analyse.jvm_vers[r]}
+                       collectorValue={this.state.analyse.jvm_gcts[r]} jvmName={this.state.analyse.jvm_names[r] || r} jvmId={r}
+                       idDisabled={$.inArray(r, this.state.initialJvmIds) >= 0} closeClickHandler={this.jvmCloseClicked.bind(this,
+                         r)}></CreateJvm>;
                    }.bind(this));
                  }.bind(this))()}
                  </Row>

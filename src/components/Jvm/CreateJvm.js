@@ -10,16 +10,30 @@ var update = require('react-addons-update');
 class CreateJvm extends React.Component {
   constructor(props) {
     super(props);
+    var rstr = GCPlotCore.rstr(7);
+
     var title = this.props.title || "New JVM";
     var versionValue = this.props.versionValue || "7";
     var collectorValue = this.props.collectorValue || "3";
-    var jvmName = this.props.jvmName || "vm-" + GCPlotCore.rstr(7);
+    var jvmId = this.props.jvmId || "vm-" + rstr;
+    var jvmName = this.props.jvmName || "VM " + rstr
+    var idDisabled = this.props.idDisabled || false;
     this.state = {
       title: title,
       versionValue: versionValue,
       collectorValue: collectorValue,
-      jvmName: jvmName
+      jvmId: jvmId,
+      jvmName: jvmName,
+      idDisabled: idDisabled
     };
+  }
+
+  componentDidUpdate() {
+    if (this.props.idDisabled != this.state.idDisabled) {
+      this.setState(update(this.state, {
+        idDisabled: {$set: this.props.idDisabled}
+      }));
+    }
   }
 
   componentDidMount() {
@@ -37,7 +51,8 @@ class CreateJvm extends React.Component {
       <Col md={this.props.md}>
         <Panel header={<div>{this.state.title}<I name="close pull-right" onClick={this.props.closeClickHandler} style={{cursor: "pointer"}} /></div>}>
           <form role="form">
-            <Input type="text" label="Unique ID" defaultValue={this.state.jvmName} placeholder="JVM Identifier" ref={(r) => this.jvmIdText = r}/>
+            <Input type="text" label="Unique ID" disabled={this.state.idDisabled} defaultValue={this.state.jvmId} placeholder="JVM Identifier" ref={(r) => this.jvmIdText = r}/>
+            <Input type="text" label="Name" defaultValue={this.state.jvmName} placeholder="Display Name" ref={(r) => this.jvmNameText = r}/>
             <Input type="select" label="Version" className="select2" defaultValue={this.state.versionValue} style={{width: '100%'}} ref={(r) => this.versionSelector = r}>
               <option value="1">Hotspot 1.2.2</option>
               <option value="2">Hotspot 1.3.1</option>
