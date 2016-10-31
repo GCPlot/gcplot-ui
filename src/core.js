@@ -5,6 +5,8 @@ import $ from 'jquery';
 function GCPlotCore() {
 }
 
+GCPlotCore.ANONYMOUS_ANALYSE_ID = "7acada7b-e109-4d11-ac01-b3521d9d58c3";
+
 GCPlotCore.TOKEN_KEY = "token";
 GCPlotCore.USER_INFO = "user_info";
 GCPlotCore.ANALYSES = "analyses";
@@ -12,6 +14,11 @@ GCPlotCore.ANALYSES = "analyses";
 GCPlotCore.INTERNAL_ERROR_HANDLER = function(status) {
   alert(status);
 }
+
+$(window).on('beforeunload', function() {
+  sessionStorage.removeItem(GCPlotCore.USER_INFO);
+  sessionStorage.removeItem(GCPlotCore.ANALYSES);
+});
 
 GCPlotCore.PROFILE_CHANGED_EVENT = "profile.changed.event";
 GCPlotCore.ANALYSES_CHANGED_EVENT = "analyses.changed.event";
@@ -147,18 +154,19 @@ GCPlotCore.analyses = function(callback, errorCallback) {
           for (var i = 0; i < r.result.analyses.length; i++) {
             var jvms = r.result.analyses[i].jvm_ids || [];
             var namesByJvm = r.result.analyses[i].jvm_names || {};
-            var jvmByName = {};
 
+            var jvmByName = {};
             var namesArr = [];
             var sortedJvms = [];
             for (var j = 0; j < jvms.length; j++) {
               var name = namesByJvm[jvms[j]] || jvms[j];
+              name += jvms[j];
               jvmByName[name] = jvms[j];
               namesArr.push(name);
             }
             namesArr.sort();
             for (var j = 0; j < namesArr.length; j++) {
-              sortedJvms.push(jvmByName[namesArr[j]])
+              sortedJvms.push(jvmByName[namesArr[j]]);
             }
             r.result.analyses[i].jvm_ids = sortedJvms;
           }

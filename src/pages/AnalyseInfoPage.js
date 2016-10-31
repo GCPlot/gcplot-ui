@@ -230,6 +230,7 @@ class AnalyseInfoPage extends React.Component {
     let close = () => this.setState(update(this.state, { show: {$set: false}}));
     let closeSave = () => this.setState(update(this.state, { showSave: {$set: false}}));
 
+    if (this.props.params.analyseId != GCPlotCore.ANONYMOUS_ANALYSE_ID) {
     return (
       <div className="content-wrapper">
       <section className="content-header">
@@ -319,6 +320,9 @@ class AnalyseInfoPage extends React.Component {
         </Row>
         </section>
       </div>);
+    } else {
+      return <div/>
+    }
   }
 
 }

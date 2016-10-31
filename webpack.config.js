@@ -3,6 +3,8 @@
 const path = require('path');
 const args = require('minimist')(process.argv.slice(2));
 
+//require('imports?define=>false!blueimp-file-upload')
+
 // List of allowed environments
 const allowedEnvs = ['dev', 'dist', 'test'];
 

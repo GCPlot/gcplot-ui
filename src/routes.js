@@ -23,6 +23,7 @@ import MailWritePage from './pages/MailWritePage';
 import ChartChartJSPage from './pages/ChartChartJSPage';
 import ChartFlotPage from './pages/ChartFlotPage';
 import AnalyseInfoPage from './pages/AnalyseInfoPage';
+import QuickProcessPage from './pages/QuickProcessPage'
 
 export default () => {
   return (
@@ -31,6 +32,7 @@ export default () => {
         <IndexRoute component={DashboardPage} />
         <Route path="/dashboard" component={DashboardPage} />
         <Route path="/widgets" component={WidgetPage} />
+        <Route path="/quick_process" component={QuickProcessPage} />
         <Route path="/forms/general" component={FormGeneralPage} />
         <Route path="/forms/advanced" component={FormAdvancedPage} />
         <Route path="/forms/editor" component={EditorPage} />
