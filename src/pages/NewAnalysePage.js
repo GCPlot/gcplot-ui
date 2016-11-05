@@ -6,6 +6,8 @@ import { Row, Col, Panel, Input, ButtonInput, Popover, Modal, Button, DropdownBu
 import I from 'react-fontawesome';
 import CreateJvm from '../components/Jvm/CreateJvm'
 import GCPlotCore from '../core'
+import TimezonePicker from 'react-bootstrap-timezone-picker';
+import 'react-bootstrap-timezone-picker/dist/react-bootstrap-timezone-picker.min.css';
 
 var update = require('react-addons-update');
 
@@ -20,7 +22,8 @@ class NewAnalysePage extends React.Component {
             display: "none",
             value: "",
             color: 'red'
-        }
+        },
+        createDisabled: false
       };
   }
 
@@ -59,13 +62,18 @@ class NewAnalysePage extends React.Component {
       this.setState(update(this.state, {
         errorStyle: {
             display: {$set: "block"},
-            value: {$set: "Name should not be empty!"}
+            value: {$set: "Name should not be empty!"},
+            createDisabled: {$set: false}
         }
       }));
     } else {
+      this.setState(update(this.state, {
+        createDisabled: {$set: true}
+      }));
       var req = {
         name: this.nameText.getValue(),
         cnts: true,
+        tz: this.tzPicker.prevValue,
         ext: ""
       };
       var jvms = [];
@@ -88,7 +96,8 @@ class NewAnalysePage extends React.Component {
         this.setState(update(this.state, {
           errorStyle: {
               display: {$set: "block"},
-              value: {$set: title + " (" + msg + ")"}
+              value: {$set: title + " (" + msg + ")"},
+              createDisabled: {$set: false}
           }
         }));
       }).bind(this));
@@ -108,10 +117,21 @@ class NewAnalysePage extends React.Component {
         <Col>
         <Panel header="Create New" footer={<div>
           <p style={this.state.errorStyle}>{this.state.errorStyle.value}</p>
-          <ButtonInput type="submit" bsStyle="primary" value="Create" onClick={this.createClicked.bind(this)} />
+          <Button type="button" disabled={this.state.createDisabled} bsStyle="primary" onClick={this.createClicked.bind(this)}>Create</Button>
         </div>}>
           <form role="form">
             <Input type="text" label="Display Name" placeholder="Enter name" ref={(r) => this.nameText = r} />
+            <label htmlFor="tzSelect">Timezone</label>
+            <p>
+            <TimezonePicker
+              absolute      = {false}
+              defaultValue  = "Europe/London"
+              placeholder   = "Timezone:"
+              id            = "tzSelect"
+              style         = {{width: "100%"}}
+              ref           = {(r) => this.tzPicker = r}
+            />
+            </p>
             <button className="btn btn-block btn-info btn-xs" style={{width: "100px"}} onClick={this.addJvmClicked.bind(this)}>Add JVM</button>
             <p />
           </form>

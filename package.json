@@ -55,7 +55,7 @@
     "bootstrap": "^3.3.6",
     "bootstrap-colorpicker": "^2.3.0",
     "bootstrap-sass": "^3.3.6",
-    "chart.js": "^1.0.2",
+    "chart.js": "^2.3.0",
     "classnames": "^2.2.3",
     "core-js": "^2.0.0",
     "daterangepicker": "0.0.3",
@@ -71,12 +71,12 @@
     "jquery-ui": "^1.10.5",
     "jquery.inputmask": "^3.2.7",
     "react-fileupload-progress": "0.3.2",
-    "moment": "^2.12.0",
+    "moment": "^2.15.2",
     "morris.js": "^0.5.0",
     "normalize.css": "^3.0.3",
     "restful.js": "^0.9.6",
     "react": "^0.14.0",
-    "react-bootstrap": "^0.28.3",
+    "react-bootstrap": "^0.29.5",
     "react-dom": "^0.14.0",
     "react-fontawesome": "^0.3.3",
     "react-medium-editor": "^1.6.3",
@@ -86,6 +86,9 @@
     "react-spinkit": "^1.1.11",
     "script-loader": "^0.6.1",
     "select2": "^4.0.2",
-    "timepicker": "^1.8.11"
+    "timepicker": "^1.8.11",
+    "react-bootstrap-timezone-picker": "^1.0.7",
+    "rc-time-picker": "^2.1.0",
+    "clipboard-js": "^0.3.1"
   }
 }

@@ -8,7 +8,10 @@ import { browserHistory } from 'react-router'
 import I from 'react-fontawesome';
 import CreateJvm from '../components/Jvm/CreateJvm'
 import GCPlotCore from '../core'
+import TimezonePicker from 'react-bootstrap-timezone-picker';
+import 'react-bootstrap-timezone-picker/dist/react-bootstrap-timezone-picker.min.css';
 
+var clipboard = require('clipboard-js');
 var update = require('react-addons-update');
 
 class AnalyseInfoPage extends React.Component {
@@ -49,6 +52,13 @@ class AnalyseInfoPage extends React.Component {
 
   updateAll() {
     this.setState(update(this.state, {
+      analyse: {
+        name: {$set: ""},
+        jvm_ids: {$set: []},
+        jvm_vers: {$set: {}},
+        jvm_names: {$set: {}},
+        jvm_gcts: {$set: {}}
+      },
       jvmsAdded: {$set: []},
       jvmsRemoved: {$set: []},
       /*cmps: {$set: {}},
@@ -63,7 +73,6 @@ class AnalyseInfoPage extends React.Component {
   componentWillMount() {
     GCPlotCore.analyses((function(r) {
       var analyses = r.analyses;
-      console.log(analyses);
       for (var i = 0; i < analyses.length; i++) {
         if (analyses[i].id == this.props.params.analyseId) {
           this.setState(update(this.state, {
@@ -89,7 +98,8 @@ class AnalyseInfoPage extends React.Component {
   onUpdateClick() {
     var msg = {
       id: this.state.analyse.id,
-      name: this.state.analyse.name
+      name: this.state.analyse.name,
+      tz: this.tzPicker.prevValue
     }
     this.setState(update(this.state, {
       updateDisabled: {$set: true},
@@ -134,7 +144,6 @@ class AnalyseInfoPage extends React.Component {
   }
 
   onSaveClick() {
-    console.log(this.state);
     var jvmsToAdd = [];
     for (var i = 0; i < this.state.jvmsAdded.length; i++) {
       var cmp = this.state.cmps[this.state.jvmsAdded[i]];
@@ -226,6 +235,10 @@ class AnalyseInfoPage extends React.Component {
     }));
   }
 
+  copyIdClick() {
+    clipboard.copy(this.state.analyse.id);
+  }
+
   render() {
     let close = () => this.setState(update(this.state, { show: {$set: false}}));
     let closeSave = () => this.setState(update(this.state, { showSave: {$set: false}}));
@@ -245,8 +258,17 @@ class AnalyseInfoPage extends React.Component {
           <Panel>
             <Tabs defaultActiveKey={1}>
               <Tab eventKey={1} title="Info">
-                <Input type="text" label="ID" value={this.state.analyse.id} disabled={true}/>
+                <Input type="text" label="ID" value={this.state.analyse.id} addonAfter={<I name="clipboard" style={{cursor: "pointer"}} onClick={this.copyIdClick.bind(this)} />} disabled={true}/>
                 <Input type="text" label="Display Name" value={this.state.analyse.name} onChange={this.handleNameChange.bind(this)} placeholder="Enter name" ref={(r) => this.nameText = r} />
+                <label htmlFor="tzSelect">Timezone</label>
+                <TimezonePicker
+                  absolute      = {false}
+                  value  = {this.state.analyse.tz || "Europe/London"}
+                  placeholder   = "Timezone:"
+                  id            = "tzSelect"
+                  style         = {{width: "100%"}}
+                  ref           = {(r) => this.tzPicker = r}
+                />
                 <p/>
                 <p style={this.state.errorStyle}>{this.state.errorStyle.value}</p>
                 <button className="btn btn-block btn-primary" onClick={this.onUpdateClick.bind(this)} disabled={this.state.updateDisabled}>{this.state.updateCaption}</button>

@@ -101,15 +101,17 @@ class QuickProcessPage extends React.Component {
   }
 
   onAbort() {
-    this.setState(update(this.state, {
-      errorStyle: {
-        display: {$set: "inline"},
-        value: {$set: "Upload aborted. Please refresh the page and try again."},
-        className: {$set: 'callout-danger'}
-      },
-      isProcessing: {$set: false},
-      isUploading: {$set: false}
-    }));
+    if (!this.state.isProcessing) {
+      this.setState(update(this.state, {
+        errorStyle: {
+          display: {$set: "inline"},
+          value: {$set: "Upload aborted. Please refresh the page and try again."},
+          className: {$set: 'callout-danger'}
+        },
+        isProcessing: {$set: false},
+        isUploading: {$set: false}
+      }));
+    }
   }
 
   formGetter(){
@@ -122,7 +124,7 @@ class QuickProcessPage extends React.Component {
         <label htmlFor="exampleInputFile">File input</label>
         <input style={{display: 'block'}} disabled={this.state.isUploading || this.state.isProcessing} type="file" name='file' id="exampleInputFile" />
         <p/>
-        <Button type="button" bsStyle="primary" onClick={onSubmit}>Upload</Button>
+        <Button type="button" bsStyle="primary" disabled={this.state.isUploading || this.state.isProcessing} onClick={onSubmit}>Upload</Button>
       </form>
     );
   }
