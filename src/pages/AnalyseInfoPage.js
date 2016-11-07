@@ -3,7 +3,7 @@
 import $ from 'jquery';
 
 import React from 'react';
-import { Row, Col, Panel, Tabs, Tab, ButtonGroup, Input, Modal, ButtonInput, Button } from 'react-bootstrap';
+import { Row, Col, Panel, Tabs, Tab, ButtonGroup, Input, Modal, Button } from 'react-bootstrap';
 import { browserHistory } from 'react-router'
 import I from 'react-fontawesome';
 import CreateJvm from '../components/Jvm/CreateJvm'

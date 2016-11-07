@@ -1,6 +1,7 @@
 /*jshint -W109 */
 
 import $ from 'jquery';
+var jsonpipe = require('jsonpipe');
 
 function GCPlotCore() {
 }
@@ -239,6 +240,46 @@ GCPlotCore.deleteAnalyse = function(id, callback, errorCallback) {
       }
     }
   });
+}
+
+GCPlotCore.lazyGCEvents = function(data, callback, errorCallback, completeCallback) {
+  jsonpipe.flow(GCPlotCore.authUrl("/gc/jvm/events/full/stream") + "&" +
+    "analyse_id" + "=" + data.analyse_id + "&" + "jvm_id" + "=" + encodeURIComponent(data.jvm_id) +
+     "&" + "tz" + "=" + encodeURIComponent(data.tz || "") + "&" + "from" + "=" + data.from + "&" + "to" + "=" + data.to +
+     "&delimit=true", {
+        "delimiter": "$d",
+        "success": function(data) {
+          callback(data);
+        },
+        "error": function(errorMsg) {
+          console.error(errorMsg);
+          errorCallback(errorMsg);
+        },
+        "complete": function(statusText) {
+          if (completeCallback) {
+            completeCallback(statusText);
+          }
+        },
+        timeout: 180000,
+        "method": "GET",
+        "withCredentials": false
+    });
+}
+
+GCPlotCore.humanFileSize = function(bytes, si) {
+    var thresh = si ? 1000 : 1024;
+    if(Math.abs(bytes) < thresh) {
+        return bytes + ' B';
+    }
+    var units = si
+        ? ['kB','MB','GB','TB','PB','EB','ZB','YB']
+        : ['KiB','MiB','GiB','TiB','PiB','EiB','ZiB','YiB'];
+    var u = -1;
+    do {
+        bytes /= thresh;
+        ++u;
+    } while(Math.abs(bytes) >= thresh && u < units.length - 1);
+    return bytes.toFixed(3)+' '+units[u];
 }
 
 GCPlotCore.url = function(path) {

@@ -1,0 +1,18 @@
+.rc-time-picker-input {
+  width: 134px;
+  height: 26px;
+  border-radius: 0px !important;
+  border-width: 2px !important;
+  border-style: inset !important;
+  border-color: initial !important;
+  border-image: initial !important;
+  background-image: none !important;
+  -webkit-appearance: textfield !important;
+  -webkit-rtl-ordering: logical !important;
+  color: #000;
+  font-size: 14px !important;
+}
+
+.rc-time-picker-input:disabled {
+    color: #dddddd;
+}

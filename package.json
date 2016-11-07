@@ -35,6 +35,7 @@
     "eslint-loader": "^1.0.0",
     "eslint-plugin-react": "^3.3.0",
     "file-loader": "^0.8.4",
+    "json-loader": "^0.5.4",
     "glob": "^6.0.0",
     "isparta-instrumenter-loader": "^1.0.0",
     "minimist": "^1.2.0",
@@ -72,12 +73,14 @@
     "jquery.inputmask": "^3.2.7",
     "react-fileupload-progress": "0.3.2",
     "moment": "^2.15.2",
+    "moment-timezone": "^0.5.9",
     "morris.js": "^0.5.0",
     "normalize.css": "^3.0.3",
     "restful.js": "^0.9.6",
     "react": "^0.14.0",
     "react-bootstrap": "^0.29.5",
     "react-dom": "^0.14.0",
+    "react-addons-shallow-compare": "^0.14.0",
     "react-fontawesome": "^0.3.3",
     "react-medium-editor": "^1.6.3",
     "react-recaptcha": "^2.1.1",
@@ -89,6 +92,8 @@
     "timepicker": "^1.8.11",
     "react-bootstrap-timezone-picker": "^1.0.7",
     "rc-time-picker": "^2.1.0",
-    "clipboard-js": "^0.3.1"
+    "clipboard-js": "^0.3.1",
+    "jsonpipe": "^2.0.1",
+    "react-datepicker": "^0.34.0"
   }
 }
