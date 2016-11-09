@@ -11,6 +11,7 @@ import DatePicker from 'react-datepicker';
 import TimePicker from 'rc-time-picker';
 require('../css/rc-tp-override.css');
 require('../css/react-datepicker.css');
+import {Chart} from 'react-google-charts';
 
 var Spinner = require('react-spinkit');
 var clipboard = require('clipboard-js');
@@ -39,6 +40,11 @@ class JvmInfoPage extends React.Component {
         timeEnabled: false
       },
       data: [],
+      pauseDurationData: [[moment().toDate(), null, null, null, null]],
+      pauseDurationRange: {
+        from: moment().toDate(),
+        to: moment().toDate()
+      },
       isLoading: false
     };
   }
@@ -96,6 +102,11 @@ class JvmInfoPage extends React.Component {
         timeEnabled: false
       },
       data: [],
+      pauseDurationData: [[moment().toDate(), null, null, null, null]],
+      pauseDurationRange: {
+        from: moment(),
+        to: moment()
+      },
       isLoading: false
     };
     this.componentWillMount();
@@ -112,6 +123,9 @@ class JvmInfoPage extends React.Component {
           if (lastEvent) {
             endDate = moment.tz(lastEvent, this.tz(analyses[i]));
             startDate = moment(endDate).subtract(1, 'days');
+            if (startDate.hours() >= 0 || startDate.minutes() > 0) {
+              startDate.subtract(1, 'minutes');
+            }
           } else {
             endDate = moment({hour :23, minute :59, second :59, millisecond :999});
             startDate = moment(endDate).hour(0).minute(0).second(0).millisecond(0).subtract(1, 'days');
@@ -178,9 +192,12 @@ class JvmInfoPage extends React.Component {
 
     this.setState(update(this.state, {
       data: {$set: []},
+      pauseDurationData: {$set: [[moment().toDate(), null, null, null, null]]},
       isLoading: {$set: true}
     }));
     var dd = [];
+    var pauseDurationData = [];
+    var lastPauseD, firstPauseD = null;
     GCPlotCore.lazyGCEvents({
       analyse_id: this.state.analyse_id,
       jvm_id: this.state.jvm_id,
@@ -188,18 +205,35 @@ class JvmInfoPage extends React.Component {
       from: moment.tz(start, 'UTC').valueOf(),
       to: moment.tz(end, 'UTC').valueOf()
     }, function(d) {
-      dd.push(d);
-      if (dd.length >= 2000) {
-        this.setState(update(this.state, {
-          data: {$push: dd.slice(0)}
-        }));
-        dd = [];
+      //dd.push(d);
+      if (typeof d.c == 'undefined') {
+        if (d.g.length == 0) return;
+        if (firstPauseD == null) {
+          firstPauseD = moment.tz(d.d, this.tz()).toDate();
+        }
+        lastPauseD = moment.tz(d.d, this.tz()).toDate();
+        if (d.g.length == 1) {
+          if ($.inArray(GCPlotCore.YOUNG_GEN, d.g) >= 0) {
+            pauseDurationData.push([lastPauseD, d.p / 1000, null, null, null]);
+          } else if ($.inArray(GCPlotCore.TENURED_GEN, d.g) >= 0) {
+            pauseDurationData.push([lastPauseD, null, d.p / 1000, null, null]);
+          } else if ($.inArray(GCPlotCore.METASPACE_GEN, d.g) >= 0) {
+            pauseDurationData.push([lastPauseD, null, null, d.p / 1000, null]);
+          }
+        } else {
+          pauseDurationData.push([lastPauseD, null, null, null, d.p / 1000]);
+        }
       }
     }.bind(this), function(err) {
       console.log("error: " + err);
     }, function() {
       this.setState(update(this.state, {
-        data: {$push: dd},
+        //data: {$push: dd},
+        pauseDurationData: {$push: pauseDurationData},
+        pauseDurationRange: {
+          from: {$set: lastPauseD},
+          to: {$set: firstPauseD}
+        },
         isLoading: {$set: false}
       }));
     }.bind(this));
@@ -327,7 +361,64 @@ class JvmInfoPage extends React.Component {
           </Row>
         </Tab>
         <Tab eventKey={2} title="Graphs">
-
+        <Panel><Chart
+      chartType="ScatterChart"
+      options={{
+         	title: 'Pause Durations (Stop-The-World only)',
+          hAxis: {
+            viewWindow: {
+              min: this.state.pauseDurationRange.from,
+              max: this.state.pauseDurationRange.to
+            },
+            gridlines: {
+              count: -1,
+              units: {
+                days: {format: ['MMM dd']},
+                hours: {format: ['HH:mm', 'ha']},
+              }
+            },
+            minorGridlines: {
+              units: {
+                hours: {format: ['hh:mm:ss a', 'ha']},
+                minutes: {format: ['HH:mm a Z', ':mm']}
+              }
+            }
+          },
+          series: {
+            0: { pointShape: 'circle' },
+            1: { pointShape: 'triangle' },
+            2: { pointShape: 'star' },
+            3: { pointShape: 'polygon' }
+          }
+      }}
+      rows={this.state.pauseDurationData}
+      columns={[
+      	{
+      		'type': 'datetime',
+      		'label' : 'Time'
+      	},
+      	{
+      		'type' : 'number',
+      		'label' : 'Young Pause'
+      	},
+        {
+      		'type' : 'number',
+      		'label' : 'Tenured Pause'
+      	},
+        {
+      		'type' : 'number',
+      		'label' : 'Metaspace/Perm Pause'
+      	},
+        {
+      		'type' : 'number',
+      		'label' : 'Full Pause (Young + Tenured + Metaspace/Perm)'
+      	}
+      ]}
+      graph_id="ScatterChart"
+      width="100%"
+      height="400px"
+      legend_toggle={true}
+     /></Panel>
         </Tab>
         <Tab eventKey={3} title="Tenuring Stats">
 

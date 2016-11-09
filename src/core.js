@@ -42,6 +42,13 @@ GCPlotCore.ERRORS = {
   '769': 'Invalid request param'
 };
 
+GCPlotCore.YOUNG_GEN = 1;
+GCPlotCore.TENURED_GEN = 2;
+GCPlotCore.PERM_GEN = 3;
+GCPlotCore.METASPACE_GEN = 4;
+GCPlotCore.OLD_GEN = 5;
+GCPlotCore.OTHER_GEN = 6;
+
 GCPlotCore.on = function(event, handler) {
   $(document).on(event, handler);
 }

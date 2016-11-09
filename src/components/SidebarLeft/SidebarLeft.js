@@ -209,6 +209,11 @@ class SidebarLeft extends React.Component {
               <I name="upload" /> Quick process
             </NavLink>
           </li>
+          <li className="treeview">
+            <NavLink to="/charts/chartjs">
+              <I name="upload" /> Charts test
+            </NavLink>
+          </li>
           <li className="header">Control Panel</li>
           <li className="treeview">
             <NavLink to="/analyse/new">
@@ -234,7 +239,7 @@ class SidebarLeft extends React.Component {
               <ul className="treeview-menu">
                 {item.jvm_ids.map(function (jvm, o) {
                   return (<li key={o}>
-                    <NavLink to={"/analyses/" + item.id + "/jvm/" + encodeURIComponent(jvm)}>
+                    <NavLink to={"/jvms/" + item.id + "/jvm/" + encodeURIComponent(jvm)}>
                       <I name="server" /> {item.jvm_names[jvm] || jvm}
                     </NavLink>
                   </li>);
