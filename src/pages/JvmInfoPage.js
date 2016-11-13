@@ -12,6 +12,7 @@ import TimePicker from 'rc-time-picker';
 require('../css/rc-tp-override.css');
 require('../css/react-datepicker.css');
 import {Chart} from 'react-google-charts';
+import { browserHistory } from 'react-router'
 
 var Spinner = require('react-spinkit');
 var clipboard = require('clipboard-js');
@@ -20,15 +21,21 @@ var update = require('react-addons-update');
 class JvmInfoPage extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      analyse_id: props.params.analyseId,
-      jvm_id: props.params.jvmId,
+    this.state = this.initialState();
+  }
+
+  initialState() {
+    return {
+      analyse_id: this.props.params.analyseId,
+      jvm_id: this.props.params.jvmId,
       analyse: {
         name: "",
         jvm_ids: [],
         jvm_vers: {},
         jvm_names: {},
+        jvm_hdrs: {},
         jvm_gcts: {},
+        first_utc: {},
         last_utc: {},
         jvm_mem: {},
         cnts: false,
@@ -40,13 +47,21 @@ class JvmInfoPage extends React.Component {
         timeEnabled: false
       },
       data: [],
-      pauseDurationData: [[moment().toDate(), null, null, null, null]],
+      pauseDurationData: [[this.toDateTz(moment()), null, null, null, null]],
       pauseDurationRange: {
-        from: moment().toDate(),
-        to: moment().toDate()
+        from: this.toDateTz(moment()),
+        to: this.toDateTz(moment())
       },
-      isLoading: false
+      isLoading: false,
+      show: false,
+      delete: {
+        message: ""
+      }
     };
+  }
+
+  toDateTz(mm) {
+    return new Date(mm.year(), mm.month(), mm.date(), mm.hour(), mm.minute(), mm.second(), mm.millisecond());
   }
 
   tz(a) {
@@ -58,24 +73,36 @@ class JvmInfoPage extends React.Component {
     }
   }
 
+  isFirstEventPresented() {
+    var firstEvent = this.state.analyse.first_utc[this.state.jvm_id];
+    return ((typeof firstEvent) != 'undefined') && firstEvent != null;
+  }
+
   isLastEventPresented() {
     var lastEvent = this.state.analyse.last_utc[this.state.jvm_id];
     return ((typeof lastEvent) != 'undefined') && lastEvent != null;
   }
 
-  mm() {
+  lastEventMoment() {
     var m;
     var lastEvent = this.state.analyse.last_utc[this.state.jvm_id];
     if (this.isLastEventPresented()) {
-      m = moment.tz(lastEvent, this.tz());
-    } else {
-      m = moment().tz(this.tz());
+      m = moment.utc(lastEvent).tz(this.tz());
     }
     return m;
   }
 
-  formattedTime(format) {
-    return this.mm().format(format);
+  firstEventMoment() {
+    var m;
+    var firstEvent = this.state.analyse.first_utc[this.state.jvm_id];
+    if (this.isFirstEventPresented()) {
+      m = moment.utc(firstEvent).tz(this.tz());
+    }
+    return m;
+  }
+
+  formattedTime(format, mmnt) {
+    return mmnt.format(format);
   }
 
   componentDidUpdate() {
@@ -87,28 +114,7 @@ class JvmInfoPage extends React.Component {
   updateAll() {
     this.state.analyse_id = this.props.params.analyseId;
     this.state.jvm_id = this.props.params.jvmId;
-    this.state.analyse = {
-      name: "",
-      jvm_ids: [],
-      jvm_vers: {},
-      jvm_names: {},
-      jvm_gcts: {},
-      last_utc: {},
-      jvm_mem: {},
-      tz: null,
-      dateRangeState: {
-        startDate: moment(),
-        endDate: moment(),
-        timeEnabled: false
-      },
-      data: [],
-      pauseDurationData: [[moment().toDate(), null, null, null, null]],
-      pauseDurationRange: {
-        from: moment(),
-        to: moment()
-      },
-      isLoading: false
-    };
+    this.state = this.initialState();
     this.componentWillMount();
   }
 
@@ -120,26 +126,29 @@ class JvmInfoPage extends React.Component {
           console.log(analyses[i]);
           var lastEvent = analyses[i].last_utc[this.props.params.jvmId];
           var endDate, startDate;
+          var tz = this.tz(analyses[i]);
           if (lastEvent) {
-            endDate = moment.tz(lastEvent, this.tz(analyses[i]));
-            startDate = moment(endDate).subtract(1, 'days');
+            endDate = moment.utc(lastEvent).tz(tz);
+            startDate = moment.utc(lastEvent).tz(tz).subtract(1, 'days');
             if (startDate.hours() >= 0 || startDate.minutes() > 0) {
               startDate.subtract(1, 'minutes');
             }
           } else {
-            endDate = moment({hour :23, minute :59, second :59, millisecond :999});
-            startDate = moment(endDate).hour(0).minute(0).second(0).millisecond(0).subtract(1, 'days');
+            endDate = moment.tz({hour :23, minute :59, second :59, millisecond :999}, tz);
+            startDate = moment(endDate, tz).hour(0).minute(0).second(0).millisecond(0).subtract(1, 'days');
           }
-          this.setState(update(this.state, {
-            analyse: {$set: analyses[i]},
-            dateRangeState: {
-              endDate: {$set: endDate},
-              startDate: {$set: startDate}
-            }
-          }));
+          console.log(startDate.format());
+          console.log(endDate.format());
+          this.state.analyse = analyses[i];
+          this.state.dateRangeState = {
+            endDate: endDate,
+            startDate: startDate
+          };
+          this.setState(this.state);
           break;
         }
       }
+      this.onReloadClick();
     }).bind(this), function(code, title, msg) {
       this.setState(this.state);
       alert(code + "|" + title + "|" + msg);
@@ -151,7 +160,7 @@ class JvmInfoPage extends React.Component {
   }
 
   copyIdClick() {
-    clipboard.copy(this.state.analyse.id);
+    clipboard.copy(this.props.params.jvmId);
   }
 
   handleChangeStart(date) {
@@ -179,20 +188,23 @@ class JvmInfoPage extends React.Component {
   }
 
   onReloadClick() {
-    var start = moment(this.state.dateRangeState.startDate);
-    var end = moment(this.state.dateRangeState.endDate);
+    var start = moment(this.state.dateRangeState.startDate, this.tz());
+    var end = moment(this.state.dateRangeState.endDate, this.tz());
 
     if (!this.state.dateRangeState.timeEnabled) {
       start.hour(0).minute(0).second(0).millisecond(0);
       end.hour(23).minute(59).second(59).millisecond(999);
     }
 
-    console.log("start " + moment.tz(start, 'UTC').valueOf());
-    console.log("end " + moment.tz(end, 'UTC').valueOf());
+    console.log("start f: " + start.format());
+    console.log("end f: " + end.format());
+    console.log("start d: " + this.toDateTz(start));
+    console.log("end d: " + this.toDateTz(end));
+    console.log("start: " + start.valueOf());
+    console.log("end: " + end.valueOf());
 
     this.setState(update(this.state, {
-      data: {$set: []},
-      pauseDurationData: {$set: [[moment().toDate(), null, null, null, null]]},
+      pauseDurationData: {$set: [[this.toDateTz(moment.tz(this.tz())), null, null, null, null]]},
       isLoading: {$set: true}
     }));
     var dd = [];
@@ -202,50 +214,74 @@ class JvmInfoPage extends React.Component {
       analyse_id: this.state.analyse_id,
       jvm_id: this.state.jvm_id,
       tz: this.tz(),
-      from: moment.tz(start, 'UTC').valueOf(),
-      to: moment.tz(end, 'UTC').valueOf()
+      from: start.valueOf(),
+      to: end.valueOf()
     }, function(d) {
       //dd.push(d);
+      if (d.g.length == 0) return;
+      if (firstPauseD == null) {
+        firstPauseD = moment.utc(d.d).tz(this.tz());
+      }
+      lastPauseD = moment.utc(d.d).tz(this.tz());
       if (typeof d.c == 'undefined') {
-        if (d.g.length == 0) return;
-        if (firstPauseD == null) {
-          firstPauseD = moment.tz(d.d, this.tz()).toDate();
-        }
-        lastPauseD = moment.tz(d.d, this.tz()).toDate();
         if (d.g.length == 1) {
           if ($.inArray(GCPlotCore.YOUNG_GEN, d.g) >= 0) {
-            pauseDurationData.push([lastPauseD, d.p / 1000, null, null, null]);
+            pauseDurationData.push([this.toDateTz(lastPauseD), d.p / 1000, null, null, null]);
           } else if ($.inArray(GCPlotCore.TENURED_GEN, d.g) >= 0) {
-            pauseDurationData.push([lastPauseD, null, d.p / 1000, null, null]);
+            pauseDurationData.push([this.toDateTz(lastPauseD), null, d.p / 1000, null, null]);
           } else if ($.inArray(GCPlotCore.METASPACE_GEN, d.g) >= 0) {
-            pauseDurationData.push([lastPauseD, null, null, d.p / 1000, null]);
+            pauseDurationData.push([this.toDateTz(lastPauseD), null, null, d.p / 1000, null]);
           }
         } else {
-          pauseDurationData.push([lastPauseD, null, null, null, d.p / 1000]);
+          pauseDurationData.push([this.toDateTz(lastPauseD), null, null, null, d.p / 1000]);
         }
       }
     }.bind(this), function(err) {
       console.log("error: " + err);
     }, function() {
+      if ((typeof firstPauseD == 'undefined') || firstPauseD == null) {
+        firstPauseD = moment.tz(this.tz());
+        lastPauseD = moment(firstPauseD);
+      }
+
       this.setState(update(this.state, {
         //data: {$push: dd},
         pauseDurationData: {$push: pauseDurationData},
         pauseDurationRange: {
-          from: {$set: lastPauseD},
-          to: {$set: firstPauseD}
+          from: {$set: this.toDateTz(lastPauseD)},
+          to: {$set: this.toDateTz(firstPauseD)}
         },
         isLoading: {$set: false}
       }));
     }.bind(this));
   }
 
+  onDeleteJvmClick() {
+    this.setState(update(this.state, {
+      delete: {
+        message: {$set: ""},
+      }
+    }));
+    GCPlotCore.deleteJvm(this.props.params.analyseId, this.props.params.jvmId, function() {
+      this.setState(update(this.state, { show: {$set: false}}))
+      browserHistory.push("/dashboard");
+    }.bind(this), function(code, title, msg) {
+      this.setState(update(this.state, {
+        delete: {
+          message: {$set: title + " (" + msg + ")"},
+        }
+      }));
+    }.bind(this));
+  }
+
   render() {
+    let close = () => this.setState(update(this.state, { show: {$set: false}}));
     return (
       <div className="content-wrapper">
       <section className="content-header">
         <h1>
           JVM Info
-          <small>{this.state.analyse.jvm_names[this.props.params.jvmId]} from {this.state.analyse.name}</small>
+          <small><span style={{color: "#3c8dbc"}}>{this.state.analyse.jvm_names[this.props.params.jvmId]}</span> from {this.state.analyse.name}</small>
         </h1>
       </section>
       <section className="content">
@@ -300,12 +336,20 @@ class JvmInfoPage extends React.Component {
             <dl>
               <dt>Name</dt>
               <dd><code>{this.state.analyse.jvm_names[this.props.params.jvmId]}</code></dd>
+              <dt>First GC Event Occured</dt>
+              {(() => {
+                  if (this.isFirstEventPresented()) {
+                    return <dd>{this.formattedTime("MMMM DD, YYYY (hh:mm:ss A)", this.firstEventMoment())} - {this.tz()}</dd>
+                  } else {
+                    return <dd>There is no info about the first GC Event observed.</dd>
+                  }
+              })()}
               <dt>Last GC Event Time</dt>
               {(() => {
                   if (this.isLastEventPresented()) {
-                    return <dd>{this.formattedTime("MMMM DD, YYYY (hh:mm:ss)")} - {this.tz()}</dd>
+                    return <dd>{this.formattedTime("MMMM DD, YYYY (hh:mm:ss A)", this.lastEventMoment())} - {this.tz()}</dd>
                   } else {
-                    return <dd>There is no info about last GC Event observed.</dd>
+                    return <dd>There is no info about the last GC Event observed.</dd>
                   }
               })()}
               <dt>Analyse Type</dt>
@@ -364,8 +408,10 @@ class JvmInfoPage extends React.Component {
         <Panel><Chart
       chartType="ScatterChart"
       options={{
+          displayAnnotations: true,
          	title: 'Pause Durations (Stop-The-World only)',
           hAxis: {
+            title: 'Time',
             viewWindow: {
               min: this.state.pauseDurationRange.from,
               max: this.state.pauseDurationRange.to
@@ -383,6 +429,9 @@ class JvmInfoPage extends React.Component {
                 minutes: {format: ['HH:mm a Z', ':mm']}
               }
             }
+          },
+          vAxis: {
+            title: 'GC Pause (milliseconds)'
           },
           series: {
             0: { pointShape: 'circle' },
@@ -430,7 +479,21 @@ class JvmInfoPage extends React.Component {
 
         </Tab>
         <Tab eventKey={6} title="Manage">
+        <Modal container={this} show={this.state.show} onHide={close}>
+          <Modal.Header closeButton>
+            <Modal.Title>Confirm Delete</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <h4>Are you sure you want to delete this JVM?</h4>
+            <p>{this.state.delete.message}</p>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button bsStyle="danger" onClick={this.onDeleteJvmClick.bind(this)}>Delete</Button>
+            <Button onClick={close}>Close</Button>
+          </Modal.Footer>
+        </Modal>
           <Input type="text" label="ID" value={this.props.params.jvmId} addonAfter={<I name="clipboard" style={{cursor: "pointer"}} onClick={this.copyIdClick.bind(this)} />} disabled={true}/>
+           <Button className="btn btn-block btn-danger" style={{color: "white"}} onClick={() => this.setState(update(this.state, { show: {$set: true}}))}>Delete JVM</Button>
         </Tab>
       </Tabs>
       </section>

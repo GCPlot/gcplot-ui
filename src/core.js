@@ -249,8 +249,25 @@ GCPlotCore.deleteAnalyse = function(id, callback, errorCallback) {
   });
 }
 
+GCPlotCore.deleteJvm = function(analyseId, jvmId, callback, errorCallback) {
+  $.ajax({
+    type: "DELETE",
+    url: GCPlotCore.authUrl("/analyse/jvm/delete?analyse_id=" + analyseId + "&jvm_id=" + jvmId),
+    success: function(data) {
+      var r = JSON.parse(data);
+      if (r.hasOwnProperty('error')) {
+        errorCallback(r.error, GCPlotCore.ERRORS[r.error], r.message);
+      } else {
+        sessionStorage.removeItem(GCPlotCore.ANALYSES);
+        GCPlotCore.trigger(GCPlotCore.ANALYSES_CHANGED_EVENT);
+        callback();
+      }
+    }
+  });
+}
+
 GCPlotCore.lazyGCEvents = function(data, callback, errorCallback, completeCallback) {
-  jsonpipe.flow(GCPlotCore.authUrl("/gc/jvm/events/full/stream") + "&" +
+  jsonpipe.flow(GCPlotCore.authUrl("/gc/jvm/events/full/sample/stream") + "&" +
     "analyse_id" + "=" + data.analyse_id + "&" + "jvm_id" + "=" + encodeURIComponent(data.jvm_id) +
      "&" + "tz" + "=" + encodeURIComponent(data.tz || "") + "&" + "from" + "=" + data.from + "&" + "to" + "=" + data.to +
      "&delimit=true", {
