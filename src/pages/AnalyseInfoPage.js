@@ -243,7 +243,6 @@ class AnalyseInfoPage extends React.Component {
     let close = () => this.setState(update(this.state, { show: {$set: false}}));
     let closeSave = () => this.setState(update(this.state, { showSave: {$set: false}}));
 
-    if (this.props.params.analyseId != GCPlotCore.ANONYMOUS_ANALYSE_ID) {
     return (
       <div className="content-wrapper">
       <section className="content-header">
@@ -263,7 +262,7 @@ class AnalyseInfoPage extends React.Component {
                 <label htmlFor="tzSelect">Timezone</label>
                 <TimezonePicker
                   absolute      = {false}
-                  value  = {this.state.analyse.tz || "Europe/London"}
+                  value  = {this.state.analyse.tz || "Africa/Monrovia"}
                   placeholder   = "Timezone:"
                   id            = "tzSelect"
                   style         = {{width: "100%"}}
@@ -275,7 +274,7 @@ class AnalyseInfoPage extends React.Component {
                 <p/>
                 <p/>
               </Tab>
-              <Tab eventKey={2} title="Manage">
+              <Tab disabled={this.props.params.analyseId == GCPlotCore.ANONYMOUS_ANALYSE_ID} eventKey={2} title="Manage">
               <Panel header="Danger Zone">
               <form role="form">
                  <Button className="btn btn-block btn-danger" style={{color: "white"}} onClick={() => this.setState(update(this.state, { show: {$set: true}}))}>Delete Analyse</Button>
@@ -296,7 +295,7 @@ class AnalyseInfoPage extends React.Component {
               </div>
               </Panel>
               </Tab>
-              <Tab eventKey={3} title="JVMs">
+              <Tab disabled={this.props.params.analyseId == GCPlotCore.ANONYMOUS_ANALYSE_ID} eventKey={3} title="JVMs">
               <div className="static-modal">
                 <Modal container={this} show={this.state.showSave} onHide={closeSave}>
                   <Modal.Header closeButton>
@@ -342,9 +341,6 @@ class AnalyseInfoPage extends React.Component {
         </Row>
         </section>
       </div>);
-    } else {
-      return <div/>
-    }
   }
 
 }

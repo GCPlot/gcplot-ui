@@ -290,6 +290,21 @@ GCPlotCore.lazyGCEvents = function(data, callback, errorCallback, completeCallba
     });
 }
 
+GCPlotCore.objectsAges = function(analyseId, jvmId, callback, errorCallback) {
+  $.ajax({
+    type: "GET",
+    url: GCPlotCore.authUrl("/jvm/gc/ages/last?analyse_id=" + analyseId + "&jvm_id=" + jvmId),
+    success: function(data) {
+      var r = JSON.parse(data);
+      if (r.hasOwnProperty('error')) {
+        errorCallback(r.error, GCPlotCore.ERRORS[r.error], r.message);
+      } else {
+        callback(r.result);
+      }
+    }
+  });
+}
+
 GCPlotCore.humanFileSize = function(bytes, si) {
     var thresh = si ? 1000 : 1024;
     if(Math.abs(bytes) < thresh) {

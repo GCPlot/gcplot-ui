@@ -125,7 +125,7 @@ class NewAnalysePage extends React.Component {
             <p>
             <TimezonePicker
               absolute      = {false}
-              defaultValue  = "Europe/London"
+              defaultValue  = "Africa/Monrovia"
               placeholder   = "Timezone:"
               id            = "tzSelect"
               style         = {{width: "100%"}}

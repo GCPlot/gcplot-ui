@@ -3,17 +3,17 @@
 import $ from 'jquery';
 
 import React from 'react';
-import { Row, Col, Panel, Tabs, Tab, ButtonGroup, Input, Modal, Button } from 'react-bootstrap';
+import { Row, Col, Panel, Tabs, Tab, ButtonGroup, Table, ProgressBar, Input, Modal, Button } from 'react-bootstrap';
 import I from 'react-fontawesome';
 import GCPlotCore from '../core'
 import moment from 'moment-timezone';
 import DatePicker from 'react-datepicker';
 import TimePicker from 'rc-time-picker';
-require('../css/rc-tp-override.css');
-require('../css/react-datepicker.css');
 import {Chart} from 'react-google-charts';
 import { browserHistory } from 'react-router'
 
+require('../css/rc-tp-override.css');
+require('../css/react-datepicker.css');
 var Spinner = require('react-spinkit');
 var clipboard = require('clipboard-js');
 var update = require('react-addons-update');
@@ -47,7 +47,9 @@ class JvmInfoPage extends React.Component {
         timeEnabled: false
       },
       data: [],
+      objectsAges: [],
       pauseDurationData: [[this.toDateTz(moment()), null, null, null, null]],
+      logPauseDurationData: [[this.toDateTz(moment()), null, null, null, null]],
       pauseDurationRange: {
         from: this.toDateTz(moment()),
         to: this.toDateTz(moment())
@@ -55,6 +57,9 @@ class JvmInfoPage extends React.Component {
       isLoading: false,
       show: false,
       delete: {
+        message: ""
+      },
+      reload: {
         message: ""
       }
     };
@@ -67,7 +72,7 @@ class JvmInfoPage extends React.Component {
   tz(a) {
     var analyse = a || this.state.analyse;
     if ((typeof analyse.tz) == 'undefined' || analyse.tz == null || analyse.tz == "") {
-      return "Europe/London";
+      return "Africa/Monrovia";
     } else {
       return analyse.tz;
     }
@@ -137,8 +142,6 @@ class JvmInfoPage extends React.Component {
             endDate = moment.tz({hour :23, minute :59, second :59, millisecond :999}, tz);
             startDate = moment(endDate, tz).hour(0).minute(0).second(0).millisecond(0).subtract(1, 'days');
           }
-          console.log(startDate.format());
-          console.log(endDate.format());
           this.state.analyse = analyses[i];
           this.state.dateRangeState = {
             endDate: endDate,
@@ -192,8 +195,8 @@ class JvmInfoPage extends React.Component {
     var end = moment(this.state.dateRangeState.endDate, this.tz());
 
     if (!this.state.dateRangeState.timeEnabled) {
-      start.hour(0).minute(0).second(0).millisecond(0);
-      end.hour(23).minute(59).second(59).millisecond(999);
+        start.hour(0).minute(0).second(0).millisecond(0);
+        end.hour(23).minute(59).second(59).millisecond(999);
     }
 
     console.log("start f: " + start.format());
@@ -204,54 +207,102 @@ class JvmInfoPage extends React.Component {
     console.log("end: " + end.valueOf());
 
     this.setState(update(this.state, {
-      pauseDurationData: {$set: [[this.toDateTz(moment.tz(this.tz())), null, null, null, null]]},
-      isLoading: {$set: true}
+        isLoading: {$set: true},
+        reload: {
+            message: {$set: ""}
+        }
     }));
     var dd = [];
     var pauseDurationData = [];
-    var lastPauseD, firstPauseD = null;
+    var logPauseDurationData = [];
+    var lastPauseD,
+        firstPauseD = null;
     GCPlotCore.lazyGCEvents({
-      analyse_id: this.state.analyse_id,
-      jvm_id: this.state.jvm_id,
-      tz: this.tz(),
-      from: start.valueOf(),
-      to: end.valueOf()
+        analyse_id: this.state.analyse_id,
+        jvm_id: this.state.jvm_id,
+        tz: this.tz(),
+        from: start.valueOf(),
+        to: end.valueOf()
     }, function(d) {
-      //dd.push(d);
-      if (d.g.length == 0) return;
-      if (firstPauseD == null) {
-        firstPauseD = moment.utc(d.d).tz(this.tz());
-      }
-      lastPauseD = moment.utc(d.d).tz(this.tz());
-      if (typeof d.c == 'undefined') {
-        if (d.g.length == 1) {
-          if ($.inArray(GCPlotCore.YOUNG_GEN, d.g) >= 0) {
-            pauseDurationData.push([this.toDateTz(lastPauseD), d.p / 1000, null, null, null]);
-          } else if ($.inArray(GCPlotCore.TENURED_GEN, d.g) >= 0) {
-            pauseDurationData.push([this.toDateTz(lastPauseD), null, d.p / 1000, null, null]);
-          } else if ($.inArray(GCPlotCore.METASPACE_GEN, d.g) >= 0) {
-            pauseDurationData.push([this.toDateTz(lastPauseD), null, null, d.p / 1000, null]);
-          }
+        if (typeof d.error != 'undefined') {
+            this.setState(update(this.state, {
+                reload: {
+                    message: {
+                        $set: GCPlotCore.ERRORS[d.error] + " (" + d.message + ")"
+                    }
+                }
+            }));
         } else {
-          pauseDurationData.push([this.toDateTz(lastPauseD), null, null, null, d.p / 1000]);
+            if (d.g.length == 0)
+                return;
+            if (firstPauseD == null) {
+                firstPauseD = moment.utc(d.d).tz(this.tz());
+            }
+            lastPauseD = moment.utc(d.d).tz(this.tz());
+            var jdate = this.toDateTz(lastPauseD);
+            if (typeof d.c == 'undefined') {
+                if (d.g.length == 1) {
+                    if ($.inArray(GCPlotCore.YOUNG_GEN, d.g) >= 0) {
+                        logPauseDurationData.push([jdate, Math.log(d.p / 1000),null,null,null]);
+                        pauseDurationData.push([jdate, d.p / 1000,null,null,null]);
+                    } else if ($.inArray(GCPlotCore.TENURED_GEN, d.g) >= 0) {
+                        logPauseDurationData.push([jdate, null, Math.log(d.p / 1000),null,null]);
+                        pauseDurationData.push([jdate, null, d.p / 1000,null,null]);
+                    } else if ($.inArray(GCPlotCore.METASPACE_GEN, d.g) >= 0) {
+                        logPauseDurationData.push([jdate, null, null, Math.log(d.p / 1000),null]);
+                        pauseDurationData.push([jdate, null, null, d.p / 1000,null]);
+                    }
+                } else {
+                    logPauseDurationData.push([jdate, null, null, null, Math.log(d.p / 1000)]);
+                    pauseDurationData.push([jdate, null, null, null, d.p / 1000]);
+                }
+            }
         }
-      }
     }.bind(this), function(err) {
-      console.log("error: " + err);
-    }, function() {
-      if ((typeof firstPauseD == 'undefined') || firstPauseD == null) {
-        firstPauseD = moment.tz(this.tz());
-        lastPauseD = moment(firstPauseD);
-      }
+        this.setState(update(this.state, {
+            reload: {
+                message: {
+                    $set: GCPlotCore.ERRORS[r.error] + "(" + d.message + ")"
+                }
+            }
+        }));
+    }.bind(this), function() {
+        if ((typeof firstPauseD == 'undefined') || firstPauseD == null) {
+            firstPauseD = moment.tz(this.tz());
+            lastPauseD = moment(firstPauseD);
+        }
 
+        this.setState(update(this.state, {
+            pauseDurationData: {
+                $set: pauseDurationData
+            },
+            logPauseDurationData: {
+                $set: logPauseDurationData
+            },
+            pauseDurationRange: {
+                from: {
+                    $set: this.toDateTz(lastPauseD)
+                },
+                to: {
+                    $set: this.toDateTz(firstPauseD)
+                }
+            },
+            isLoading: {
+                $set: false
+            }
+        }));
+    }.bind(this));
+    GCPlotCore.objectsAges(this.state.analyse_id, this.state.jvm_id, function(r) {
+      var oas = [];
+      for  (var i = 0; i < r.occupied.length; i++) {
+        oas.push([r.occupied[i], r.total[i]]);
+      }
       this.setState(update(this.state, {
-        //data: {$push: dd},
-        pauseDurationData: {$push: pauseDurationData},
-        pauseDurationRange: {
-          from: {$set: this.toDateTz(lastPauseD)},
-          to: {$set: this.toDateTz(firstPauseD)}
-        },
-        isLoading: {$set: false}
+        objectsAges: {$set: oas}
+      }));
+    }.bind(this), function(code, title, msg) {
+      this.setState(update(this.state, {
+        objectsAges: {$set: [["Error", title + " (" + msg + ")"]]}
       }));
     }.bind(this));
   }
@@ -295,6 +346,11 @@ class JvmInfoPage extends React.Component {
               return <div>Reload</div>
             }
         })()}</Button>
+        </Col>
+        <Col style={this.state.errorStyle} md={6}>
+          <div style={{display: this.state.reload.message == '' ? 'none' : 'block'}} className="callout callout-danger">
+            <p>{this.state.reload.message}</p>
+          </div>
         </Col>
         </Row>
       </div>}>
@@ -463,14 +519,105 @@ class JvmInfoPage extends React.Component {
       		'label' : 'Full Pause (Young + Tenured + Metaspace/Perm)'
       	}
       ]}
-      graph_id="ScatterChart"
+      graph_id="pdc"
       width="100%"
       height="400px"
       legend_toggle={true}
-     /></Panel>
+     /><Chart
+   chartType="ScatterChart"
+   options={{
+       displayAnnotations: true,
+       title: 'Log10(x) Pause Durations (Stop-The-World only)',
+       hAxis: {
+         title: 'Time',
+         viewWindow: {
+           min: this.state.pauseDurationRange.from,
+           max: this.state.pauseDurationRange.to
+         },
+         gridlines: {
+           count: -1,
+           units: {
+             days: {format: ['MMM dd']},
+             hours: {format: ['HH:mm', 'ha']},
+           }
+         },
+         minorGridlines: {
+           units: {
+             hours: {format: ['hh:mm:ss a', 'ha']},
+             minutes: {format: ['HH:mm a Z', ':mm']}
+           }
+         }
+       },
+       vAxis: {
+         title: 'Log10(GC_Pause)'
+       },
+       series: {
+         0: { pointShape: 'circle' },
+         1: { pointShape: 'triangle' },
+         2: { pointShape: 'star' },
+         3: { pointShape: 'polygon' }
+       }
+   }}
+   rows={this.state.logPauseDurationData}
+   columns={[
+     {
+       'type': 'datetime',
+       'label' : 'Time'
+     },
+     {
+       'type' : 'number',
+       'label' : 'Young Pause'
+     },
+     {
+       'type' : 'number',
+       'label' : 'Tenured Pause'
+     },
+     {
+       'type' : 'number',
+       'label' : 'Metaspace/Perm Pause'
+     },
+     {
+       'type' : 'number',
+       'label' : 'Full Pause (Young + Tenured + Metaspace/Perm)'
+     }
+   ]}
+   graph_id="lpdc"
+   width="100%"
+   height="400px"
+   legend_toggle={true}
+  /></Panel>
         </Tab>
         <Tab eventKey={3} title="Tenuring Stats">
-
+        <Panel header="Tenuring Ages Statistic">
+        <Row>
+          <Col md={8}>
+          <Table bordered>
+            <thead>
+              <tr>
+                <th style={{width: '3%'}}>#</th>
+                <th style={{width: '30%'}}>Occupied (bytes)</th>
+                <th style={{width: '30%'}}>Total (bytes)</th>
+                <th style={{width: '30%'}}>Occupation</th>
+              </tr>
+            </thead>
+            <tbody>
+            {(() => {
+                return this.state.objectsAges.map(function(r, i) {
+                  return <tr>
+                    <td>{i + 1}</td>
+                    <td>{r[0]}</td>
+                    <td>{r[1]}</td>
+                    <td>
+                      <ProgressBar now={Number.isInteger(r[0]) ? (100 - ((r[1] - r[0] + 1) / r[1] * 100)) : 0} bsStyle="primary" className="progress-xs" />
+                    </td>
+                  </tr>;
+                });
+            })()}
+            </tbody>
+          </Table>
+          </Col>
+          </Row>
+          </Panel>
         </Tab>
         <Tab eventKey={4} title="Causes & Phases">
 
@@ -501,13 +648,6 @@ class JvmInfoPage extends React.Component {
     );
   }
 }
-
-/*
-<p>{this.tz()}</p>
-<p>{this.formattedTime("MMMM DD, YYYY (hh:mm:ss)")}</p>
-<p>{this.state.analyse.jvm_hdrs[this.props.params.jvmId]}</p>
-<Button bsStyle="success" onClick={this.testRequestLastDay.bind(this)}>Request last day</Button>
-*/
 
 JvmInfoPage.displayName = 'JvmInfoPage';
 

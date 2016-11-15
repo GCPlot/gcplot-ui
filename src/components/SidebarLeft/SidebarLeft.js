@@ -229,11 +229,7 @@ class SidebarLeft extends React.Component {
                 <I name="pie-chart" /> <span>{item.name}</span>
                 <I name="angle-left pull-right" />
                 {(function() {
-                  if (item.id != GCPlotCore.ANONYMOUS_ANALYSE_ID) {
                     return <small className="label pull-right bg-green edit-toggle" onClick={this.analyseEditClicked.bind(this,   item)}>info</small>;
-                  } else {
-                    return <div/>
-                  }
                 }.bind(this))()}
               </NavLink>
               <ul className="treeview-menu">
