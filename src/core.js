@@ -41,6 +41,21 @@ GCPlotCore.ERRORS = {
   '514': 'Unknown JVM Id',
   '769': 'Invalid request param'
 };
+GCPlotCore.PHASES = {
+  0: 'Other',
+  1: 'G1 Initial Mark',
+  2: 'G1 Root Region Scanning',
+  3: 'G1 Concurrent Marking',
+  4: 'G1 Remark',
+  5: 'G1 Cleanup',
+  6: 'G1 Copying',
+  7: 'CMS Initial Mark',
+  8: 'CMS Concurrent Mark',
+  9: 'CMS Concurrent Preclean',
+  10: 'CMS Remark',
+  11: 'CMS Concurrent Sweep',
+  12: 'CMS Concurrent Reset'
+}
 
 GCPlotCore.YOUNG_GEN = 1;
 GCPlotCore.TENURED_GEN = 2;
@@ -298,11 +313,22 @@ GCPlotCore.objectsAges = function(analyseId, jvmId, callback, errorCallback) {
       var r = JSON.parse(data);
       if (r.hasOwnProperty('error')) {
         errorCallback(r.error, GCPlotCore.ERRORS[r.error], r.message);
-      } else {
+      } else if (!$.isEmptyObject(r)) {
         callback(r.result);
       }
     }
   });
+}
+
+GCPlotCore.createArray = function(len, itm) {
+    var arr1 = [itm],
+        arr2 = [];
+    while (len > 0) {
+        if (len & 1) arr2 = arr2.concat(arr1);
+        arr1 = arr1.concat(arr1);
+        len >>>= 1;
+    }
+    return arr2;
 }
 
 GCPlotCore.humanFileSize = function(bytes, si) {

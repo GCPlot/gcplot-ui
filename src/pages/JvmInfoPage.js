@@ -48,8 +48,10 @@ class JvmInfoPage extends React.Component {
       },
       data: [],
       objectsAges: [],
-      pauseDurationData: [[this.toDateTz(moment()), null, null, null, null]],
-      logPauseDurationData: [[this.toDateTz(moment()), null, null, null, null]],
+      concurrentDurationData: [[this.toDateTz(moment()), null, '']],
+      logConcurrentDurationData: [[this.toDateTz(moment()), null, '']],
+      pauseDurationData: [[this.toDateTz(moment()), null, '', null, '', null, '', null, '']],
+      logPauseDurationData: [[this.toDateTz(moment()), null, '', null, '', null, '', null, '']],
       pauseDurationRange: {
         from: this.toDateTz(moment()),
         to: this.toDateTz(moment())
@@ -190,6 +192,17 @@ class JvmInfoPage extends React.Component {
     }));
   }
 
+  buildConcurrentTooltip(date, d) {
+    var phase;
+    if (typeof d.ph != 'undefined') {
+      phase = GCPlotCore.PHASES[d.ph];
+    } else {
+      phase = null;
+    }
+    return '<dl style="padding: 10px; width: 250px; font-size: 16px"><dt>Time</dt><dd>' + date.format('DD, MMM, YYYY - HH:mm:ss') + '</dd><dt>Pause (Ms)</dt><dd>' +
+        (d.p / 1000) + '</dd>' + (phase == null ? '' : '<dt>Phase</dt><dd>' + phase + '</dd>') + '</dl>';
+  }
+
   onReloadClick() {
     var start = moment(this.state.dateRangeState.startDate, this.tz());
     var end = moment(this.state.dateRangeState.endDate, this.tz());
@@ -212,11 +225,13 @@ class JvmInfoPage extends React.Component {
             message: {$set: ""}
         }
     }));
-    var dd = [];
+
+    var concDurationData = [];
+    var logConcDurationData = [];
     var pauseDurationData = [];
     var logPauseDurationData = [];
-    var lastPauseD,
-        firstPauseD = null;
+
+    var lastPauseD, firstPauseD = null;
     GCPlotCore.lazyGCEvents({
         analyse_id: this.state.analyse_id,
         jvm_id: this.state.jvm_id,
@@ -240,22 +255,27 @@ class JvmInfoPage extends React.Component {
             }
             lastPauseD = moment.utc(d.d).tz(this.tz());
             var jdate = this.toDateTz(lastPauseD);
+            // if not concurrent
+            var tt = this.buildConcurrentTooltip(lastPauseD, d);
             if (typeof d.c == 'undefined') {
                 if (d.g.length == 1) {
                     if ($.inArray(GCPlotCore.YOUNG_GEN, d.g) >= 0) {
-                        logPauseDurationData.push([jdate, Math.log(d.p / 1000),null,null,null]);
-                        pauseDurationData.push([jdate, d.p / 1000,null,null,null]);
+                        logPauseDurationData.push([jdate, Math.log10(d.p / 1000), tt, null, tt, null, tt, null, tt]);
+                        pauseDurationData.push([jdate, d.p / 1000, tt, null, tt, null, tt, null, tt]);
                     } else if ($.inArray(GCPlotCore.TENURED_GEN, d.g) >= 0) {
-                        logPauseDurationData.push([jdate, null, Math.log(d.p / 1000),null,null]);
-                        pauseDurationData.push([jdate, null, d.p / 1000,null,null]);
+                        logPauseDurationData.push([jdate, null, tt, Math.log10(d.p / 1000), tt, null, tt,null, tt]);
+                        pauseDurationData.push([jdate, null, tt, d.p / 1000, tt, null, tt, null, tt]);
                     } else if ($.inArray(GCPlotCore.METASPACE_GEN, d.g) >= 0) {
-                        logPauseDurationData.push([jdate, null, null, Math.log(d.p / 1000),null]);
-                        pauseDurationData.push([jdate, null, null, d.p / 1000,null]);
+                        logPauseDurationData.push([jdate, null, tt, null, tt, Math.log10(d.p / 1000), tt, null, tt]);
+                        pauseDurationData.push([jdate, null, tt, null, tt, d.p / 1000, tt, null, tt]);
                     }
                 } else {
-                    logPauseDurationData.push([jdate, null, null, null, Math.log(d.p / 1000)]);
-                    pauseDurationData.push([jdate, null, null, null, d.p / 1000]);
+                    logPauseDurationData.push([jdate, null, tt, null, tt, null, tt, Math.log10(d.p / 1000), tt]);
+                    pauseDurationData.push([jdate, null, tt, null, tt, null, tt, d.p / 1000, tt]);
                 }
+            } else {
+              concDurationData.push([jdate, d.p / 1000, tt]);
+              logConcDurationData.push([jdate, Math.log10(d.p / 1000), tt]);
             }
         }
     }.bind(this), function(err) {
@@ -272,12 +292,26 @@ class JvmInfoPage extends React.Component {
             lastPauseD = moment(firstPauseD);
         }
 
+        if (pauseDurationData.length == 0) {
+          pauseDurationData = [[this.toDateTz(moment()), null, '', null, '', null, '', null, '']];
+          logPauseDurationData = pauseDurationData;
+        }
+        if (concDurationData.length == 0) {
+          concDurationData = [[this.toDateTz(moment()), null, '']];
+          logConcDurationData = concDurationData;
+        }
         this.setState(update(this.state, {
             pauseDurationData: {
                 $set: pauseDurationData
             },
             logPauseDurationData: {
                 $set: logPauseDurationData
+            },
+            concurrentDurationData: {
+                $set: concDurationData
+            },
+            logConcurrentDurationData: {
+                $set: logConcDurationData
             },
             pauseDurationRange: {
                 from: {
@@ -466,6 +500,7 @@ class JvmInfoPage extends React.Component {
       options={{
           displayAnnotations: true,
          	title: 'Pause Durations (Stop-The-World only)',
+          tooltip: { isHtml: true },
           hAxis: {
             title: 'Time',
             viewWindow: {
@@ -506,18 +541,22 @@ class JvmInfoPage extends React.Component {
       		'type' : 'number',
       		'label' : 'Young Pause'
       	},
+        {'type': 'string', 'role': 'tooltip', 'p': {'html': true}},
         {
       		'type' : 'number',
       		'label' : 'Tenured Pause'
       	},
+        {'type': 'string', 'role': 'tooltip', 'p': {'html': true}},
         {
       		'type' : 'number',
       		'label' : 'Metaspace/Perm Pause'
       	},
+        {'type': 'string', 'role': 'tooltip', 'p': {'html': true}},
         {
       		'type' : 'number',
       		'label' : 'Full Pause (Young + Tenured + Metaspace/Perm)'
-      	}
+      	},
+        {'type': 'string', 'role': 'tooltip', 'p': {'html': true}}
       ]}
       graph_id="pdc"
       width="100%"
@@ -527,7 +566,8 @@ class JvmInfoPage extends React.Component {
    chartType="ScatterChart"
    options={{
        displayAnnotations: true,
-       title: 'Log10(x) Pause Durations (Stop-The-World only)',
+       title: 'Log(x) Pause Durations (Stop-The-World only)',
+       tooltip: { isHtml: true },
        hAxis: {
          title: 'Time',
          viewWindow: {
@@ -549,7 +589,7 @@ class JvmInfoPage extends React.Component {
          }
        },
        vAxis: {
-         title: 'Log10(GC_Pause)'
+         title: 'Log(GC_Pause)'
        },
        series: {
          0: { pointShape: 'circle' },
@@ -568,24 +608,113 @@ class JvmInfoPage extends React.Component {
        'type' : 'number',
        'label' : 'Young Pause'
      },
+     {'type': 'string', 'role': 'tooltip', 'p': {'html': true}},
      {
        'type' : 'number',
        'label' : 'Tenured Pause'
      },
+     {'type': 'string', 'role': 'tooltip', 'p': {'html': true}},
      {
        'type' : 'number',
        'label' : 'Metaspace/Perm Pause'
      },
+     {'type': 'string', 'role': 'tooltip', 'p': {'html': true}},
      {
        'type' : 'number',
        'label' : 'Full Pause (Young + Tenured + Metaspace/Perm)'
-     }
+     },
+     {'type': 'string', 'role': 'tooltip', 'p': {'html': true}}
    ]}
    graph_id="lpdc"
    width="100%"
    height="400px"
    legend_toggle={true}
-  /></Panel>
+  />
+  <Chart
+  chartType="ScatterChart"
+  options={{
+    displayAnnotations: true,
+    title: 'Concurrent Pause Durations (Non-STW)',
+    tooltip: { isHtml: true },
+    hAxis: {
+      title: 'Time',
+      viewWindow: {
+        min: this.state.pauseDurationRange.from,
+        max: this.state.pauseDurationRange.to
+      },
+      gridlines: {
+        count: -1,
+        units: {
+          days: {format: ['MMM dd']},
+          hours: {format: ['HH:mm', 'ha']},
+        }
+      },
+      minorGridlines: {
+        units: {
+          hours: {format: ['hh:mm:ss a', 'ha']},
+          minutes: {format: ['HH:mm a Z', ':mm']}
+        }
+      }
+    },
+    vAxis: {
+      title: 'GC Duration (Milliseconds)'
+    },
+    series: {
+      0: { pointShape: 'circle' }
+    }
+  }}
+  rows={this.state.concurrentDurationData}
+  columns={[{'type': 'datetime', 'label' : 'Time'},
+    {'type' : 'number', 'label' : 'Concurrent Collections'},
+    {'type': 'string', 'role': 'tooltip', 'p': {'html': true}}]}
+  graph_id="conc_events"
+  width="100%"
+  height="400px"
+  legend_toggle={true}
+  />
+  <Chart
+  chartType="ScatterChart"
+  options={{
+    displayAnnotations: true,
+    title: 'Log(x) Concurrent Pause Durations (Non-STW)',
+    tooltip: { isHtml: true },
+    hAxis: {
+      title: 'Time',
+      viewWindow: {
+        min: this.state.pauseDurationRange.from,
+        max: this.state.pauseDurationRange.to
+      },
+      gridlines: {
+        count: -1,
+        units: {
+          days: {format: ['MMM dd']},
+          hours: {format: ['HH:mm', 'ha']},
+        }
+      },
+      minorGridlines: {
+        units: {
+          hours: {format: ['hh:mm:ss a', 'ha']},
+          minutes: {format: ['HH:mm a Z', ':mm']}
+        }
+      }
+    },
+    vAxis: {
+      title: 'Log(GC_Duration)'
+    },
+    series: {
+      0: { pointShape: 'circle' }
+    }
+  }}
+  rows={this.state.logConcurrentDurationData}
+  columns={[{'type': 'datetime', 'label' : 'Time'},
+    {'type' : 'number', 'label' : 'Concurrent Collections'},
+    {'type': 'string', 'role': 'tooltip', 'p': {'html': true}}]}
+  graph_id="lconc_events"
+  width="100%"
+  height="400px"
+  legend_toggle={true}
+  />
+  </Panel>
         </Tab>
         <Tab eventKey={3} title="Tenuring Stats">
         <Panel header="Tenuring Ages Statistic">
