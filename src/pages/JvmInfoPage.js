@@ -47,6 +47,7 @@ class JvmInfoPage extends React.Component {
         timeEnabled: false
       },
       data: [],
+      desiredSurvivorSize: -1,
       objectsAges: [],
       concurrentDurationData: [[this.toDateTz(moment()), null, '']],
       logConcurrentDurationData: [[this.toDateTz(moment()), null, '']],
@@ -328,10 +329,15 @@ class JvmInfoPage extends React.Component {
     }.bind(this));
     GCPlotCore.objectsAges(this.state.analyse_id, this.state.jvm_id, function(r) {
       var oas = [];
+      var dss = -1;
+      if (typeof r.dss != 'undefined' && r.dss > 0) {
+        dss = r.dss;
+      }
       for  (var i = 0; i < r.occupied.length; i++) {
         oas.push([r.occupied[i], r.total[i]]);
       }
       this.setState(update(this.state, {
+        desiredSurvivorSize: {$set: dss},
         objectsAges: {$set: oas}
       }));
     }.bind(this), function(code, title, msg) {
@@ -461,19 +467,19 @@ class JvmInfoPage extends React.Component {
               if (this.state.analyse.jvm_mem[this.props.params.jvmId]) {
                 return (<dl>
                   <dt>Page Size</dt>
-                  <dd><code>{GCPlotCore.humanFileSize(this.state.analyse.jvm_mem[this.props.params.jvmId].ps, true)}</code> ({this.state.analyse.jvm_mem[this.props.params.jvmId].ps} bytes)</dd>
+                  <dd><code>{GCPlotCore.humanFileSize(this.state.analyse.jvm_mem[this.props.params.jvmId].ps)}</code> ({this.state.analyse.jvm_mem[this.props.params.jvmId].ps} bytes)</dd>
                   <dt>Physical Total</dt>
-                  <dd><code>{GCPlotCore.humanFileSize(this.state.analyse.jvm_mem[this.props.params.jvmId].pt, true)}</code> ({this.state.analyse.jvm_mem[this.props.params.jvmId].pt} bytes)</dd>
+                  <dd><code>{GCPlotCore.humanFileSize(this.state.analyse.jvm_mem[this.props.params.jvmId].pt)}</code> ({this.state.analyse.jvm_mem[this.props.params.jvmId].pt} bytes)</dd>
                   <dt>Physical Free</dt>
-                  <dd><code>{GCPlotCore.humanFileSize(this.state.analyse.jvm_mem[this.props.params.jvmId].pf, true)}</code> ({this.state.analyse.jvm_mem[this.props.params.jvmId].pf} bytes)</dd>
+                  <dd><code>{GCPlotCore.humanFileSize(this.state.analyse.jvm_mem[this.props.params.jvmId].pf)}</code> ({this.state.analyse.jvm_mem[this.props.params.jvmId].pf} bytes)</dd>
                   <dt>Physical Occupied</dt>
-                  <dd><code>{GCPlotCore.humanFileSize(this.state.analyse.jvm_mem[this.props.params.jvmId].pt - this.state.analyse.jvm_mem[this.props.params.jvmId].pf, true)}</code> ({this.state.analyse.jvm_mem[this.props.params.jvmId].pt - this.state.analyse.jvm_mem[this.props.params.jvmId].pf} bytes)</dd>
+                  <dd><code>{GCPlotCore.humanFileSize(this.state.analyse.jvm_mem[this.props.params.jvmId].pt - this.state.analyse.jvm_mem[this.props.params.jvmId].pf)}</code> ({this.state.analyse.jvm_mem[this.props.params.jvmId].pt - this.state.analyse.jvm_mem[this.props.params.jvmId].pf} bytes)</dd>
                   <dt>Swap Total</dt>
-                  <dd><code>{GCPlotCore.humanFileSize(this.state.analyse.jvm_mem[this.props.params.jvmId].st, true)}</code> ({this.state.analyse.jvm_mem[this.props.params.jvmId].st} bytes)</dd>
+                  <dd><code>{GCPlotCore.humanFileSize(this.state.analyse.jvm_mem[this.props.params.jvmId].st)}</code> ({this.state.analyse.jvm_mem[this.props.params.jvmId].st} bytes)</dd>
                   <dt>Swap Free</dt>
-                  <dd><code>{GCPlotCore.humanFileSize(this.state.analyse.jvm_mem[this.props.params.jvmId].sf, true)}</code> ({this.state.analyse.jvm_mem[this.props.params.jvmId].sf} bytes)</dd>
+                  <dd><code>{GCPlotCore.humanFileSize(this.state.analyse.jvm_mem[this.props.params.jvmId].sf)}</code> ({this.state.analyse.jvm_mem[this.props.params.jvmId].sf} bytes)</dd>
                   <dt>Swap Occupied</dt>
-                  <dd><code>{GCPlotCore.humanFileSize(this.state.analyse.jvm_mem[this.props.params.jvmId].st - this.state.analyse.jvm_mem[this.props.params.jvmId].sf, true)}</code> ({this.state.analyse.jvm_mem[this.props.params.jvmId].st - this.state.analyse.jvm_mem[this.props.params.jvmId].sf} bytes)</dd>
+                  <dd><code>{GCPlotCore.humanFileSize(this.state.analyse.jvm_mem[this.props.params.jvmId].st - this.state.analyse.jvm_mem[this.props.params.jvmId].sf)}</code> ({this.state.analyse.jvm_mem[this.props.params.jvmId].st - this.state.analyse.jvm_mem[this.props.params.jvmId].sf} bytes)</dd>
                 </dl>);
               } else {
                 return <dd>No info recorded. Probably the file was truncated or corrupted.</dd>
@@ -494,7 +500,7 @@ class JvmInfoPage extends React.Component {
           </Col>
           </Row>
         </Tab>
-        <Tab eventKey={2} title="Graphs">
+        <Tab eventKey={2} title="Pauses">
         <Panel><Chart
       chartType="ScatterChart"
       options={{
@@ -718,6 +724,15 @@ class JvmInfoPage extends React.Component {
         </Tab>
         <Tab eventKey={3} title="Tenuring Stats">
         <Panel header="Tenuring Ages Statistic">
+        {(() => {
+          if (this.state.desiredSurvivorSize > 0) {
+            return <p>
+              <b>Desired Survivor Size</b> - <code>{GCPlotCore.humanFileSize(this.state.desiredSurvivorSize)}</code>
+            </p>;
+          } else {
+            return <div />;
+          }
+        })()}
         <Row>
           <Col md={8}>
           <Table bordered>

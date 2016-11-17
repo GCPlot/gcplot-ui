@@ -331,14 +331,12 @@ GCPlotCore.createArray = function(len, itm) {
     return arr2;
 }
 
-GCPlotCore.humanFileSize = function(bytes, si) {
-    var thresh = si ? 1000 : 1024;
+GCPlotCore.humanFileSize = function(bytes) {
+    var thresh = 1024;
     if(Math.abs(bytes) < thresh) {
         return bytes + ' B';
     }
-    var units = si
-        ? ['kB','MB','GB','TB','PB','EB','ZB','YB']
-        : ['KiB','MiB','GiB','TiB','PiB','EiB','ZiB','YiB'];
+    var units = ['kB','MB','GB','TB','PB','EB','ZB','YB'];
     var u = -1;
     do {
         bytes /= thresh;
