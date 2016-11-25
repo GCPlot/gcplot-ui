@@ -53,6 +53,14 @@ class JvmInfoPage extends React.Component {
       logConcurrentDurationData: [[this.toDateTz(moment()), null, '']],
       pauseDurationData: [[this.toDateTz(moment()), null, '', null, '', null, '', null, '']],
       logPauseDurationData: [[this.toDateTz(moment()), null, '', null, '', null, '', null, '']],
+      promotionRateData: [[this.toDateTz(moment()), null]],
+      allocationRateData: [[this.toDateTz(moment()), null]],
+      youngUsedBeforeData: [[this.toDateTz(moment()), null, null]],
+      youngUsedAfterData: [[this.toDateTz(moment()), null, null]],
+      youngTotalData: [[this.toDateTz(moment()), null, null]],
+      heapUsedBeforeData: [[this.toDateTz(moment()), null, null]],
+      heapUsedAfterData: [[this.toDateTz(moment()), null, null]],
+      heapTotalData: [[this.toDateTz(moment()), null, null]],
       pauseDurationRange: {
         from: this.toDateTz(moment()),
         to: this.toDateTz(moment())
@@ -193,7 +201,7 @@ class JvmInfoPage extends React.Component {
     }));
   }
 
-  buildConcurrentTooltip(date, d) {
+  buildTooltip(date, d) {
     var phase;
     if (typeof d.ph != 'undefined') {
       phase = GCPlotCore.PHASES[d.ph];
@@ -227,12 +235,22 @@ class JvmInfoPage extends React.Component {
         }
     }));
 
+    var k = 2/(10 + 1);
     var concDurationData = [];
     var logConcDurationData = [];
     var pauseDurationData = [];
     var logPauseDurationData = [];
 
-    var lastPauseD, firstPauseD = null;
+    var youngUsedBeforeData = [];
+    var youngTotalData = [];
+    var youngUsedAfterData = [];
+    var heapUsedBeforeData = [];
+    var heapTotalData = [];
+    var heapUsedAfterData = [];
+    var allocationRateData = [];
+    var promotionRateData = [];
+
+    var lastTime, firstTime = null;
     GCPlotCore.lazyGCEvents({
         analyse_id: this.state.analyse_id,
         jvm_id: this.state.jvm_id,
@@ -249,18 +267,51 @@ class JvmInfoPage extends React.Component {
                 }
             }));
         } else {
-            if (d.g.length == 0)
-                return;
-            if (firstPauseD == null) {
-                firstPauseD = moment.utc(d.d).tz(this.tz());
-            }
-            lastPauseD = moment.utc(d.d).tz(this.tz());
-            var jdate = this.toDateTz(lastPauseD);
-            // if not concurrent
-            var tt = this.buildConcurrentTooltip(lastPauseD, d);
-            if (typeof d.c == 'undefined') {
+            if (typeof d.stats == 'undefined' && typeof d.alr == 'undefined') {
+              if (d.g.length == 0)
+                  return;
+              if (firstTime == null) {
+                  firstTime = moment.utc(d.d).tz(this.tz());
+              }
+              lastTime = moment.utc(d.d).tz(this.tz());
+              var jdate = this.toDateTz(lastTime);
+              // if not concurrent
+              var tt = this.buildTooltip(lastTime, d);
+              if (typeof d.c == 'undefined') {
                 if (d.g.length == 1) {
                     if ($.inArray(GCPlotCore.YOUNG_GEN, d.g) >= 0) {
+                        if (typeof d.cp != 'undefined') {
+                          var hbEma, haEma, htEma;
+                          if (youngUsedBeforeData.length > 1) {
+                              var i = youngUsedBeforeData.length - 1;
+                              hbEma = youngUsedBeforeData[i][1] * k + youngUsedBeforeData[i - 1][2] * (1 - k);
+                              haEma = youngUsedAfterData[i][1] * k + youngUsedAfterData[i - 1][2] * (1 - k);
+                              htEma = youngTotalData[i][1] * k + youngTotalData[i - 1][2] * (1 - k);
+                          } else {
+                              hbEma = d.cp.b / 1024;
+                              haEma = d.cp.a / 1024;
+                              htEma = d.cp.t / 1024;
+                          }
+                          youngUsedBeforeData.push([jdate, d.cp.b / 1024, hbEma]);
+                          youngUsedAfterData.push([jdate, d.cp.a / 1024, haEma]);
+                          youngTotalData.push([jdate, d.cp.t / 1024, htEma]);
+                        }
+                        if (typeof d.tc != 'undefined') {
+                          var hbEma, haEma, htEma;
+                          if (heapUsedBeforeData.length > 1) {
+                              var i = heapUsedBeforeData.length - 1;
+                              hbEma = heapUsedBeforeData[i][1] * k + heapUsedBeforeData[i - 1][2] * (1 - k);
+                              haEma = heapUsedAfterData[i][1] * k + heapUsedAfterData[i - 1][2] * (1 - k);
+                              htEma = heapTotalData[i][1] * k + heapTotalData[i - 1][2] * (1 - k);
+                          } else {
+                              hbEma = d.tc.b / 1024;
+                              haEma = d.tc.a / 1024;
+                              htEma = d.tc.t / 1024;
+                          }
+                          heapUsedBeforeData.push([jdate, d.tc.b / 1024, hbEma]);
+                          heapUsedAfterData.push([jdate, d.tc.a / 1024, haEma]);
+                          heapTotalData.push([jdate, d.tc.t / 1024, htEma]);
+                        }
                         logPauseDurationData.push([jdate, Math.log10(d.p / 1000), tt, null, tt, null, tt, null, tt]);
                         pauseDurationData.push([jdate, d.p / 1000, tt, null, tt, null, tt, null, tt]);
                     } else if ($.inArray(GCPlotCore.TENURED_GEN, d.g) >= 0) {
@@ -274,10 +325,15 @@ class JvmInfoPage extends React.Component {
                     logPauseDurationData.push([jdate, null, tt, null, tt, null, tt, Math.log10(d.p / 1000), tt]);
                     pauseDurationData.push([jdate, null, tt, null, tt, null, tt, d.p / 1000, tt]);
                 }
-            } else {
-              concDurationData.push([jdate, d.p / 1000, tt]);
-              logConcDurationData.push([jdate, Math.log10(d.p / 1000), tt]);
-            }
+              } else {
+                  concDurationData.push([jdate, d.p / 1000, tt]);
+                  logConcDurationData.push([jdate, Math.log10(d.p / 1000), tt]);
+              }
+          } else if (typeof d.alr != 'undefined') {
+            var jdate = this.toDateTz(moment.utc(d.d).tz(this.tz()));
+            allocationRateData.push([jdate, d.alr / 1024]);
+            promotionRateData.push([jdate, d.prr / 1024]);
+          }
         }
     }.bind(this), function(err) {
         this.setState(update(this.state, {
@@ -288,9 +344,9 @@ class JvmInfoPage extends React.Component {
             }
         }));
     }.bind(this), function() {
-        if ((typeof firstPauseD == 'undefined') || firstPauseD == null) {
-            firstPauseD = moment.tz(this.tz());
-            lastPauseD = moment(firstPauseD);
+        if ((typeof firstTime == 'undefined') || firstTime == null) {
+            firstTime = moment.tz(this.tz());
+            lastTime = moment(firstTime);
         }
 
         if (pauseDurationData.length == 0) {
@@ -300,6 +356,20 @@ class JvmInfoPage extends React.Component {
         if (concDurationData.length == 0) {
           concDurationData = [[this.toDateTz(moment()), null, '']];
           logConcDurationData = concDurationData;
+        }
+        if (allocationRateData.length == 0) {
+          promotionRateData = [[this.toDateTz(moment()), null]];
+          allocationRateData = promotionRateData;
+        }
+        if (youngUsedBeforeData.length == 0) {
+          youngUsedBeforeData = [[this.toDateTz(moment()), null, null]];
+          youngUsedAfterData = youngUsedBeforeData;
+          youngTotalData = youngUsedBeforeData;
+        }
+        if (heapUsedBeforeData.length == 0) {
+          heapUsedBeforeData = [[this.toDateTz(moment()), null, null]];
+          heapUsedAfterData = heapUsedBeforeData;
+          heapTotalData = heapUsedBeforeData;
         }
         this.setState(update(this.state, {
             pauseDurationData: {
@@ -314,12 +384,36 @@ class JvmInfoPage extends React.Component {
             logConcurrentDurationData: {
                 $set: logConcDurationData
             },
+            promotionRateData: {
+                $set: promotionRateData
+            },
+            allocationRateData: {
+                $set: allocationRateData
+            },
+            youngUsedBeforeData: {
+                $set: youngUsedBeforeData
+            },
+            youngUsedAfterData: {
+                $set: youngUsedAfterData
+            },
+            youngTotalData: {
+                $set: youngTotalData
+            },
+            heapUsedBeforeData: {
+                $set: heapUsedBeforeData
+            },
+            heapUsedAfterData: {
+                $set: heapUsedAfterData
+            },
+            heapTotalData: {
+                $set: heapTotalData
+            },
             pauseDurationRange: {
                 from: {
-                    $set: this.toDateTz(lastPauseD)
+                    $set: this.toDateTz(lastTime)
                 },
                 to: {
-                    $set: this.toDateTz(firstPauseD)
+                    $set: this.toDateTz(firstTime)
                 }
             },
             isLoading: {
@@ -410,7 +504,7 @@ class JvmInfoPage extends React.Component {
         </Col>
         <Col md={5}>
           <p><b>Times Range:</b></p>
-          <input type="checkbox" className="col-xs-1" checked={this.state.dateRangeState.timeEnabled} onChange={this.onTimeChange.bind(this)}/>
+          <input type="checkbox" className="col-xs-1" value={this.state.dateRangeState.timeEnabled} onChange={this.onTimeChange.bind(this)}/>
           <TimePicker
             disabled={!this.state.dateRangeState.timeEnabled}
             value={this.state.dateRangeState.startDate}
@@ -504,6 +598,7 @@ class JvmInfoPage extends React.Component {
         <Panel><Chart
       chartType="ScatterChart"
       options={{
+        backgroundColor: '#FDFFFA',
           displayAnnotations: true,
          	title: 'Pause Durations (Stop-The-World only)',
           tooltip: { isHtml: true },
@@ -571,6 +666,7 @@ class JvmInfoPage extends React.Component {
      /><Chart
    chartType="ScatterChart"
    options={{
+     backgroundColor: '#FDFFFA',
        displayAnnotations: true,
        title: 'Log(x) Pause Durations (Stop-The-World only)',
        tooltip: { isHtml: true },
@@ -639,6 +735,7 @@ class JvmInfoPage extends React.Component {
   <Chart
   chartType="ScatterChart"
   options={{
+    backgroundColor: '#FDFFFA',
     displayAnnotations: true,
     title: 'Concurrent Pause Durations (Non-STW)',
     tooltip: { isHtml: true },
@@ -681,6 +778,7 @@ class JvmInfoPage extends React.Component {
   <Chart
   chartType="ScatterChart"
   options={{
+    backgroundColor: '#FDFFFA',
     displayAnnotations: true,
     title: 'Log(x) Concurrent Pause Durations (Non-STW)',
     tooltip: { isHtml: true },
@@ -722,7 +820,393 @@ class JvmInfoPage extends React.Component {
   />
   </Panel>
         </Tab>
-        <Tab eventKey={3} title="Tenuring Stats">
+        <Tab eventKey={3} title="Memory">
+        <Chart
+      chartType="LineChart"
+      options={{
+        backgroundColor: '#FDFFFA',
+          displayAnnotations: true,
+         	title: 'Promotion Rate',
+          hAxis: {
+            title: 'Time',
+            viewWindow: {
+              min: this.state.pauseDurationRange.from,
+              max: this.state.pauseDurationRange.to
+            },
+            gridlines: {
+              count: -1,
+              units: {
+                days: {format: ['MMM dd']},
+                hours: {format: ['HH:mm', 'ha']},
+              }
+            },
+            minorGridlines: {
+              units: {
+                hours: {format: ['hh:mm:ss a', 'ha']},
+                minutes: {format: ['HH:mm a Z', ':mm']}
+              }
+            }
+          },
+          vAxis: {
+            title: 'Promotion Rate (mb/sec)'
+          }
+      }}
+      rows={this.state.promotionRateData}
+      columns={[
+      	{
+      		'type': 'datetime',
+      		'label' : 'Time'
+      	},
+      	{
+      		'type' : 'number',
+      		'label' : 'Promotion Rate'
+      	}]}
+      graph_id="prmc"
+      width="100%"
+      height="400px"
+      legend_toggle={true}
+     />
+     <Chart
+   chartType="LineChart"
+   options={{
+     backgroundColor: '#FDFFFA',
+       displayAnnotations: true,
+       title: 'Allocation Rate',
+       hAxis: {
+         title: 'Time',
+         viewWindow: {
+           min: this.state.pauseDurationRange.from,
+           max: this.state.pauseDurationRange.to
+         },
+         gridlines: {
+           count: -1,
+           units: {
+             days: {format: ['MMM dd']},
+             hours: {format: ['HH:mm', 'ha']},
+           }
+         },
+         minorGridlines: {
+           units: {
+             hours: {format: ['hh:mm:ss a', 'ha']},
+             minutes: {format: ['HH:mm a Z', ':mm']}
+           }
+         }
+       },
+       vAxis: {
+         title: 'Allocation Rate (mb/sec)'
+       }
+   }}
+   rows={this.state.allocationRateData}
+   columns={[
+     {
+       'type': 'datetime',
+       'label' : 'Time'
+     },
+     {
+       'type' : 'number',
+       'label' : 'Allocation Rate'
+     }]}
+   graph_id="armc"
+   width="100%"
+   height="400px"
+   legend_toggle={true}
+  />
+  <Chart
+chartType="LineChart"
+options={{
+  backgroundColor: '#FDFFFA',
+    displayAnnotations: true,
+    title: 'Young Generation Used Size Before GC',
+    hAxis: {
+      title: 'Time',
+      viewWindow: {
+        min: this.state.pauseDurationRange.from,
+        max: this.state.pauseDurationRange.to
+      },
+      gridlines: {
+        count: -1,
+        units: {
+          days: {format: ['MMM dd']},
+          hours: {format: ['HH:mm', 'ha']},
+        }
+      },
+      minorGridlines: {
+        units: {
+          hours: {format: ['hh:mm:ss a', 'ha']},
+          minutes: {format: ['HH:mm a Z', ':mm']}
+        }
+      }
+    },
+    vAxis: {
+      title: 'Young Used Before (mb)'
+    }
+}}
+rows={this.state.youngUsedBeforeData}
+columns={[
+  {
+    'type': 'datetime',
+    'label' : 'Time'
+  },
+  {
+    'type' : 'number',
+    'label' : 'Young Used Before'
+  },
+  {
+    'type' : 'number',
+    'label' : 'Young Used Before EMA'
+  }]}
+graph_id="yubc"
+width="100%"
+height="400px"
+legend_toggle={true}
+/>
+<Chart
+chartType="LineChart"
+options={{
+backgroundColor: '#FDFFFA',
+  displayAnnotations: true,
+  title: 'Young Generation Used Size After GC',
+  hAxis: {
+    title: 'Time',
+    viewWindow: {
+      min: this.state.pauseDurationRange.from,
+      max: this.state.pauseDurationRange.to
+    },
+    gridlines: {
+      count: -1,
+      units: {
+        days: {format: ['MMM dd']},
+        hours: {format: ['HH:mm', 'ha']},
+      }
+    },
+    minorGridlines: {
+      units: {
+        hours: {format: ['hh:mm:ss a', 'ha']},
+        minutes: {format: ['HH:mm a Z', ':mm']}
+      }
+    }
+  },
+  vAxis: {
+    title: 'Young Used After (mb)'
+  }
+}}
+rows={this.state.youngUsedAfterData}
+columns={[
+{
+  'type': 'datetime',
+  'label' : 'Time'
+},
+{
+  'type' : 'number',
+  'label' : 'Young Used After'
+},
+{
+  'type' : 'number',
+  'label' : 'Young Used After EMA'
+}]}
+graph_id="yuac"
+width="100%"
+height="400px"
+legend_toggle={true}
+/>
+<Chart
+chartType="LineChart"
+options={{
+backgroundColor: '#FDFFFA',
+  displayAnnotations: true,
+  title: 'Young Total Size',
+  hAxis: {
+    title: 'Time',
+    viewWindow: {
+      min: this.state.pauseDurationRange.from,
+      max: this.state.pauseDurationRange.to
+    },
+    gridlines: {
+      count: -1,
+      units: {
+        days: {format: ['MMM dd']},
+        hours: {format: ['HH:mm', 'ha']},
+      }
+    },
+    minorGridlines: {
+      units: {
+        hours: {format: ['hh:mm:ss a', 'ha']},
+        minutes: {format: ['HH:mm a Z', ':mm']}
+      }
+    }
+  },
+  vAxis: {
+    title: 'Young Total (mb)'
+  }
+}}
+rows={this.state.youngTotalData}
+columns={[
+{
+  'type': 'datetime',
+  'label' : 'Time'
+},
+{
+  'type' : 'number',
+  'label' : 'Young Total'
+},
+{
+  'type' : 'number',
+  'label' : 'Young Total EMA'
+}]}
+graph_id="yutc"
+width="100%"
+height="400px"
+legend_toggle={true}
+/>
+<Chart
+chartType="LineChart"
+options={{
+backgroundColor: '#FDFFFA',
+  displayAnnotations: true,
+  title: 'Heap Used Size Before GC',
+  hAxis: {
+    title: 'Time',
+    viewWindow: {
+      min: this.state.pauseDurationRange.from,
+      max: this.state.pauseDurationRange.to
+    },
+    gridlines: {
+      count: -1,
+      units: {
+        days: {format: ['MMM dd']},
+        hours: {format: ['HH:mm', 'ha']},
+      }
+    },
+    minorGridlines: {
+      units: {
+        hours: {format: ['hh:mm:ss a', 'ha']},
+        minutes: {format: ['HH:mm a Z', ':mm']}
+      }
+    }
+  },
+  vAxis: {
+    title: 'Heap Used Before (mb)'
+  }
+}}
+rows={this.state.heapUsedBeforeData}
+columns={[
+{
+  'type': 'datetime',
+  'label' : 'Time'
+},
+{
+  'type' : 'number',
+  'label' : 'Heap Used Before'
+},
+{
+  'type' : 'number',
+  'label' : 'Heap Used Before EMA'
+}]}
+graph_id="hubc"
+width="100%"
+height="400px"
+legend_toggle={true}
+/>
+<Chart
+chartType="LineChart"
+options={{
+backgroundColor: '#FDFFFA',
+displayAnnotations: true,
+title: 'Heap Used Size After GC',
+hAxis: {
+  title: 'Time',
+  viewWindow: {
+    min: this.state.pauseDurationRange.from,
+    max: this.state.pauseDurationRange.to
+  },
+  gridlines: {
+    count: -1,
+    units: {
+      days: {format: ['MMM dd']},
+      hours: {format: ['HH:mm', 'ha']},
+    }
+  },
+  minorGridlines: {
+    units: {
+      hours: {format: ['hh:mm:ss a', 'ha']},
+      minutes: {format: ['HH:mm a Z', ':mm']}
+    }
+  }
+},
+vAxis: {
+  title: 'Heap Used After (mb)'
+}
+}}
+rows={this.state.heapUsedAfterData}
+columns={[
+{
+'type': 'datetime',
+'label' : 'Time'
+},
+{
+'type' : 'number',
+'label' : 'Heap Used After'
+},
+{
+'type' : 'number',
+'label' : 'Heap Used After EMA'
+}]}
+graph_id="huac"
+width="100%"
+height="400px"
+legend_toggle={true}
+/>
+<Chart
+chartType="LineChart"
+options={{
+backgroundColor: '#FDFFFA',
+displayAnnotations: true,
+title: 'Heap Total Size',
+hAxis: {
+  title: 'Time',
+  viewWindow: {
+    min: this.state.pauseDurationRange.from,
+    max: this.state.pauseDurationRange.to
+  },
+  gridlines: {
+    count: -1,
+    units: {
+      days: {format: ['MMM dd']},
+      hours: {format: ['HH:mm', 'ha']},
+    }
+  },
+  minorGridlines: {
+    units: {
+      hours: {format: ['hh:mm:ss a', 'ha']},
+      minutes: {format: ['HH:mm a Z', ':mm']}
+    }
+  }
+},
+vAxis: {
+  title: 'Heap Total (mb)'
+}
+}}
+rows={this.state.heapTotalData}
+columns={[
+{
+'type': 'datetime',
+'label' : 'Time'
+},
+{
+'type' : 'number',
+'label' : 'Heap Total'
+},
+{
+'type' : 'number',
+'label' : 'Heap Total EMA'
+}]}
+graph_id="hutc"
+width="100%"
+height="400px"
+legend_toggle={true}
+/>
+        </Tab>
+        <Tab eventKey={4} title="Tenuring Stats">
         <Panel header="Tenuring Ages Statistic">
         {(() => {
           if (this.state.desiredSurvivorSize > 0) {
@@ -763,13 +1247,13 @@ class JvmInfoPage extends React.Component {
           </Row>
           </Panel>
         </Tab>
-        <Tab eventKey={4} title="Causes & Phases">
+        <Tab eventKey={5} title="Causes & Phases">
 
         </Tab>
-        <Tab eventKey={5} title="Performance">
+        <Tab eventKey={6} title="Performance">
 
         </Tab>
-        <Tab eventKey={6} title="Manage">
+        <Tab eventKey={7} title="Manage">
         <Modal container={this} show={this.state.show} onHide={close}>
           <Modal.Header closeButton>
             <Modal.Title>Confirm Delete</Modal.Title>

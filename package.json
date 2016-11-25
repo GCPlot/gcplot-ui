@@ -90,7 +90,7 @@
     "select2": "^4.0.2",
     "timepicker": "^1.8.11",
     "react-bootstrap-timezone-picker": "^1.0.7",
-    "rc-time-picker": "^2.1.0",
+    "rc-time-picker": "^2.2.1",
     "clipboard-js": "^0.3.1",
     "jsonpipe": "^2.0.1",
     "react-datepicker": "^0.34.0",

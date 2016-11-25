@@ -285,7 +285,7 @@ GCPlotCore.lazyGCEvents = function(data, callback, errorCallback, completeCallba
   jsonpipe.flow(GCPlotCore.authUrl("/gc/jvm/events/full/sample/stream") + "&" +
     "analyse_id" + "=" + data.analyse_id + "&" + "jvm_id" + "=" + encodeURIComponent(data.jvm_id) +
      "&" + "tz" + "=" + encodeURIComponent(data.tz || "") + "&" + "from" + "=" + data.from + "&" + "to" + "=" + data.to +
-     "&delimit=true", {
+     "&delimit=true&stats=true", {
         "delimiter": "$d",
         "success": function(data) {
           callback(data);
