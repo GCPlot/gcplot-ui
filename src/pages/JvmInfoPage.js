@@ -24,6 +24,29 @@ class JvmInfoPage extends React.Component {
     this.state = this.initialState();
   }
 
+  hAxis() {
+    return {
+      title: 'Time',
+      viewWindow: {
+        min: this.state.pauseDurationRange.from,
+        max: this.state.pauseDurationRange.to
+      },
+      gridlines: {
+        count: -1,
+        units: {
+          days: {format: ['MMM dd']},
+          hours: {format: ['HH:mm', 'ha']},
+        }
+      },
+      minorGridlines: {
+        units: {
+          hours: {format: ['hh:mm:ss a', 'ha']},
+          minutes: {format: ['HH:mm a Z', ':mm']}
+        }
+      }
+    };
+  }
+
   initialState() {
     return {
       analyse_id: this.props.params.analyseId,
@@ -212,6 +235,24 @@ class JvmInfoPage extends React.Component {
         (d.p / 1000) + '</dd>' + (phase == null ? '' : '<dt>Phase</dt><dd>' + phase + '</dd>') + '</dl>';
   }
 
+  fillCapacity(jdate, usedBeforeData, usedAfterData, totalData, cp) {
+    var k = 2/(10 + 1);
+    var hbEma, haEma, htEma;
+    if (usedBeforeData.length > 1) {
+        var i = usedBeforeData.length - 1;
+        hbEma = usedBeforeData[i][1] * k + usedBeforeData[i - 1][2] * (1 - k);
+        haEma = usedAfterData[i][1] * k + usedAfterData[i - 1][2] * (1 - k);
+        htEma = totalData[i][1] * k + totalData[i - 1][2] * (1 - k);
+    } else {
+        hbEma = cp.b / 1024;
+        haEma = cp.a / 1024;
+        htEma = cp.t / 1024;
+    }
+    usedBeforeData.push([jdate, cp.b / 1024, hbEma]);
+    usedAfterData.push([jdate, cp.a / 1024, haEma]);
+    totalData.push([jdate, cp.t / 1024, htEma]);
+  }
+
   onReloadClick() {
     var start = moment(this.state.dateRangeState.startDate, this.tz());
     var end = moment(this.state.dateRangeState.endDate, this.tz());
@@ -235,7 +276,6 @@ class JvmInfoPage extends React.Component {
         }
     }));
 
-    var k = 2/(10 + 1);
     var concDurationData = [];
     var logConcDurationData = [];
     var pauseDurationData = [];
@@ -281,36 +321,10 @@ class JvmInfoPage extends React.Component {
                 if (d.g.length == 1) {
                     if ($.inArray(GCPlotCore.YOUNG_GEN, d.g) >= 0) {
                         if (typeof d.cp != 'undefined') {
-                          var hbEma, haEma, htEma;
-                          if (youngUsedBeforeData.length > 1) {
-                              var i = youngUsedBeforeData.length - 1;
-                              hbEma = youngUsedBeforeData[i][1] * k + youngUsedBeforeData[i - 1][2] * (1 - k);
-                              haEma = youngUsedAfterData[i][1] * k + youngUsedAfterData[i - 1][2] * (1 - k);
-                              htEma = youngTotalData[i][1] * k + youngTotalData[i - 1][2] * (1 - k);
-                          } else {
-                              hbEma = d.cp.b / 1024;
-                              haEma = d.cp.a / 1024;
-                              htEma = d.cp.t / 1024;
-                          }
-                          youngUsedBeforeData.push([jdate, d.cp.b / 1024, hbEma]);
-                          youngUsedAfterData.push([jdate, d.cp.a / 1024, haEma]);
-                          youngTotalData.push([jdate, d.cp.t / 1024, htEma]);
+                            this.fillCapacity(jdate, youngUsedBeforeData, youngUsedAfterData, youngTotalData, d.cp);
                         }
                         if (typeof d.tc != 'undefined') {
-                          var hbEma, haEma, htEma;
-                          if (heapUsedBeforeData.length > 1) {
-                              var i = heapUsedBeforeData.length - 1;
-                              hbEma = heapUsedBeforeData[i][1] * k + heapUsedBeforeData[i - 1][2] * (1 - k);
-                              haEma = heapUsedAfterData[i][1] * k + heapUsedAfterData[i - 1][2] * (1 - k);
-                              htEma = heapTotalData[i][1] * k + heapTotalData[i - 1][2] * (1 - k);
-                          } else {
-                              hbEma = d.tc.b / 1024;
-                              haEma = d.tc.a / 1024;
-                              htEma = d.tc.t / 1024;
-                          }
-                          heapUsedBeforeData.push([jdate, d.tc.b / 1024, hbEma]);
-                          heapUsedAfterData.push([jdate, d.tc.a / 1024, haEma]);
-                          heapTotalData.push([jdate, d.tc.t / 1024, htEma]);
+                            this.fillCapacity(jdate, heapUsedBeforeData, heapUsedAfterData, heapTotalData, d.tc);
                         }
                         logPauseDurationData.push([jdate, Math.log10(d.p / 1000), tt, null, tt, null, tt, null, tt]);
                         pauseDurationData.push([jdate, d.p / 1000, tt, null, tt, null, tt, null, tt]);
@@ -598,30 +612,10 @@ class JvmInfoPage extends React.Component {
         <Panel><Chart
       chartType="ScatterChart"
       options={{
-        backgroundColor: '#FDFFFA',
           displayAnnotations: true,
          	title: 'Pause Durations (Stop-The-World only)',
           tooltip: { isHtml: true },
-          hAxis: {
-            title: 'Time',
-            viewWindow: {
-              min: this.state.pauseDurationRange.from,
-              max: this.state.pauseDurationRange.to
-            },
-            gridlines: {
-              count: -1,
-              units: {
-                days: {format: ['MMM dd']},
-                hours: {format: ['HH:mm', 'ha']},
-              }
-            },
-            minorGridlines: {
-              units: {
-                hours: {format: ['hh:mm:ss a', 'ha']},
-                minutes: {format: ['HH:mm a Z', ':mm']}
-              }
-            }
-          },
+          hAxis: this.hAxis(),
           vAxis: {
             title: 'GC Pause (milliseconds)'
           },
@@ -666,30 +660,10 @@ class JvmInfoPage extends React.Component {
      /><Chart
    chartType="ScatterChart"
    options={{
-     backgroundColor: '#FDFFFA',
        displayAnnotations: true,
        title: 'Log(x) Pause Durations (Stop-The-World only)',
        tooltip: { isHtml: true },
-       hAxis: {
-         title: 'Time',
-         viewWindow: {
-           min: this.state.pauseDurationRange.from,
-           max: this.state.pauseDurationRange.to
-         },
-         gridlines: {
-           count: -1,
-           units: {
-             days: {format: ['MMM dd']},
-             hours: {format: ['HH:mm', 'ha']},
-           }
-         },
-         minorGridlines: {
-           units: {
-             hours: {format: ['hh:mm:ss a', 'ha']},
-             minutes: {format: ['HH:mm a Z', ':mm']}
-           }
-         }
-       },
+       hAxis: this.hAxis(),
        vAxis: {
          title: 'Log(GC_Pause)'
        },
@@ -735,30 +709,10 @@ class JvmInfoPage extends React.Component {
   <Chart
   chartType="ScatterChart"
   options={{
-    backgroundColor: '#FDFFFA',
     displayAnnotations: true,
     title: 'Concurrent Pause Durations (Non-STW)',
     tooltip: { isHtml: true },
-    hAxis: {
-      title: 'Time',
-      viewWindow: {
-        min: this.state.pauseDurationRange.from,
-        max: this.state.pauseDurationRange.to
-      },
-      gridlines: {
-        count: -1,
-        units: {
-          days: {format: ['MMM dd']},
-          hours: {format: ['HH:mm', 'ha']},
-        }
-      },
-      minorGridlines: {
-        units: {
-          hours: {format: ['hh:mm:ss a', 'ha']},
-          minutes: {format: ['HH:mm a Z', ':mm']}
-        }
-      }
-    },
+    hAxis: this.hAxis(),
     vAxis: {
       title: 'GC Duration (Milliseconds)'
     },
@@ -778,30 +732,10 @@ class JvmInfoPage extends React.Component {
   <Chart
   chartType="ScatterChart"
   options={{
-    backgroundColor: '#FDFFFA',
     displayAnnotations: true,
     title: 'Log(x) Concurrent Pause Durations (Non-STW)',
     tooltip: { isHtml: true },
-    hAxis: {
-      title: 'Time',
-      viewWindow: {
-        min: this.state.pauseDurationRange.from,
-        max: this.state.pauseDurationRange.to
-      },
-      gridlines: {
-        count: -1,
-        units: {
-          days: {format: ['MMM dd']},
-          hours: {format: ['HH:mm', 'ha']},
-        }
-      },
-      minorGridlines: {
-        units: {
-          hours: {format: ['hh:mm:ss a', 'ha']},
-          minutes: {format: ['HH:mm a Z', ':mm']}
-        }
-      }
-    },
+    hAxis: this.hAxis(),
     vAxis: {
       title: 'Log(GC_Duration)'
     },
@@ -824,29 +758,9 @@ class JvmInfoPage extends React.Component {
         <Chart
       chartType="LineChart"
       options={{
-        backgroundColor: '#FDFFFA',
           displayAnnotations: true,
          	title: 'Promotion Rate',
-          hAxis: {
-            title: 'Time',
-            viewWindow: {
-              min: this.state.pauseDurationRange.from,
-              max: this.state.pauseDurationRange.to
-            },
-            gridlines: {
-              count: -1,
-              units: {
-                days: {format: ['MMM dd']},
-                hours: {format: ['HH:mm', 'ha']},
-              }
-            },
-            minorGridlines: {
-              units: {
-                hours: {format: ['hh:mm:ss a', 'ha']},
-                minutes: {format: ['HH:mm a Z', ':mm']}
-              }
-            }
-          },
+          hAxis: this.hAxis(),
           vAxis: {
             title: 'Promotion Rate (mb/sec)'
           }
@@ -869,29 +783,9 @@ class JvmInfoPage extends React.Component {
      <Chart
    chartType="LineChart"
    options={{
-     backgroundColor: '#FDFFFA',
        displayAnnotations: true,
        title: 'Allocation Rate',
-       hAxis: {
-         title: 'Time',
-         viewWindow: {
-           min: this.state.pauseDurationRange.from,
-           max: this.state.pauseDurationRange.to
-         },
-         gridlines: {
-           count: -1,
-           units: {
-             days: {format: ['MMM dd']},
-             hours: {format: ['HH:mm', 'ha']},
-           }
-         },
-         minorGridlines: {
-           units: {
-             hours: {format: ['hh:mm:ss a', 'ha']},
-             minutes: {format: ['HH:mm a Z', ':mm']}
-           }
-         }
-       },
+       hAxis: this.hAxis(),
        vAxis: {
          title: 'Allocation Rate (mb/sec)'
        }
@@ -914,29 +808,9 @@ class JvmInfoPage extends React.Component {
   <Chart
 chartType="LineChart"
 options={{
-  backgroundColor: '#FDFFFA',
     displayAnnotations: true,
     title: 'Young Generation Used Size Before GC',
-    hAxis: {
-      title: 'Time',
-      viewWindow: {
-        min: this.state.pauseDurationRange.from,
-        max: this.state.pauseDurationRange.to
-      },
-      gridlines: {
-        count: -1,
-        units: {
-          days: {format: ['MMM dd']},
-          hours: {format: ['HH:mm', 'ha']},
-        }
-      },
-      minorGridlines: {
-        units: {
-          hours: {format: ['hh:mm:ss a', 'ha']},
-          minutes: {format: ['HH:mm a Z', ':mm']}
-        }
-      }
-    },
+    hAxis: this.hAxis(),
     vAxis: {
       title: 'Young Used Before (mb)'
     }
@@ -963,29 +837,9 @@ legend_toggle={true}
 <Chart
 chartType="LineChart"
 options={{
-backgroundColor: '#FDFFFA',
   displayAnnotations: true,
   title: 'Young Generation Used Size After GC',
-  hAxis: {
-    title: 'Time',
-    viewWindow: {
-      min: this.state.pauseDurationRange.from,
-      max: this.state.pauseDurationRange.to
-    },
-    gridlines: {
-      count: -1,
-      units: {
-        days: {format: ['MMM dd']},
-        hours: {format: ['HH:mm', 'ha']},
-      }
-    },
-    minorGridlines: {
-      units: {
-        hours: {format: ['hh:mm:ss a', 'ha']},
-        minutes: {format: ['HH:mm a Z', ':mm']}
-      }
-    }
-  },
+  hAxis: this.hAxis(),
   vAxis: {
     title: 'Young Used After (mb)'
   }
@@ -1012,29 +866,9 @@ legend_toggle={true}
 <Chart
 chartType="LineChart"
 options={{
-backgroundColor: '#FDFFFA',
   displayAnnotations: true,
   title: 'Young Total Size',
-  hAxis: {
-    title: 'Time',
-    viewWindow: {
-      min: this.state.pauseDurationRange.from,
-      max: this.state.pauseDurationRange.to
-    },
-    gridlines: {
-      count: -1,
-      units: {
-        days: {format: ['MMM dd']},
-        hours: {format: ['HH:mm', 'ha']},
-      }
-    },
-    minorGridlines: {
-      units: {
-        hours: {format: ['hh:mm:ss a', 'ha']},
-        minutes: {format: ['HH:mm a Z', ':mm']}
-      }
-    }
-  },
+  hAxis: this.hAxis(),
   vAxis: {
     title: 'Young Total (mb)'
   }
@@ -1061,29 +895,9 @@ legend_toggle={true}
 <Chart
 chartType="LineChart"
 options={{
-backgroundColor: '#FDFFFA',
   displayAnnotations: true,
   title: 'Heap Used Size Before GC',
-  hAxis: {
-    title: 'Time',
-    viewWindow: {
-      min: this.state.pauseDurationRange.from,
-      max: this.state.pauseDurationRange.to
-    },
-    gridlines: {
-      count: -1,
-      units: {
-        days: {format: ['MMM dd']},
-        hours: {format: ['HH:mm', 'ha']},
-      }
-    },
-    minorGridlines: {
-      units: {
-        hours: {format: ['hh:mm:ss a', 'ha']},
-        minutes: {format: ['HH:mm a Z', ':mm']}
-      }
-    }
-  },
+  hAxis: this.hAxis(),
   vAxis: {
     title: 'Heap Used Before (mb)'
   }
@@ -1110,29 +924,9 @@ legend_toggle={true}
 <Chart
 chartType="LineChart"
 options={{
-backgroundColor: '#FDFFFA',
 displayAnnotations: true,
 title: 'Heap Used Size After GC',
-hAxis: {
-  title: 'Time',
-  viewWindow: {
-    min: this.state.pauseDurationRange.from,
-    max: this.state.pauseDurationRange.to
-  },
-  gridlines: {
-    count: -1,
-    units: {
-      days: {format: ['MMM dd']},
-      hours: {format: ['HH:mm', 'ha']},
-    }
-  },
-  minorGridlines: {
-    units: {
-      hours: {format: ['hh:mm:ss a', 'ha']},
-      minutes: {format: ['HH:mm a Z', ':mm']}
-    }
-  }
-},
+hAxis: this.hAxis(),
 vAxis: {
   title: 'Heap Used After (mb)'
 }
@@ -1159,29 +953,9 @@ legend_toggle={true}
 <Chart
 chartType="LineChart"
 options={{
-backgroundColor: '#FDFFFA',
 displayAnnotations: true,
 title: 'Heap Total Size',
-hAxis: {
-  title: 'Time',
-  viewWindow: {
-    min: this.state.pauseDurationRange.from,
-    max: this.state.pauseDurationRange.to
-  },
-  gridlines: {
-    count: -1,
-    units: {
-      days: {format: ['MMM dd']},
-      hours: {format: ['HH:mm', 'ha']},
-    }
-  },
-  minorGridlines: {
-    units: {
-      hours: {format: ['hh:mm:ss a', 'ha']},
-      minutes: {format: ['HH:mm a Z', ':mm']}
-    }
-  }
-},
+hAxis: this.hAxis(),
 vAxis: {
   title: 'Heap Total (mb)'
 }
