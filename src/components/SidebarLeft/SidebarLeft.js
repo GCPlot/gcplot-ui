@@ -209,11 +209,6 @@ class SidebarLeft extends React.Component {
               <I name="upload" /> Quick process
             </NavLink>
           </li>
-          <li className="treeview">
-            <NavLink to="/charts/chartjs">
-              <I name="upload" /> Charts test
-            </NavLink>
-          </li>
           <li className="header">Control Panel</li>
           <li className="treeview">
             <NavLink to="/analyse/new">

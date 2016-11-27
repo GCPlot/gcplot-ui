@@ -63,6 +63,12 @@ GCPlotCore.PERM_GEN = 3;
 GCPlotCore.METASPACE_GEN = 4;
 GCPlotCore.OLD_GEN = 5;
 GCPlotCore.OTHER_GEN = 6;
+GCPlotCore.YOUNG_GEN_STR = '1';
+GCPlotCore.TENURED_GEN_STR = '2';
+GCPlotCore.PERM_GEN_STR = '3';
+GCPlotCore.METASPACE_GEN_STR = '4';
+GCPlotCore.OLD_GEN_STR = '5';
+GCPlotCore.OTHER_GEN_STR = '6';
 
 GCPlotCore.on = function(event, handler) {
   $(document).on(event, handler);
