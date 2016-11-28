@@ -327,6 +327,9 @@ class JvmInfoPage extends React.Component {
             }));
         } else {
             if (typeof d.stats == 'undefined' && typeof d.alr == 'undefined') {
+              if (typeof d.g == 'undefined' || d.g == null) {
+                  d.g = [1];
+              }
               if (d.g.length == 0)
                   return;
               if (firstTime == null) {
@@ -361,11 +364,11 @@ class JvmInfoPage extends React.Component {
                         lastTenured = d.d;
                         logPauseDurationData.push([jdate, null, tt, Math.log10(d.p / 1000), tt, null, tt,null, tt]);
                         pauseDurationData.push([jdate, null, tt, d.p / 1000, tt, null, tt, null, tt]);
-                    } else if ($.inArray(GCPlotCore.METASPACE_GEN, d.g) >= 0) {
+                    } else if ($.inArray(GCPlotCore.METASPACE_GEN, d.g) >= 0 || $.inArray(GCPlotCore.PERM_GEN, d.g) >= 0) {
                         logPauseDurationData.push([jdate, null, tt, null, tt, Math.log10(d.p / 1000), tt, null, tt]);
                         pauseDurationData.push([jdate, null, tt, null, tt, d.p / 1000, tt, null, tt]);
                         if (typeof d.cp != 'undefined' && d.cp != null) {
-                            metaspaceUsage.push([jdate, d.cp.b, d.cp.a]);
+                            metaspaceUsage.push([jdate, d.cp.b / 1024, d.cp.a / 1024]);
                         }
                     }
                 } else {
@@ -373,8 +376,11 @@ class JvmInfoPage extends React.Component {
                     pauseDurationData.push([jdate, null, tt, null, tt, null, tt, d.p / 1000, tt]);
                     if (typeof d.ecp != 'undefined') {
                         var msc = d.ecp[GCPlotCore.METASPACE_GEN_STR];
+                        if (typeof msc == 'undefined' || msc == null) {
+                          var msc = d.ecp[GCPlotCore.PERM_GEN_STR];
+                        }
                         if (typeof msc != 'undefined' && msc != null) {
-                            metaspaceUsage.push([jdate, msc.b, msc.a]);
+                            metaspaceUsage.push([jdate, msc.b / 1024, msc.a / 1024]);
                         }
                     }
                 }
@@ -544,7 +550,7 @@ class JvmInfoPage extends React.Component {
                         <span style={{
                             color: "#3c8dbc"
                         }}>{this.state.analyse.jvm_names[this.props.params.jvmId]}</span>
-                        from {this.state.analyse.name}</small>
+                        <span> from </span>{this.state.analyse.name}</small>
                 </h1>
             </section>
             <section className="content">
@@ -1023,10 +1029,10 @@ class JvmInfoPage extends React.Component {
                         ]} graph_id="tutc" width="100%" height="400px" legend_toggle={false}/>
                         <Chart chartType="ScatterChart" options={{
                             displayAnnotations: true,
-                            title: 'Metaspace Used Before and After',
+                            title: 'Metaspace/Perm Used Before and After',
                             hAxis: this.hAxis(),
                             vAxis: {
-                                title: 'Metaspact Used (mb)'
+                                title: 'Used (mb)'
                             },
                             series: {
                                 0: {
@@ -1159,9 +1165,10 @@ class JvmInfoPage extends React.Component {
                             </Row>
                         </Panel>
                     </Tab>
-                    <Tab eventKey={5} title="Causes & Phases"></Tab>
-                    <Tab eventKey={6} title="Performance"></Tab>
-                    <Tab eventKey={7} title="Manage">
+                    <Tab eventKey={5} title="Generations"></Tab>
+                    <Tab eventKey={6} title="Phases"></Tab>
+                    <Tab eventKey={7} title="Objects"></Tab>
+                    <Tab eventKey={8} title="Manage">
                         <Modal container={this} show={this.state.show} onHide={close}>
                             <Modal.Header closeButton>
                                 <Modal.Title>Confirm Delete</Modal.Title>
