@@ -1194,7 +1194,7 @@ class JvmInfoPage extends React.Component {
                                   <Table bordered>
                                       <thead>
                                           <tr>
-                                              <th style={{width: '10%'}}>Name</th>
+                                              <th style={{width: '10%'}}>Generation</th>
                                               <th style={{width: '30%'}}>Average</th>
                                               <th style={{width: '30%'}}>Min</th>
                                               <th style={{width: '30%'}}>Max</th>
@@ -1238,7 +1238,7 @@ class JvmInfoPage extends React.Component {
                                   <Table bordered>
                                       <thead>
                                           <tr>
-                                              <th style={{width: '10%'}}>Name</th>
+                                              <th style={{width: '10%'}}>Generation</th>
                                               <th style={{width: '30%'}}>Average</th>
                                               <th style={{width: '30%'}}>Min</th>
                                               <th style={{width: '30%'}}>Max</th>
@@ -1276,6 +1276,14 @@ class JvmInfoPage extends React.Component {
                               </Col>
                           </Row>
                       </Panel>
+                      <Row>
+                          <Col md={12}>
+                            <div className="callout callout-info">
+                              <h4>Tips</h4>
+                              <p>Please note that this are <u>observed values</u> for the given period, hence they might be inconsistent with each other (Min/Max particulary). This solely depends on the input data.</p>
+                            </div>
+                          </Col>
+                      </Row>
                     </Tab>
                     <Tab eventKey={6} title="Phases"></Tab>
                     <Tab eventKey={7} title="Objects"></Tab>
