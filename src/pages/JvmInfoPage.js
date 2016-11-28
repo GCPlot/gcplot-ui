@@ -432,8 +432,8 @@ class JvmInfoPage extends React.Component {
         }
         if (tenuredUsedBeforeData.length == 0) {
           tenuredUsedBeforeData = [[this.toDateTz(moment()), null, null, null]];
-          tenuredUsedAfterData = heapUsedBeforeData;
-          tenuredTotalData = heapUsedBeforeData;
+          tenuredUsedAfterData = tenuredUsedBeforeData;
+          tenuredTotalData = tenuredUsedBeforeData;
         }
         if (metaspaceUsage.length == 0) {
           metaspaceUsage = [[this.toDateTz(moment()), null, null]];
