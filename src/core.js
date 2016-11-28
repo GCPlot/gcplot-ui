@@ -70,6 +70,25 @@ GCPlotCore.METASPACE_GEN_STR = '4';
 GCPlotCore.OLD_GEN_STR = '5';
 GCPlotCore.OTHER_GEN_STR = '6';
 
+/**
+ * Only the generations we really support so far.
+**/
+GCPlotCore.generationName = function(gen) {
+  if (gen == GCPlotCore.YOUNG_GEN || gen == GCPlotCore.YOUNG_GEN_STR) {
+    return 'Young';
+  }
+  if (gen == GCPlotCore.TENURED_GEN || gen == GCPlotCore.TENURED_GEN_STR) {
+    return 'Tenured';
+  }
+  if (gen == GCPlotCore.PERM_GEN || gen == GCPlotCore.PERM_GEN_STR) {
+    return 'Perm';
+  }
+  if (gen == GCPlotCore.METASPACE_GEN || gen == GCPlotCore.METASPACE_GEN_STR) {
+    return 'Metaspace';
+  }
+  return null;
+}
+
 GCPlotCore.on = function(event, handler) {
   $(document).on(event, handler);
 }

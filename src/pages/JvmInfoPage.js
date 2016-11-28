@@ -94,6 +94,7 @@ class JvmInfoPage extends React.Component {
         from: this.toDateTz(moment()),
         to: this.toDateTz(moment())
       },
+      stats: null,
       isLoading: false,
       show: false,
       delete: {
@@ -308,6 +309,7 @@ class JvmInfoPage extends React.Component {
 
     var metaspaceUsage = [];
 
+    var stats = null;
     var lastTenured = 0;
     var lastTime, firstTime = null;
     GCPlotCore.lazyGCEvents({
@@ -392,6 +394,8 @@ class JvmInfoPage extends React.Component {
             var jdate = this.toDateTz(moment.utc(d.d).tz(this.tz()));
             allocationRateData.push([jdate, d.alr / 1024]);
             promotionRateData.push([jdate, d.prr / 1024]);
+          } else if (typeof d.stats != 'undefined') {
+            stats = d;
           }
         }
     }.bind(this), function(err) {
@@ -484,6 +488,9 @@ class JvmInfoPage extends React.Component {
             metaspaceUsage: {
                 $set: metaspaceUsage
             },
+            stats: {
+              $set: this.statsPostProcessing(stats)
+            },
             pauseDurationRange: {
                 from: {
                     $set: this.toDateTz(lastTime)
@@ -515,6 +522,29 @@ class JvmInfoPage extends React.Component {
         objectsAges: {$set: [["Error", title + " (" + msg + ")"]]}
       }));
     }.bind(this));
+  }
+
+  statsPostProcessing(stats) {
+    if (typeof stats.generation_total[GCPlotCore.TENURED_GEN_STR] == 'undefined') {
+      var gty = stats.generation_total[GCPlotCore.YOUNG_GEN_STR];
+      var gtt = stats.heap_total;
+      // the min for young is actually is max for tenured
+      stats.generation_total[GCPlotCore.TENURED_GEN_STR] = {
+        min: Math.max(gtt.max - gty.max, 0),
+        max: Math.max(gtt.min - gty.min, 0),
+        avg: Math.max(gtt.avg - gty.avg, 0)
+      };
+    }
+    if (typeof stats.generation_usage[GCPlotCore.TENURED_GEN_STR] == 'undefined') {
+      var gty = stats.generation_usage[GCPlotCore.YOUNG_GEN_STR];
+      var gtt = stats.heap_usage;
+      stats.generation_usage[GCPlotCore.TENURED_GEN_STR] = {
+        min: null,
+        max: null,
+        avg: Math.max(gtt.avg - gty.avg, 0)
+      };
+    }
+    return stats;
   }
 
   onDeleteJvmClick() {
@@ -1130,18 +1160,10 @@ class JvmInfoPage extends React.Component {
                                     <Table bordered>
                                         <thead>
                                             <tr>
-                                                <th style={{
-                                                    width: '3%'
-                                                }}>#</th>
-                                                <th style={{
-                                                    width: '30%'
-                                                }}>Occupied (bytes)</th>
-                                                <th style={{
-                                                    width: '30%'
-                                                }}>Total (bytes)</th>
-                                                <th style={{
-                                                    width: '30%'
-                                                }}>Occupation</th>
+                                                <th style={{width: '3%'}}>#</th>
+                                                <th style={{width: '30%'}}>Occupied (bytes)</th>
+                                                <th style={{width: '30%'}}>Total (bytes)</th>
+                                                <th style={{width: '30%'}}>Occupation</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -1165,7 +1187,96 @@ class JvmInfoPage extends React.Component {
                             </Row>
                         </Panel>
                     </Tab>
-                    <Tab eventKey={5} title="Generations"></Tab>
+                    <Tab eventKey={5} title="Generations">
+                      <Panel header="Generations Total Sizes">
+                          <Row>
+                              <Col md={8}>
+                                  <Table bordered>
+                                      <thead>
+                                          <tr>
+                                              <th style={{width: '10%'}}>Name</th>
+                                              <th style={{width: '30%'}}>Average</th>
+                                              <th style={{width: '30%'}}>Min</th>
+                                              <th style={{width: '30%'}}>Max</th>
+                                          </tr>
+                                      </thead>
+                                      <tbody>
+                                          {(() => {
+                                            var items = [];
+                                            if (this.state.stats != null) {
+                                              for (var gen_id in this.state.stats.generation_total) {
+                                                  if (this.state.stats.generation_total.hasOwnProperty(gen_id)) {
+                                                      var gen = this.state.stats.generation_total[gen_id];
+                                                      var name = GCPlotCore.generationName(gen_id);
+                                                      if (name != null) {
+                                                        items.push(<tr>
+                                                            <td>{name}</td>
+                                                            <td><code>{GCPlotCore.humanFileSize(gen.avg * 1024)}</code></td>
+                                                            <td><code>{GCPlotCore.humanFileSize(gen.min * 1024)}</code></td>
+                                                            <td><code>{GCPlotCore.humanFileSize(gen.max * 1024)}</code></td>
+                                                        </tr>);
+                                                      }
+                                                  }
+                                              }
+                                              items.push(<tr>
+                                                  <td>Heap</td>
+                                                  <td><code>{GCPlotCore.humanFileSize(this.state.stats.heap_total.avg * 1024)}</code></td>
+                                                  <td><code>{GCPlotCore.humanFileSize(this.state.stats.heap_total.min * 1024)}</code></td>
+                                                  <td><code>{GCPlotCore.humanFileSize(this.state.stats.heap_total.max * 1024)}</code></td>
+                                              </tr>);
+                                            }
+                                            return items;
+                                          })()}
+                                      </tbody>
+                                  </Table>
+                              </Col>
+                          </Row>
+                      </Panel>
+                      <Panel header="Generations Used Memory">
+                          <Row>
+                              <Col md={8}>
+                                  <Table bordered>
+                                      <thead>
+                                          <tr>
+                                              <th style={{width: '10%'}}>Name</th>
+                                              <th style={{width: '30%'}}>Average</th>
+                                              <th style={{width: '30%'}}>Min</th>
+                                              <th style={{width: '30%'}}>Max</th>
+                                          </tr>
+                                      </thead>
+                                      <tbody>
+                                          {(() => {
+                                            var items = [];
+                                            if (this.state.stats != null) {
+                                              for (var gen_id in this.state.stats.generation_usage) {
+                                                  if (this.state.stats.generation_usage.hasOwnProperty(gen_id)) {
+                                                      var gen = this.state.stats.generation_usage[gen_id];
+                                                      var name = GCPlotCore.generationName(gen_id);
+                                                      if (name != null) {
+                                                        items.push(<tr>
+                                                            <td>{name}</td>
+                                                            <td><code>{GCPlotCore.humanFileSize(gen.avg * 1024)}</code></td>
+                                                            <td><code>{gen.min == null ? "-" : GCPlotCore.humanFileSize(gen.min * 1024)}</code></td>
+                                                            <td><code>{gen.max == null ? "-" : GCPlotCore.humanFileSize(gen.max * 1024)}</code></td>
+                                                        </tr>);
+                                                      }
+                                                  }
+                                              }
+                                              items.push(<tr>
+                                                  <td>Heap</td>
+                                                  <td><code>{GCPlotCore.humanFileSize(this.state.stats.heap_usage.avg * 1024)}</code></td>
+                                                  <td><code>{GCPlotCore.humanFileSize(this.state.stats.heap_usage.min * 1024)}</code></td>
+                                                  <td><code>{GCPlotCore.humanFileSize(this.state.stats.heap_usage.max * 1024)}</code></td>
+                                              </tr>);
+                                            }
+                                            return items;
+                                          })()}
+                                      </tbody>
+                                  </Table>
+                              </Col>
+                          </Row>
+                      </Panel>
+                    </Tab>
                     <Tab eventKey={6} title="Phases"></Tab>
                     <Tab eventKey={7} title="Objects"></Tab>
                     <Tab eventKey={8} title="Manage">

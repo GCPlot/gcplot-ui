@@ -56,7 +56,6 @@
     "bootstrap": "^3.3.6",
     "bootstrap-colorpicker": "^2.3.0",
     "bootstrap-sass": "^3.3.6",
-    "chart.js": "^2.3.0",
     "classnames": "^2.2.3",
     "core-js": "^2.0.0",
     "daterangepicker": "0.0.3",
