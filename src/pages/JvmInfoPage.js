@@ -91,6 +91,8 @@ class JvmInfoPage extends React.Component {
       heapUsedAfterData: [[this.toDateTz(moment()), null, null]],
       heapTotalData: [[this.toDateTz(moment()), null, null]],
       metaspaceUsage: [[this.toDateTz(moment()), null, null]],
+      totalAvgPie: [['', 1]],
+      usedAvgPie: [['', 1]],
       pauseDurationRange: {
         from: this.toDateTz(moment()),
         to: this.toDateTz(moment())
@@ -531,7 +533,7 @@ class JvmInfoPage extends React.Component {
   }
 
   statsPostProcessing(stats) {
-    if (stats == null) {
+    if (stats == null || $.isEmptyObject(stats.generation_total)) {
       return null;
     }
     if (typeof stats.generation_total[GCPlotCore.TENURED_GEN_STR] == 'undefined') {
@@ -552,6 +554,32 @@ class JvmInfoPage extends React.Component {
         max: null,
         avg: Math.max(gtt.avg - gty.avg, 0)
       };
+    }
+    var totalAvgPie = [];
+    var usedAvgPie = [];
+    for (var gen_id in stats.generation_total) {
+        if (stats.generation_total.hasOwnProperty(gen_id)) {
+            var gen = stats.generation_total[gen_id];
+            var name = GCPlotCore.generationName(gen_id);
+            if (name != null) {
+              totalAvgPie.push([name, gen.avg])
+            }
+        }
+    }
+    for (var gen_id in stats.generation_usage) {
+        if (stats.generation_usage.hasOwnProperty(gen_id)) {
+            var gen = stats.generation_usage[gen_id];
+            var name = GCPlotCore.generationName(gen_id);
+            if (name != null) {
+              usedAvgPie.push([name, gen.avg])
+            }
+        }
+    }
+    if (totalAvgPie.length > 0) {
+      this.state.totalAvgPie = totalAvgPie;
+    }
+    if (usedAvgPie.length > 0) {
+      this.state.usedAvgPie = usedAvgPie;
     }
     return stats;
   }
@@ -1150,8 +1178,7 @@ class JvmInfoPage extends React.Component {
                             {(() => {
                                 if (this.state.desiredSurvivorSize > 0) {
                                     return <p>
-                                        <b>Desired Survivor Size</b>
-                                        -
+                                        <b>Desired Survivor Size{" - "}</b>
                                         <code>{GCPlotCore.humanFileSize(this.state.desiredSurvivorSize)}</code>
                                     </p>;
                                 } else {
@@ -1195,7 +1222,7 @@ class JvmInfoPage extends React.Component {
                         <Col md={12}>
                       <Panel header="Generations Total Sizes">
                           <Row>
-                              <Col md={12}>
+                              <Col md={6}>
                                   <Table bordered>
                                       <thead>
                                           <tr>
@@ -1235,11 +1262,25 @@ class JvmInfoPage extends React.Component {
                                       </tbody>
                                   </Table>
                               </Col>
+                              <Col md={6}>
+                                <Chart chartType="PieChart" options={{
+                                    displayAnnotations: true,
+                                    title: 'Average Total Size by Generation'
+                                }} rows={this.state.totalAvgPie} columns={[
+                                    {
+                                        'type': 'string',
+                                        'label': 'Generation'
+                                    }, {
+                                        'type': 'number',
+                                        'label': 'Size'
+                                    }
+                                ]} graph_id="piet" width="100%" height="200px" legend_toggle={false}/>
+                              </Col>
                           </Row>
                       </Panel>
                       <Panel header="Generations Used Memory">
                           <Row>
-                              <Col md={12}>
+                              <Col md={6}>
                                   <Table bordered>
                                       <thead>
                                           <tr>
@@ -1278,6 +1319,20 @@ class JvmInfoPage extends React.Component {
                                           })()}
                                       </tbody>
                                   </Table>
+                              </Col>
+                              <Col md={6}>
+                                <Chart chartType="PieChart" options={{
+                                    displayAnnotations: true,
+                                    title: 'Average Used Size by Generation'
+                                }} rows={this.state.usedAvgPie} columns={[
+                                    {
+                                        'type': 'string',
+                                        'label': 'Generation'
+                                    }, {
+                                        'type': 'number',
+                                        'label': 'Size'
+                                    }
+                                ]} graph_id="pieu" width="100%" height="200px" legend_toggle={false}/>
                               </Col>
                           </Row>
                       </Panel>
