@@ -1320,13 +1320,6 @@ class JvmInfoPage extends React.Component {
                     </Tab>
                     <Tab eventKey={6} title="Phases">
                       <Row>
-                          <Col md={12}>
-                            <div className="callout callout-info">
-                              <p>Only <u>concurrent</u> phases from the OldGen collections are included.</p>
-                            </div>
-                          </Col>
-                      </Row>
-                      <Row>
                         <Col md={12}>
                           {(() => {
                             var items = [];
@@ -1345,8 +1338,57 @@ class JvmInfoPage extends React.Component {
                           })()}
                         </Col>
                       </Row>
+                      <Row>
+                          <Col md={12}>
+                            <div className="callout callout-info">
+                              <p>Only <u>concurrent</u> phases from the OldGen collections are included.</p>
+                            </div>
+                          </Col>
+                      </Row>
                     </Tab>
-                    <Tab eventKey={7} title="Objects"></Tab>
+                    <Tab eventKey={7} title="Objects">
+                        <Row>
+                            <Col md={10}>
+                              <Panel>
+                              <Table bordered>
+                                  <thead>
+                                      <tr>
+                                          <th style={{width: '50%'}}>Name</th>
+                                          <th style={{width: '50%'}}>Value</th>
+                                      </tr>
+                                  </thead>
+                                  <tbody>
+                                      {(() => {
+                                        var items = [];
+                                        if (this.state.stats != null) {
+                                          items.push(<tr>
+                                            <td>Promoted Total</td>
+                                            <td><code>{GCPlotCore.humanFileSize(this.state.stats.promoted_total * 1024)}</code></td>
+                                          </tr>);
+                                          items.push(<tr>
+                                            <td>Observed Promotion Rate (MB/Sec)</td>
+                                            <td><code>{(this.state.stats.promotion_rate / 1024).toFixed(2)}</code></td>
+                                          </tr>);
+                                          items.push(<tr>
+                                            <td>Allocated Total</td>
+                                            <td><code>{GCPlotCore.humanFileSize(this.state.stats.allocated_total * 1024)}</code></td>
+                                          </tr>);
+                                          items.push(<tr>
+                                            <td>Observed Allocation Rate (MB/Sec)</td>
+                                            <td><code>{(this.state.stats.allocation_rate / 1024).toFixed(2)}</code></td>
+                                          </tr>);
+                                        }
+                                        return items;
+                                      })()}
+                                  </tbody>
+                                </Table>
+                              </Panel>
+                              <div className="callout callout-info">
+                                <p>By <u>Observed</u> we understand an average of the rates we observe between the events, not just division of the total value on the whole interval in seconds. That said, the values are more realistic.</p>
+                              </div>
+                            </Col>
+                        </Row>
+                    </Tab>
                     <Tab eventKey={8} title="Manage">
                         <Modal container={this} show={this.state.show} onHide={close}>
                             <Modal.Header closeButton>
