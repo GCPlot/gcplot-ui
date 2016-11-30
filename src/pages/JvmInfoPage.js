@@ -5,12 +5,13 @@ import $ from 'jquery';
 import React from 'react';
 import { Row, Col, Panel, Tabs, Tab, ButtonGroup, Table, ProgressBar, Input, Modal, Button } from 'react-bootstrap';
 import I from 'react-fontawesome';
-import GCPlotCore from '../core'
+import GCPlotCore from '../core';
 import moment from 'moment-timezone';
 import DatePicker from 'react-datepicker';
 import TimePicker from 'rc-time-picker';
 import {Chart} from 'react-google-charts';
-import { browserHistory } from 'react-router'
+import { browserHistory } from 'react-router';
+import GenerationStats from '../components/Jvm/GenerationStats';
 
 require('../css/rc-tp-override.css');
 require('../css/react-datepicker.css');
@@ -283,8 +284,10 @@ class JvmInfoPage extends React.Component {
     console.log("start: " + start.valueOf());
     console.log("end: " + end.valueOf());
 
+    this.state.stats = null;
     this.setState(update(this.state, {
         isLoading: {$set: true},
+        stats: {$set: null},
         reload: {
             message: {$set: ""}
         }
@@ -374,6 +377,9 @@ class JvmInfoPage extends React.Component {
                         }
                     }
                 } else {
+                    if ($.inArray(GCPlotCore.TENURED_GEN, d.g) >= 0) {
+                      lastTenured = d.d;
+                    }
                     logPauseDurationData.push([jdate, null, tt, null, tt, null, tt, Math.log10(d.p / 1000), tt]);
                     pauseDurationData.push([jdate, null, tt, null, tt, null, tt, d.p / 1000, tt]);
                     if (typeof d.ecp != 'undefined') {
@@ -525,6 +531,9 @@ class JvmInfoPage extends React.Component {
   }
 
   statsPostProcessing(stats) {
+    if (stats == null) {
+      return null;
+    }
     if (typeof stats.generation_total[GCPlotCore.TENURED_GEN_STR] == 'undefined') {
       var gty = stats.generation_total[GCPlotCore.YOUNG_GEN_STR];
       var gtt = stats.heap_total;
@@ -626,7 +635,7 @@ class JvmInfoPage extends React.Component {
                     <Tab eventKey={1} title="General Stats">
                         <Row>
                             <Col md={12}>
-                                <Panel header={< span > <I name="info"/>Brief Info < /span>}>
+                                <Panel header={<span> <I name="info"/> <span>Brief Info</span> </span>}>
                                     <dl>
                                         <dt>Name</dt>
                                         <dd>
@@ -635,8 +644,8 @@ class JvmInfoPage extends React.Component {
                                         <dt>First GC Event Occured</dt>
                                         {(() => {
                                             if (this.isFirstEventPresented()) {
-                                                return <dd>{this.formattedTime("MMMM DD, YYYY (hh:mm:ss A)", this.firstEventMoment())}
-                                                    - {this.tz()}</dd>
+                                                return <dd>{this.formattedTime("MMMM DD, YYYY (hh:mm:ss A)", this.firstEventMoment()) +
+                                                    " - " + this.tz()}</dd>
                                             } else {
                                                 return <dd>There is no info about the first GC Event observed.</dd>
                                             }
@@ -644,8 +653,8 @@ class JvmInfoPage extends React.Component {
                                         <dt>Last GC Event Time</dt>
                                         {(() => {
                                             if (this.isLastEventPresented()) {
-                                                return <dd>{this.formattedTime("MMMM DD, YYYY (hh:mm:ss A)", this.lastEventMoment())}
-                                                    - {this.tz()}</dd>
+                                                return <dd>{this.formattedTime("MMMM DD, YYYY (hh:mm:ss A)", this.lastEventMoment()) +
+                                                    " - " + this.tz()}</dd>
                                             } else {
                                                 return <dd>There is no info about the last GC Event observed.</dd>
                                             }
@@ -664,7 +673,7 @@ class JvmInfoPage extends React.Component {
                         </Row>
                         <Row>
                             <Col md={6}>
-                                <Panel header={< span > <I name="server"/>Last Server Info < /span>}>
+                                <Panel header={<span> <I name="server"/> <span>Last Server Info</span> </span>}>
                                     {(() => {
                                         if (this.state.analyse.jvm_mem[this.props.params.jvmId]) {
                                             return (
@@ -672,38 +681,32 @@ class JvmInfoPage extends React.Component {
                                                     <dt>Page Size</dt>
                                                     <dd>
                                                         <code>{GCPlotCore.humanFileSize(this.state.analyse.jvm_mem[this.props.params.jvmId].ps)}</code>
-                                                        ({this.state.analyse.jvm_mem[this.props.params.jvmId].ps}
-                                                        bytes)</dd>
+                                                        <span>{" (" + this.state.analyse.jvm_mem[this.props.params.jvmId].ps + " bytes)"}</span></dd>
                                                     <dt>Physical Total</dt>
-                                                    <dd>
+                                                      <dd>
                                                         <code>{GCPlotCore.humanFileSize(this.state.analyse.jvm_mem[this.props.params.jvmId].pt)}</code>
-                                                        ({this.state.analyse.jvm_mem[this.props.params.jvmId].pt}
-                                                        bytes)</dd>
+                                                        <span>{" (" + this.state.analyse.jvm_mem[this.props.params.jvmId].pt + " bytes)"}</span>
+                                                      </dd>
                                                     <dt>Physical Free</dt>
                                                     <dd>
                                                         <code>{GCPlotCore.humanFileSize(this.state.analyse.jvm_mem[this.props.params.jvmId].pf)}</code>
-                                                        ({this.state.analyse.jvm_mem[this.props.params.jvmId].pf}
-                                                        bytes)</dd>
+                                                        <span>{" (" + this.state.analyse.jvm_mem[this.props.params.jvmId].pf + " bytes)"}</span></dd>
                                                     <dt>Physical Occupied</dt>
                                                     <dd>
                                                         <code>{GCPlotCore.humanFileSize(this.state.analyse.jvm_mem[this.props.params.jvmId].pt - this.state.analyse.jvm_mem[this.props.params.jvmId].pf)}</code>
-                                                        ({this.state.analyse.jvm_mem[this.props.params.jvmId].pt - this.state.analyse.jvm_mem[this.props.params.jvmId].pf}
-                                                        bytes)</dd>
+                                                        <span>{" (" + (this.state.analyse.jvm_mem[this.props.params.jvmId].pt - this.state.analyse.jvm_mem[this.props.params.jvmId].pf) + " bytes)"}</span></dd>
                                                     <dt>Swap Total</dt>
                                                     <dd>
                                                         <code>{GCPlotCore.humanFileSize(this.state.analyse.jvm_mem[this.props.params.jvmId].st)}</code>
-                                                        ({this.state.analyse.jvm_mem[this.props.params.jvmId].st}
-                                                        bytes)</dd>
+                                                        <span>{" (" + this.state.analyse.jvm_mem[this.props.params.jvmId].st + " bytes)"}</span></dd>
                                                     <dt>Swap Free</dt>
                                                     <dd>
                                                         <code>{GCPlotCore.humanFileSize(this.state.analyse.jvm_mem[this.props.params.jvmId].sf)}</code>
-                                                        ({this.state.analyse.jvm_mem[this.props.params.jvmId].sf}
-                                                        bytes)</dd>
+                                                        <span>{" (" + this.state.analyse.jvm_mem[this.props.params.jvmId].sf + " bytes)"}</span></dd>
                                                     <dt>Swap Occupied</dt>
                                                     <dd>
                                                         <code>{GCPlotCore.humanFileSize(this.state.analyse.jvm_mem[this.props.params.jvmId].st - this.state.analyse.jvm_mem[this.props.params.jvmId].sf)}</code>
-                                                        ({this.state.analyse.jvm_mem[this.props.params.jvmId].st - this.state.analyse.jvm_mem[this.props.params.jvmId].sf}
-                                                        bytes)</dd>
+                                                        <span>{" (" + (this.state.analyse.jvm_mem[this.props.params.jvmId].st - this.state.analyse.jvm_mem[this.props.params.jvmId].sf) + " bytes)"}</span></dd>
                                                 </dl>
                                             );
                                         } else {
@@ -713,7 +716,7 @@ class JvmInfoPage extends React.Component {
                                 </Panel>
                             </Col>
                             <Col md={6}>
-                                <Panel header={< span > <I name="flag"/>JVM Flags < /span>}>
+                                <Panel header={<span> <I name="flag"/> <span>JVM Flags</span> </span>}>
                                     {(() => {
                                         if (this.state.analyse.jvm_hdrs[this.props.params.jvmId]) {
                                             return (
@@ -1188,9 +1191,11 @@ class JvmInfoPage extends React.Component {
                         </Panel>
                     </Tab>
                     <Tab eventKey={5} title="Generations">
+                      <Row>
+                        <Col md={12}>
                       <Panel header="Generations Total Sizes">
                           <Row>
-                              <Col md={8}>
+                              <Col md={12}>
                                   <Table bordered>
                                       <thead>
                                           <tr>
@@ -1234,7 +1239,7 @@ class JvmInfoPage extends React.Component {
                       </Panel>
                       <Panel header="Generations Used Memory">
                           <Row>
-                              <Col md={8}>
+                              <Col md={12}>
                                   <Table bordered>
                                       <thead>
                                           <tr>
@@ -1276,6 +1281,34 @@ class JvmInfoPage extends React.Component {
                               </Col>
                           </Row>
                       </Panel>
+                    </Col>
+                  </Row>
+                      <Row>
+                      {(() => {
+                        var items = [];
+                        if (this.state.stats != null) {
+                          var young = this.state.stats.generation_stats[GCPlotCore.YOUNG_GEN_STR];
+                          var tenured = this.state.stats.generation_stats[GCPlotCore.TENURED_GEN_STR];
+                          var full = this.state.stats.full_stats;
+                          var metaspace = this.state.stats.generation_stats[GCPlotCore.METASPACE_GEN_STR];
+                          var perm = this.state.stats.generation_stats[GCPlotCore.PERM_GEN_STR];
+
+                          items.push(<GenerationStats md={3} key={"g" + GCPlotCore.YOUNG_GEN_STR} stats={young} title={GCPlotCore.generationName(GCPlotCore.YOUNG_GEN_STR)} />)
+                          if (typeof tenured != 'undefined' && tenured.pause_count != 0) {
+                              items.push(<GenerationStats md={3} key={"g" + GCPlotCore.TENURED_GEN_STR} stats={tenured} title={GCPlotCore.generationName(GCPlotCore.TENURED_GEN_STR)} />)
+                          }
+                          if (typeof full != 'undefined' && full.pause_count != 0) {
+                            items.push(<GenerationStats md={3} key={"gfull"} stats={full} title={"Full GC"} />)
+                          }
+                          if (typeof metaspace != 'undefined') {
+                            items.push(<GenerationStats md={3} key={"g" + GCPlotCore.METASPACE_GEN_STR} stats={metaspace} title={GCPlotCore.generationName(GCPlotCore.METASPACE_GEN_STR)} />)
+                          } else if (typeof perm != 'undefined') {
+                            items.push(<GenerationStats md={3} key={"g" + GCPlotCore.PERM_GEN_STR} stats={perm} title={GCPlotCore.generationName(GCPlotCore.PERM_GEN_STR)} />)
+                          }
+                        }
+                        return items;
+                      })()}
+                    </Row>
                       <Row>
                           <Col md={12}>
                             <div className="callout callout-info">
@@ -1285,7 +1318,34 @@ class JvmInfoPage extends React.Component {
                           </Col>
                       </Row>
                     </Tab>
-                    <Tab eventKey={6} title="Phases"></Tab>
+                    <Tab eventKey={6} title="Phases">
+                      <Row>
+                          <Col md={12}>
+                            <div className="callout callout-info">
+                              <p>Only <u>concurrent</u> phases from the OldGen collections are included.</p>
+                            </div>
+                          </Col>
+                      </Row>
+                      <Row>
+                        <Col md={12}>
+                          {(() => {
+                            var items = [];
+                            if (this.state.stats != null) {
+                              for (var phase_id in this.state.stats.phase_stats) {
+                                  if (this.state.stats.phase_stats.hasOwnProperty(phase_id)) {
+                                      var phase = this.state.stats.phase_stats[phase_id];
+                                      var name = GCPlotCore.PHASES[phase_id];
+                                      if (name != null) {
+                                        items.push(<GenerationStats md={3} key={"p" + phase_id} stats={phase} title={name} />);
+                                      }
+                                  }
+                              }
+                            }
+                            return items;
+                          })()}
+                        </Col>
+                      </Row>
+                    </Tab>
                     <Tab eventKey={7} title="Objects"></Tab>
                     <Tab eventKey={8} title="Manage">
                         <Modal container={this} show={this.state.show} onHide={close}>
