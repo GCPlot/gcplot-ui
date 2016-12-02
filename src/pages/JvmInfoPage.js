@@ -1495,7 +1495,7 @@ class JvmInfoPage extends React.Component {
                                             <td><code>{GCPlotCore.humanFileSize(this.state.stats.promoted_total * 1024)}</code></td>
                                           </tr>);
                                           items.push(<tr>
-                                            <td>Observed Promotion Rate (MB/Sec)</td>
+                                            <td>Promotion Rate (MB/Sec)</td>
                                             <td><code>{(this.state.stats.promotion_rate / 1024).toFixed(2)}</code></td>
                                           </tr>);
                                           items.push(<tr>
@@ -1503,7 +1503,7 @@ class JvmInfoPage extends React.Component {
                                             <td><code>{GCPlotCore.humanFileSize(this.state.stats.allocated_total * 1024)}</code></td>
                                           </tr>);
                                           items.push(<tr>
-                                            <td>Observed Allocation Rate (MB/Sec)</td>
+                                            <td>Allocation Rate (MB/Sec)</td>
                                             <td><code>{(this.state.stats.allocation_rate / 1024).toFixed(2)}</code></td>
                                           </tr>);
                                         }
@@ -1513,7 +1513,7 @@ class JvmInfoPage extends React.Component {
                                 </Table>
                               </Panel>
                               <div className="callout callout-info">
-                                <p>By <u>Observed</u> we understand an average of the rates we observe between the events, not just division of the total value on the whole interval in seconds. That said, the values are more realistic.</p>
+                                <p>In rates we understand an <u>observed average</u> between the individual events, not just division of the total value on the whole interval in seconds. That said, the values are more realistic.</p>
                               </div>
                             </Col>
                         </Row>
