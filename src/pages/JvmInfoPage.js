@@ -93,6 +93,8 @@ class JvmInfoPage extends React.Component {
       metaspaceUsage: [[this.toDateTz(moment()), null, null]],
       totalAvgPie: [['', 1]],
       usedAvgPie: [['', 1]],
+      pauseTimeBar: [['', 1]],
+      pauseAvgBar: [['', 1]],
       pauseDurationRange: {
         from: this.toDateTz(moment()),
         to: this.toDateTz(moment())
@@ -557,6 +559,8 @@ class JvmInfoPage extends React.Component {
     }
     var totalAvgPie = [];
     var usedAvgPie = [];
+    var pauseTimeBar = [];
+    var pauseAvgBar = [];
     for (var gen_id in stats.generation_total) {
         if (stats.generation_total.hasOwnProperty(gen_id)) {
             var gen = stats.generation_total[gen_id];
@@ -575,11 +579,31 @@ class JvmInfoPage extends React.Component {
             }
         }
     }
+    for (var gen_id in stats.generation_stats) {
+      if (stats.generation_stats.hasOwnProperty(gen_id)) {
+          var gen = stats.generation_stats[gen_id];
+          var name = GCPlotCore.generationName(gen_id);
+          if (name != null && gen.pause_count > 0) {
+              pauseTimeBar.push([name, gen.pause_time / 1000000]);
+              pauseAvgBar.push([name, gen.avg_pause / 1000]);
+          }
+      }
+    }
+    if (stats.full_stats.pause_count > 0) {
+      pauseTimeBar.push(['Full', stats.full_stats.pause_time / 1000000]);
+      pauseAvgBar.push(['Full', stats.full_stats.avg_pause / 1000]);
+    }
     if (totalAvgPie.length > 0) {
       this.state.totalAvgPie = totalAvgPie;
     }
     if (usedAvgPie.length > 0) {
       this.state.usedAvgPie = usedAvgPie;
+    }
+    if (pauseTimeBar.length > 0) {
+      this.state.pauseTimeBar = pauseTimeBar;
+    }
+    if (pauseAvgBar.length > 0) {
+      this.state.pauseAvgBar = pauseAvgBar;
     }
     return stats;
   }
@@ -1336,6 +1360,42 @@ class JvmInfoPage extends React.Component {
                               </Col>
                           </Row>
                       </Panel>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col md={12}>
+                      <Panel>
+                        <Row>
+                          <Col md={6}>
+                    <Chart chartType="BarChart" options={{
+                        displayAnnotations: true,
+                        title: 'STW Total Pauses'
+                    }} rows={this.state.pauseTimeBar} columns={[
+                        {
+                            'type': 'string',
+                            'label': 'Generation'
+                        }, {
+                            'type': 'number',
+                            'label': 'Pause (Seconds)'
+                        }
+                    ]} graph_id="stwieu" width="100%" height="300px" legend_toggle={false}/>
+                  </Col>
+                  <Col md={6}>
+                    <Chart chartType="BarChart" options={{
+                        displayAnnotations: true,
+                        title: 'STW Avg Pause'
+                    }} rows={this.state.pauseAvgBar} columns={[
+                        {
+                            'type': 'string',
+                            'label': 'Generation'
+                        }, {
+                            'type': 'number',
+                            'label': 'Pause (Millis)'
+                        }
+                    ]} graph_id="stwied" width="100%" height="300px" legend_toggle={false}/>
+                  </Col>
+                  </Row>
+                    </Panel>
                     </Col>
                   </Row>
                       <Row>
