@@ -139,6 +139,9 @@ class QuickProcessPage extends React.Component {
         </h1>
       </section>
       <section className="content">
+        <Row>
+          <Col md={12}>
+            <Panel>
         <FileUploadProgress key='ex1' url={GCPlotCore.authUrl("/gc/jvm/log/process")}
           onProgress={this.onProgress.bind(this)}
           onLoad={this.onLoad.bind(this)}
@@ -148,16 +151,21 @@ class QuickProcessPage extends React.Component {
           formRenderer={this.customFormRenderer.bind(this)}
           />
           <p/>
-          <Col style={this.state.errorStyle} md={6}>
-          <div className={"callout " + this.state.errorStyle.className}>
-          {(() => {
-              if (this.state.isProcessing) {
-                  return <Spinner spinnerName="three-bounce"/>
-              }
-          })()}
-            <p>{this.state.errorStyle.value}</p>
-          </div>
-          </Col>
+          </Panel>
+        </Col>
+        </Row>
+        <Row>
+          <Col md={12} style={this.state.errorStyle}>
+        <div className={"callout " + this.state.errorStyle.className}>
+        {(() => {
+            if (this.state.isProcessing) {
+                return <Spinner spinnerName="three-bounce"/>
+            }
+        })()}
+          <p>{this.state.errorStyle.value}</p>
+        </div>
+      </Col>
+        </Row>
       </section>
       </div>
     );
