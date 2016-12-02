@@ -312,16 +312,16 @@ GCPlotCore.lazyGCEvents = function(data, callback, errorCallback, completeCallba
      "&" + "tz" + "=" + encodeURIComponent(data.tz || "") + "&" + "from" + "=" + data.from + "&" + "to" + "=" + data.to +
      "&delimit=true&stats=true", {
         "delimiter": "$d",
-        "success": function(data) {
-          callback(data);
+        "success": function(d) {
+          callback(d, data);
         },
         "error": function(errorMsg) {
           console.error(errorMsg);
-          errorCallback(errorMsg);
+          errorCallback(errorMsg, data);
         },
         "complete": function(statusText) {
           if (completeCallback) {
-            completeCallback(statusText);
+            completeCallback(statusText, data);
           }
         },
         timeout: 180000,
@@ -339,7 +339,7 @@ GCPlotCore.objectsAges = function(analyseId, jvmId, callback, errorCallback) {
       if (r.hasOwnProperty('error')) {
         errorCallback(r.error, GCPlotCore.ERRORS[r.error], r.message);
       } else if (!$.isEmptyObject(r)) {
-        callback(r.result);
+        callback(r.result, jvmId);
       }
     }
   });

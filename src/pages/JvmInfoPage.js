@@ -325,7 +325,10 @@ class JvmInfoPage extends React.Component {
         tz: this.tz(),
         from: start.valueOf(),
         to: end.valueOf()
-    }, function(d) {
+    }, function(d, data) {
+        if (data.jvm_id != this.props.params.jvmId) {
+          return;
+        }
         if (typeof d.error != 'undefined') {
             this.setState(update(this.state, {
                 reload: {
@@ -408,7 +411,10 @@ class JvmInfoPage extends React.Component {
             stats = d;
           }
         }
-    }.bind(this), function(err) {
+    }.bind(this), function(err, data) {
+        if (data.jvm_id != this.props.params.jvmId) {
+          return;
+        }
         this.setState(update(this.state, {
             reload: {
                 message: {
@@ -416,7 +422,10 @@ class JvmInfoPage extends React.Component {
                 }
             }
         }));
-    }.bind(this), function() {
+    }.bind(this), function(t, data) {
+        if (data.jvm_id != this.props.params.jvmId) {
+          return;
+        }
         if ((typeof firstTime == 'undefined') || firstTime == null) {
             firstTime = moment.tz(this.tz());
             lastTime = moment(firstTime);
@@ -514,7 +523,10 @@ class JvmInfoPage extends React.Component {
             }
         }));
     }.bind(this));
-    GCPlotCore.objectsAges(this.state.analyse_id, this.state.jvm_id, function(r) {
+    GCPlotCore.objectsAges(this.state.analyse_id, this.state.jvm_id, function(r, jvm_id) {
+      if (jvm_id != this.props.params.jvmId) {
+        return;
+      }
       var oas = [];
       var dss = -1;
       if (typeof r.dss != 'undefined' && r.dss > 0) {
