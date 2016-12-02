@@ -1428,7 +1428,9 @@ class JvmInfoPage extends React.Component {
                           <Col md={12}>
                             <div className="callout callout-info">
                               <h4>Tips</h4>
-                              <p>Please note that this are <u>observed values for the given period</u>, hence they might be inconsistent with each other (Min/Max particulary). This solely depends on the input data.</p>
+                              <ul>
+                                <li>We count all STW events occured at the Tenured space as a <u>separate</u> events. For example, a typical OldGen collection in CMS might incur two STW collections, with gap between each other. However, on the charts we are trying to sum them up to make the plot more readable.</li>
+                              </ul>
                             </div>
                           </Col>
                       </Row>
