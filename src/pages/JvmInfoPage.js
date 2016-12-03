@@ -1458,7 +1458,7 @@ class JvmInfoPage extends React.Component {
                                       var phase = this.state.stats.phase_stats[phase_id];
                                       var name = GCPlotCore.PHASES[phase_id];
                                       if (name != null) {
-                                        items.push(<GenerationStats md={3} key={"p" + phase_id} stats={phase} title={name} />);
+                                        items.push(<GenerationStats md={3} key={"p" + phase_id} duration={true} stats={phase} title={name} />);
                                       }
                                   }
                               }
@@ -1513,7 +1513,7 @@ class JvmInfoPage extends React.Component {
                                 </Table>
                               </Panel>
                               <div className="callout callout-info">
-                                <p>In rates we understand an <u>observed average</u> between the individual events, not just division of the total value on the whole interval in seconds. That said, the values are more realistic.</p>
+                                <p>In rates we understand an <u>observed average rates</u> between the individual events, not just division of the total value on the whole interval in seconds. That said, the values are more realistic.</p>
                               </div>
                             </Col>
                         </Row>
