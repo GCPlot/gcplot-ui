@@ -121,6 +121,44 @@ GCPlotCore.setToken = function(token) {
   localStorage.setItem(GCPlotCore.TOKEN_KEY, token);
 }
 
+GCPlotCore.changeUsername = function(newUsername, callback, errorCallback) {
+  var msg = { new_username: newUsername };
+  $.ajax({
+    type: 'POST',
+    url: GCPlotCore.authUrl("/user/change_username"),
+    contentType: "application/json",
+    data: JSON.stringify(msg),
+    success: function(data) {
+      var r = JSON.parse(data);
+      if (r.hasOwnProperty('error')) {
+        errorCallback(r.error, GCPlotCore.ERRORS[r.error], r.message);
+      } else {
+        sessionStorage.removeItem(GCPlotCore.USER_INFO, JSON.stringify(r.result));
+        GCPlotCore.trigger(GCPlotCore.PROFILE_CHANGED_EVENT);
+        callback();
+      }
+    }
+  });
+}
+
+GCPlotCore.changePassword = function(oldPass, newPass, callback, errorCallback) {
+  var msg = { old_password: oldPass, new_password: newPass };
+  $.ajax({
+    type: 'POST',
+    url: GCPlotCore.authUrl("/user/change_password"),
+    contentType: "application/json",
+    data: JSON.stringify(msg),
+    success: function(data) {
+      var r = JSON.parse(data);
+      if (r.hasOwnProperty('error')) {
+        errorCallback(r.error, GCPlotCore.ERRORS[r.error], r.message);
+      } else {
+        callback();
+      }
+    }
+  });
+}
+
 GCPlotCore.userInfo = function(callback) {
   var userInfoJson = sessionStorage.getItem(GCPlotCore.USER_INFO);
   if ((typeof userInfoJson != "undefined") && userInfoJson != null) {

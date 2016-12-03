@@ -1,7 +1,8 @@
 import React from 'react';
-import {Navbar, Nav, NavDropdown} from 'react-bootstrap';
+import {Navbar, Nav, NavDropdown, MenuItem} from 'react-bootstrap';
 import I from 'react-fontawesome';
 import GCPlotCore from '../../core'
+import { browserHistory } from 'react-router'
 
 var update = require('react-addons-update');
 
@@ -36,6 +37,10 @@ class Navigation extends React.Component {
     location.reload();
   }
 
+  profileClicked() {
+    browserHistory.push("/profile");
+  }
+
   render() {
     return (
       <Navbar
@@ -52,7 +57,7 @@ class Navigation extends React.Component {
           <Nav>
             <NavDropdown
               id="user-menu"
-              className="user user-menu"
+              className=""
               title={
                 <span>
                   <span className="hidden-xs">{this.state.full_name}</span>
@@ -60,15 +65,9 @@ class Navigation extends React.Component {
               }
               noCaret
             >
-              {/* Menu Footer */}
-              <li className="user-footer">
-                <div className="pull-left">
-                  <a href="#" className="btn btn-default btn-flat">Profile</a>
-                </div>
-                <div className="pull-right">
-                  <a href="#" className="btn btn-default btn-flat" onClick={this.signOutClicked.bind(this)}>Sign out</a>
-                </div>
-              </li>
+              <li><a href="#" onClick={this.profileClicked.bind(this)}>Profile</a></li>
+              <MenuItem divider/>
+              <li><a href="#" onClick={this.signOutClicked.bind(this)}>Sign out</a></li>
             </NavDropdown>
           </Nav>
         </div>

@@ -6,6 +6,7 @@ import NewAnalysePage from './pages/NewAnalysePage';
 import AnalyseInfoPage from './pages/AnalyseInfoPage';
 import JvmInfoPage from './pages/JvmInfoPage';
 import QuickProcessPage from './pages/QuickProcessPage'
+import ProfilePage from './pages/ProfilePage'
 
 export default () => {
   return (
@@ -17,6 +18,7 @@ export default () => {
         <Route path="/analyse/new" component={NewAnalysePage} />
         <Route path="/analyse/info/:analyseId" component={AnalyseInfoPage} />
         <Route path="/jvms/:analyseId/jvm/:jvmId" component={JvmInfoPage} />
+        <Route path="/profile" component={ProfilePage} />
       </Route>
     </Router>
   );

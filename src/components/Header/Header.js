@@ -10,7 +10,7 @@ function Header () {
       {/* Logo  */}
       <Link to="/" className="logo">
         {/* mini logo for sidebar mini 50x50 pixels  */}
-        <span className="logo-mini"><b>G</b></span>
+        <span className="logo-mini"><b>GС</b></span>
         {/* logo for regular state and mobile devices  */}
         <span className="logo-lg"><b>GC</b>Plot</span>
       </Link>
