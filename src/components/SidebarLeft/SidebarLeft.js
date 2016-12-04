@@ -191,6 +191,14 @@ class SidebarLeft extends React.Component {
       }
     }
   }
+
+  truncate(s, n, useWordBoundary) {
+    var isTooLong = s.length > n,
+        s_ = isTooLong ? s.substr(0,n-1) : s;
+        s_ = (useWordBoundary && isTooLong) ? s_.substr(0,s_.lastIndexOf(' ')) : s_;
+    return  isTooLong ? s_ + '...' : s_;
+  }
+
   render() {
     return (
       <aside className="main-sidebar">
@@ -221,7 +229,7 @@ class SidebarLeft extends React.Component {
               <ul className="sidebar-menu" key={i}>
               <li>
               <NavLink to={"/analyses/" + item.id}>
-                <I name="pie-chart" /> <span>{item.name}</span>
+                <I name="pie-chart" /> <span>{this.truncate(item.name, 16, false)}</span>
                 <I name="angle-left pull-right" />
                 {(function() {
                     return <small className="label pull-right bg-green edit-toggle" onClick={this.analyseEditClicked.bind(this,   item)}>info</small>;
@@ -231,7 +239,7 @@ class SidebarLeft extends React.Component {
                 {item.jvm_ids.map(function (jvm, o) {
                   return (<li key={o}>
                     <NavLink to={"/jvms/" + item.id + "/jvm/" + encodeURIComponent(jvm)}>
-                      <I name="server" /> {item.jvm_names[jvm] || jvm}
+                      <I name="server" /> {this.truncate(item.jvm_names[jvm] || jvm, 23, false)}
                     </NavLink>
                   </li>);
                 }.bind(this))}

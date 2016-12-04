@@ -6,6 +6,7 @@ import React from 'react';
 import { Row, Col, Panel, Tabs, Tab, ButtonGroup, Input, Modal, ButtonInput, Button } from 'react-bootstrap';
 import GCPlotCore from '../core'
 import FileUploadProgress  from 'react-fileupload-progress';
+import {withRouter} from "react-router"
 
 var Spinner = require('react-spinkit');
 var update = require('react-addons-update');
@@ -25,6 +26,13 @@ class QuickProcessPage extends React.Component {
   }
 
   componentDidMount() {
+    this.props.router.setRouteLeaveHook(this.props.route, this.routerWillLeave.bind(this));
+  }
+
+  routerWillLeave(nextLocation) {
+    if (this.state.isUploading || this.state.isProcessing) {
+      return 'You will not be able to restore your current upload! Are you sure you want to leave?'
+    }
   }
 
   componentDidUpdate() {
@@ -113,7 +121,7 @@ class QuickProcessPage extends React.Component {
     }
   }
 
-  formGetter(){
+  formGetter() {
     return new FormData(document.getElementById('customForm'));
   }
 
@@ -177,4 +185,4 @@ QuickProcessPage.displayName = 'QuickProcessPage';
 QuickProcessPage.defaultProps = {
 };
 
-export default QuickProcessPage;
+export default withRouter(QuickProcessPage);
