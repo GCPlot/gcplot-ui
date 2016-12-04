@@ -24,7 +24,7 @@ class SidebarLeft extends React.Component {
       }));
       t.componentDidMount();
     }, function(code, title, msg) {
-      alert(code + "|" + title + "|" + msg);
+      GCPlotCore.errorHandler(code, title, msg);
     });
   }
 

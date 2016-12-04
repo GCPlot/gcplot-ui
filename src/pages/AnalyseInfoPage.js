@@ -32,6 +32,11 @@ class AnalyseInfoPage extends React.Component {
             color: 'red'
         },
         updateCaption: "Update",
+        gerror: {
+          show: false,
+          title: "",
+          msg: ""
+        },
         show: false,
         showSave: false,
         cmps: {},
@@ -83,8 +88,14 @@ class AnalyseInfoPage extends React.Component {
         }
       }
     }).bind(this), function(code, title, msg) {
-      alert(code + "|" + title + "|" + msg);
-    });
+      this.setState(update(this.state, {
+        gerror: {
+          show: {$set: true},
+          title: {$set: title},
+          msg: {$set: msg}
+        }
+      }));
+    }.bind(this));
   }
 
   handleNameChange(event) {
@@ -240,6 +251,7 @@ class AnalyseInfoPage extends React.Component {
   }
 
   render() {
+    let gclose = () => this.setState(update(this.state, { gerror: { show: {$set: false} } }));
     let close = () => this.setState(update(this.state, { show: {$set: false}}));
     let closeSave = () => this.setState(update(this.state, { showSave: {$set: false}}));
 
@@ -254,6 +266,19 @@ class AnalyseInfoPage extends React.Component {
         <section className="content">
         <Row>
         <Col md={12}>
+          <div className="static-modal">
+            <Modal container={this} show={this.state.gerror.show} onHide={gclose}>
+              <Modal.Header closeButton>
+                <Modal.Title>{this.state.gerror.title}</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                <h4>{this.state.gerror.msg}</h4>
+              </Modal.Body>
+              <Modal.Footer>
+                <Button onClick={gclose}>OK</Button>
+              </Modal.Footer>
+            </Modal>
+          </div>
           <Panel>
             <Tabs defaultActiveKey={1}>
               <Tab eventKey={1} title="Info">

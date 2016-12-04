@@ -68,6 +68,11 @@ class JvmInfoPage extends React.Component {
         cnts: false,
         tz: null
       },
+      gerror: {
+        show: false,
+        title: "",
+        msg: ""
+      },
       dateRangeState: {
         startDate: moment(),
         endDate: moment(),
@@ -199,8 +204,13 @@ class JvmInfoPage extends React.Component {
       }
       this.onReloadClick();
     }).bind(this), function(code, title, msg) {
-      this.setState(this.state);
-      alert(code + "|" + title + "|" + msg);
+      this.setState(update(this.state, {
+        errorStyle: {
+            display: {$set: "block"},
+            value: {$set: title + " (" + msg + ")"}
+        },
+        updateCaption: {$set: "Update"}
+      }));
     }.bind(this));
   }
 
@@ -639,6 +649,7 @@ class JvmInfoPage extends React.Component {
   }
 
   render() {
+    let gclose = () => this.setState(update(this.state, { gerror: { show: {$set: false} } }));
     let close = () => this.setState(update(this.state, {
         show: {
             $set: false
@@ -657,6 +668,19 @@ class JvmInfoPage extends React.Component {
                 </h1>
             </section>
             <section className="content">
+              <div className="static-modal">
+                <Modal container={this} show={this.state.gerror.show} onHide={gclose}>
+                  <Modal.Header closeButton>
+                    <Modal.Title>{this.state.gerror.title}</Modal.Title>
+                  </Modal.Header>
+                  <Modal.Body>
+                    <h4>{this.state.gerror.msg}</h4>
+                  </Modal.Body>
+                  <Modal.Footer>
+                    <Button onClick={gclose}>OK</Button>
+                  </Modal.Footer>
+                </Modal>
+              </div>
                 <Panel footer={< div > <Row>
                     <Col md={2}>
                         <Button type="button" bsStyle="default" disabled={this.state.isLoading} onClick={this.onReloadClick.bind(this)}>{(() => {

@@ -16,6 +16,12 @@ GCPlotCore.INTERNAL_ERROR_HANDLER = function(status) {
   alert(status);
 }
 
+GCPlotCore.errorHandler = function(code, title, msg) {
+  if (code != 292) {
+    alert("(" + code + ") " + title + " | " + msg);
+  }
+}
+
 $(window).on('beforeunload', function() {
   sessionStorage.removeItem(GCPlotCore.USER_INFO);
   sessionStorage.removeItem(GCPlotCore.ANALYSES);
