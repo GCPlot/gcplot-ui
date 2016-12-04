@@ -56,8 +56,10 @@ class AnalyseInfoPage extends React.Component {
   }
 
   updateAll() {
+    this.state.analyse.id = this.props.params.analyseId;
     this.setState(update(this.state, {
       analyse: {
+        id: {$set: this.props.params.analyseId},
         name: {$set: ""},
         jvm_ids: {$set: []},
         jvm_vers: {$set: {}},
@@ -129,9 +131,6 @@ class AnalyseInfoPage extends React.Component {
       }.bind(this), 2000);
     }.bind(this), function(code, title, msg) {
       this.setState(update(this.state, {
-        analyse: {
-          id: {$set: this.props.params.analyseId}
-        },
         errorStyle: {
             display: {$set: "block"},
             value: {$set: title + " (" + msg + ")"}

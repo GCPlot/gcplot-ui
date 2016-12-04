@@ -205,8 +205,6 @@ class JvmInfoPage extends React.Component {
       this.onReloadClick();
     }).bind(this), function(code, title, msg) {
       this.setState(update(this.state, {
-        jvm_id: {$set: this.props.params.jvmId},
-        analyse_id: {$set: this.props.params.analyseId},
         errorStyle: {
             display: {$set: "block"},
             value: {$set: title + " (" + msg + ")"}
