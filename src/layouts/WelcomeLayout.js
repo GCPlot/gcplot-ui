@@ -185,7 +185,7 @@ class WelcomeLayout extends React.Component {
 
     onPasswordRecover() {
       var email = this.emailRecoverText.value;
-      GCPlotCore.changePassword(email, function() {
+      GCPlotCore.changePasswordMail(email, function() {
         this.updateState({
           recoverErrorStyle: {
             display: {$set: 'block'},

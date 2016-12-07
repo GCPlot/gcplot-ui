@@ -272,11 +272,29 @@ GCPlotCore.analyses = function(callback, errorCallback) {
   }
 }
 
-GCPlotCore.changePassword = function(email, callback, errorCallback) {
+GCPlotCore.changePasswordMail = function(email, callback, errorCallback) {
   var msg = { email: email };
   $.ajax({
     type: "POST",
     url: GCPlotCore.url("/user/send/new_password"),
+    data: JSON.stringify(msg),
+    contentType: "application/json",
+    success: function(data) {
+      var r = JSON.parse(data);
+      if (r.hasOwnProperty('error')) {
+        errorCallback(r.error, GCPlotCore.ERRORS[r.error], r.message);
+      } else {
+        callback();
+      }
+    }
+  });
+}
+
+GCPlotCore.newPassword = function(token, salt, newPass, callback, errorCallback) {
+  var msg = { salt: salt, new_password: newPass };
+  $.ajax({
+    type: "POST",
+    url: GCPlotCore.url("/user/send/new_password?token=" + token),
     data: JSON.stringify(msg),
     contentType: "application/json",
     success: function(data) {
