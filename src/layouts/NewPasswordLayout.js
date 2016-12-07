@@ -19,7 +19,14 @@ class NewPasswordLayout extends React.Component {
   }
 
   onSave() {
-    if (this.newPasswordText.value != this.newPasswordRepeatText.value) {
+    if (this.newPasswordText.value == "" && this.newPasswordRepeatText.value == "") {
+      this.setState(update(this.state, {
+        errorStyle: {
+          display: {$set: "block"},
+          value: {$set: "Password can't be empty."}
+        }
+      }));
+    } else if (this.newPasswordText.value != this.newPasswordRepeatText.value) {
       this.setState(update(this.state, {
         errorStyle: {
           display: {$set: "block"},

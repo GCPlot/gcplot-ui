@@ -294,7 +294,7 @@ GCPlotCore.newPassword = function(token, salt, newPass, callback, errorCallback)
   var msg = { salt: salt, new_password: newPass };
   $.ajax({
     type: "POST",
-    url: GCPlotCore.url("/user/send/new_password?token=" + token),
+    url: GCPlotCore.url("/user/change_password?token=" + token),
     data: JSON.stringify(msg),
     contentType: "application/json",
     success: function(data) {
