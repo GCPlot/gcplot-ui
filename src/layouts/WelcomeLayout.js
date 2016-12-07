@@ -13,6 +13,11 @@ class WelcomeLayout extends React.Component {
         require('../styles/skeleton/skeleton.css');
 
         this.state = {
+            recoverErrorStyle: {
+              display: "none",
+              value: "",
+              color: 'red'
+            },
             loginErrorStyle: {
                 display: "none",
                 value: "",
@@ -25,7 +30,8 @@ class WelcomeLayout extends React.Component {
             },
             captchaVerified: false,
             submitProgress: false,
-            loginProgress: false
+            loginProgress: false,
+            showForgotPassword: false
         };
         this.verifyCallback = this.verifyCallback.bind(this);
     }
@@ -171,6 +177,43 @@ class WelcomeLayout extends React.Component {
       }
     }
 
+    onForgotMyPassword() {
+      this.updateState({
+        showForgotPassword: {$set: true}
+      });
+    }
+
+    onPasswordRecover() {
+      var email = this.emailRecoverText.value;
+      GCPlotCore.changePassword(email, function() {
+        this.updateState({
+          recoverErrorStyle: {
+            display: {$set: 'block'},
+            value: {$set: 'Instructions with the recover were sent to you!'},
+            color: {$set: 'black'}
+          }
+        });
+        setTimeout(function() {
+          this.updateState({
+            recoverErrorStyle: {
+              display: {$set: 'none'},
+              value: {$set: ''},
+              color: {$set: 'red'}
+            },
+            showForgotPassword: {$set: false}
+          });
+        }.bind(this), 3000);
+      }.bind(this), function(code, title, msg) {
+        this.updateState({
+          recoverErrorStyle: {
+            display: {$set: 'block'},
+            value: {$set: msg},
+            color: {$set: 'red'}
+          }
+        });
+      }.bind(this));
+    }
+
     render() {
         return (
             <div className="container">
@@ -205,15 +248,19 @@ class WelcomeLayout extends React.Component {
                     <div className="three columns">
                         <section className="header">
                             <h2>Log In</h2>
-                            <input className="u-full-width" type="email" placeholder="Username or email" ref={(r) => this.liLoginText = r}/>
-                            <input className="u-full-width" type="password" placeholder="Password" ref={(r) => this.liPasswordText = r}/>
-                            <p style={this.state.loginErrorStyle}>{this.state.loginErrorStyle.value}</p>
+                            <input style={{display: (this.state.showForgotPassword ? "none":"inline")}} className="u-full-width" type="email" placeholder="Username or email" ref={(r) => this.liLoginText = r}/>
+                            <input style={{display: (this.state.showForgotPassword ? "none":"inline")}} className="u-full-width" type="password" placeholder="Password" ref={(r) => this.liPasswordText = r}/>
+                            <input style={{display: (!this.state.showForgotPassword ? "none":"inline")}} className="u-full-width" type="email" placeholder="Email" ref={(r) => this.emailRecoverText = r}/>
+                            <a style={{display: (this.state.showForgotPassword ? "none":"inline")}} onClick={this.onForgotMyPassword.bind(this)} href="#">Forgot your password?</a>
+                            <p style={{display: (!this.state.showForgotPassword ? "none":"inline")}} style={this.state.recoverErrorStyle}>{this.state.recoverErrorStyle.value}</p>
+                            <input style={{display: (!this.state.showForgotPassword ? "none":"inline")}} className="button-primary" type="submit" onClick={this.onPasswordRecover.bind(this)} value="Restore"/>
+                            <p style={{display: (this.state.showForgotPassword ? "none":"inline")}} style={this.state.loginErrorStyle}>{this.state.loginErrorStyle.value}</p>
                             {(() => {
-                                if (this.state.loginProgress) {
+                                if (this.state.loginProgress && !this.state.showForgotPassword) {
                                     return <Spinner spinnerName="three-bounce"/>
                                 }
                             })()}
-                            <input className="button-primary" type="submit" onClick={this.onLogin.bind(this)} value="Login"/>
+                            <input style={{display: (this.state.showForgotPassword ? "none":"inline"), "margin-top": "10px"}} className="button-primary" type="submit" onClick={this.onLogin.bind(this)} value="Login"/>
                             <h2>Sign up</h2>
                             <input className="u-full-width" type="text" placeholder="Username" ref={(r) => this.usernameText = r}/>
                             <input className="u-full-width" type="text" placeholder="First Name" ref={(r) => this.firstNameText = r}/>
