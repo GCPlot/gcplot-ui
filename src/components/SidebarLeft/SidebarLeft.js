@@ -250,7 +250,7 @@ class SidebarLeft extends React.Component {
           }.bind(this))}
           <li className="header">Help</li>
           <li className="treeview">
-            <NavLink to="/forms/editor">
+            <NavLink to="/realtime-connection">
               <I name="plug" /> Realtime Connection
             </NavLink>
           </li>
