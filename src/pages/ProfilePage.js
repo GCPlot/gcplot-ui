@@ -15,6 +15,7 @@ class ProfilePage extends React.Component {
     this.state = {
       fullname: "",
       token: "",
+      email: "",
       username: "",
       updateUsernameDisabled: false,
       usernameErrorStyle: {
@@ -36,6 +37,7 @@ class ProfilePage extends React.Component {
       this.setState(update(this.state, {
         fullname: {$set: userInfo.first_name + " " + userInfo.last_name},
         token: {$set: userInfo.token},
+        email: {$set: userInfo.email},
         username: {$set: userInfo.username}
       }));
     }.bind(this));
@@ -43,6 +45,10 @@ class ProfilePage extends React.Component {
 
   copyIdClick() {
     clipboard.copy(this.state.token);
+  }
+
+  copyEmailClick() {
+    clipboard.copy(this.state.email);
   }
 
   handleUsernameChange(event) {
@@ -140,6 +146,9 @@ class ProfilePage extends React.Component {
                 <Input type="text" label="Full Name" disabled={true} value={this.state.fullname} />
                 <Input type="text" label="API Token" disabled={true} value={this.state.token} addonAfter={< I name = "clipboard" style = {{cursor: "pointer"}} onClick = {
                     this.copyIdClick.bind(this)
+                } />} />
+                <Input type="text" label="E-mail" disabled={true} value={this.state.email} addonAfter={< I name = "clipboard" style = {{cursor: "pointer"}} onClick = {
+                    this.copyEmailClick.bind(this)
                 } />} />
             </form>
           </Panel>
