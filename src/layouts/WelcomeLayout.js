@@ -71,7 +71,7 @@ class WelcomeLayout extends React.Component {
                         $set: "block"
                     },
                     value: {
-                        $set: "You should fill all fields."
+                        $set: "You should fill all the fields."
                     }
                 }
             });
@@ -86,17 +86,6 @@ class WelcomeLayout extends React.Component {
                     }
                 }
             });
-        } else if (this.passwordText.value.length < 6) {
-          this.updateState({
-              signupErrorStyle: {
-                  display: {
-                      $set: "block"
-                  },
-                  value: {
-                      $set: "The password length can't be less than 6."
-                  }
-              }
-          });
         } else {
             this.updateState({
                 signupErrorStyle: {
@@ -275,7 +264,8 @@ class WelcomeLayout extends React.Component {
                                     return <Spinner spinnerName="three-bounce"/>
                                 }
                             })()}
-                            <input className="button-primary" type="submit" onClick={this.submitClicked.bind(this)} value="Submit"/>
+                            <a href="/terms.html" target="_blank">Terms Of Service</a>
+                            <input className="button-primary" type="submit" style={{"margin-top": "10px"}} onClick={this.submitClicked.bind(this)} value="Submit"/>
                         </section>
                     </div>
                 </div>

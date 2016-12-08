@@ -4,6 +4,13 @@ import React from 'react';
 import { Row, Col, ProgressBar, Panel } from 'react-bootstrap';
 
 class DashboardPage extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+
+    };
+  }
+
   componentDidMount () {
 
   }
@@ -12,7 +19,8 @@ class DashboardPage extends React.Component {
     return <div className="content-wrapper">
     <section className="content-header">
       <h1>
-        Main
+        GCPLOT
+        <small>DEMO</small>
       </h1>
     </section>
       <section className="content">
