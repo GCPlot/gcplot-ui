@@ -264,7 +264,7 @@ class WelcomeLayout extends React.Component {
                                     return <Spinner spinnerName="three-bounce"/>
                                 }
                             })()}
-                            <a href="/terms.html" target="_blank">Terms Of Service</a>
+                            <a href="/assets/terms.html" target="_blank">Terms Of Service</a>
                             <input className="button-primary" type="submit" style={{"margin-top": "10px"}} onClick={this.submitClicked.bind(this)} value="Submit"/>
                         </section>
                     </div>

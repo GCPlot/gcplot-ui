@@ -11,7 +11,7 @@ class TermsOfService extends React.Component {
   render() {
     return <div className="content-wrapper">
       <section className="content">
-        <iframe src="/terms.html" width="100%" height="2000px" frameBorder="0">Browser not compatible.</iframe>
+        <iframe src="/assets/terms.html" width="100%" height="2000px" frameBorder="0">Browser not compatible.</iframe>
       </section>
     </div>;
   }
