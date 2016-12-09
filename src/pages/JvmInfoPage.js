@@ -165,6 +165,7 @@ class JvmInfoPage extends React.Component {
     if (this.state.jvm_id != this.props.params.jvmId || this.state.analyse_id != this.props.params.analyseId) {
       this.updateAll();
     }
+    $(".rc-time-picker-input").removeAttr('readonly');
   }
 
   updateAll() {
