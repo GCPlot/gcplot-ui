@@ -255,8 +255,8 @@ class SidebarLeft extends React.Component {
             </NavLink>
           </li>
           <li className="treeview">
-            <NavLink to="/ui/buttons">
-              <I name="question-circle" /> Documentation and FAQ
+            <NavLink to="/faq">
+              <I name="question-circle" /> FAQ
             </NavLink>
           </li>
           <li className="treeview">
