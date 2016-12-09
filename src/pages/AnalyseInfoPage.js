@@ -301,67 +301,75 @@ class AnalyseInfoPage extends React.Component {
                 <p/>
                 <p/>
               </Tab>
-              <Tab disabled={this.props.params.analyseId == GCPlotCore.ANONYMOUS_ANALYSE_ID} eventKey={2} title="Manage">
-              <Panel header="Danger Zone">
-              <form role="form">
-                 <Button className="btn btn-block btn-danger" style={{color: "white"}} onClick={() => this.setState(update(this.state, { show: {$set: true}}))}>Delete Analyse Group</Button>
-              </form>
-              <div className="static-modal">
-                <Modal container={this} show={this.state.show} onHide={close}>
-                  <Modal.Header closeButton>
-                    <Modal.Title>Delete "{this.state.analyse.name}"</Modal.Title>
-                  </Modal.Header>
-                  <Modal.Body>
-                    <h4>Are you sure you want to delete this Analyse Group?</h4>
-                  </Modal.Body>
-                  <Modal.Footer>
-                    <Button bsStyle="danger" onClick={this.onDeleteClick.bind(this)}>Delete</Button>
-                    <Button onClick={close}>Close</Button>
-                  </Modal.Footer>
-                </Modal>
-              </div>
-              </Panel>
-              </Tab>
-              <Tab disabled={this.props.params.analyseId == GCPlotCore.ANONYMOUS_ANALYSE_ID} eventKey={3} title="JVMs">
-              <div className="static-modal">
-                <Modal container={this} show={this.state.showSave} onHide={closeSave}>
-                  <Modal.Header closeButton>
-                    <Modal.Title>Confirm update</Modal.Title>
-                  </Modal.Header>
-                  <Modal.Body>
-                    <h4>Are you sure you want to save the changes?</h4>
-                    <p>{this.state.save.message}</p>
-                  </Modal.Body>
-                  <Modal.Footer>
-                    <Button bsStyle="danger" onClick={this.onSaveClick.bind(this)}>Save</Button>
-                    <Button onClick={closeSave}>Close</Button>
-                  </Modal.Footer>
-                </Modal>
-              </div>
-              <Row>
-              <Col md={2}>
-              <ButtonGroup>
-                <Button bsStyle="success" onClick={this.addJvmClicked.bind(this)}>Add</Button>
-                <Button bsStyle="primary" onClick={this.resetClicked.bind(this)}>Reset</Button>
-              </ButtonGroup>
-              </Col>
-              <Col>
-              <Button bsStyle="danger" onClick={() => this.setState(update(this.state, { showSave: {$set: true}}))}>Save changes</Button>
-              </Col>
-              </Row>
-              <p/>
-                 <Row>
-                   {(function() {
-                     return this.state.analyse.jvm_ids.map(function(r, i) {
-                       console.log(r + "|" + ($.inArray(r, this.state.initialJvmIds) >= 0));
-                       return <CreateJvm md={3} cid={r} key={r} pp={this} title="JVM" versionValue={this.state.analyse.jvm_vers[r]}
-                       collectorValue={this.state.analyse.jvm_gcts[r]} jvmName={this.state.analyse.jvm_names[r] || r} jvmId={r}
-                       idDisabled={$.inArray(r, this.state.initialJvmIds) >= 0} closeClickHandler={this.jvmCloseClicked.bind(this,
-                         r)}></CreateJvm>;
-                   }.bind(this));
-                 }.bind(this))()}
-                 </Row>
-              </Tab>
+              {(() => {
+                if (this.props.params.analyseId != GCPlotCore.ANONYMOUS_ANALYSE_ID) {
+                return <Tab eventKey={2} title="Manage">
+                <Panel header="Danger Zone">
+                <form role="form">
+                   <Button className="btn btn-block btn-danger" style={{color: "white"}} onClick={() => this.setState(update(this.state, { show: {$set: true}}))}>Delete Analyse Group</Button>
+                </form>
+                <div className="static-modal">
+                  <Modal container={this} show={this.state.show} onHide={close}>
+                    <Modal.Header closeButton>
+                      <Modal.Title>Delete "{this.state.analyse.name}"</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                      <h4>Are you sure you want to delete this Analyse Group?</h4>
+                    </Modal.Body>
+                    <Modal.Footer>
+                      <Button bsStyle="danger" onClick={this.onDeleteClick.bind(this)}>Delete</Button>
+                      <Button onClick={close}>Close</Button>
+                    </Modal.Footer>
+                  </Modal>
+                </div>
+                </Panel>
+              </Tab>;
+              }
+              })()}
+              {(() => {
+                if (this.props.params.analyseId != GCPlotCore.ANONYMOUS_ANALYSE_ID) {
+                  return <Tab disabled={this.props.params.analyseId == GCPlotCore.ANONYMOUS_ANALYSE_ID} eventKey={3} title="JVMs">
+                  <div className="static-modal">
+                    <Modal container={this} show={this.state.showSave} onHide={closeSave}>
+                      <Modal.Header closeButton>
+                        <Modal.Title>Confirm update</Modal.Title>
+                      </Modal.Header>
+                      <Modal.Body>
+                        <h4>Are you sure you want to save the changes?</h4>
+                        <p>{this.state.save.message}</p>
+                      </Modal.Body>
+                      <Modal.Footer>
+                        <Button bsStyle="danger" onClick={this.onSaveClick.bind(this)}>Save</Button>
+                        <Button onClick={closeSave}>Close</Button>
+                      </Modal.Footer>
+                    </Modal>
+                  </div>
+                  <Row>
+                  <Col md={2}>
+                  <ButtonGroup>
+                    <Button bsStyle="success" onClick={this.addJvmClicked.bind(this)}>Add</Button>
+                    <Button bsStyle="primary" onClick={this.resetClicked.bind(this)}>Reset</Button>
+                  </ButtonGroup>
+                  </Col>
+                  <Col>
+                  <Button bsStyle="danger" onClick={() => this.setState(update(this.state, { showSave: {$set: true}}))}>Save changes</Button>
+                  </Col>
+                  </Row>
+                  <p/>
+                     <Row>
+                       {(function() {
+                         return this.state.analyse.jvm_ids.map(function(r, i) {
+                           console.log(r + "|" + ($.inArray(r, this.state.initialJvmIds) >= 0));
+                           return <CreateJvm md={3} cid={r} key={r} pp={this} title="JVM" versionValue={this.state.analyse.jvm_vers[r]}
+                           collectorValue={this.state.analyse.jvm_gcts[r]} jvmName={this.state.analyse.jvm_names[r] || r} jvmId={r}
+                           idDisabled={$.inArray(r, this.state.initialJvmIds) >= 0} closeClickHandler={this.jvmCloseClicked.bind(this,
+                             r)}></CreateJvm>;
+                       }.bind(this));
+                     }.bind(this))()}
+                     </Row>
+                  </Tab>;
+                }
+                })()}
             </Tabs>
           </Panel>
         </Col>
