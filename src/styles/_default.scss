@@ -23,8 +23,7 @@ body {
 .wrapper {
   @include clearfix();
   width: 100%;
-  min-height: 100%;
-  height: auto !important;
+  height: 100% !important;
   position: absolute;
   margin: 0px auto;
   padding: 0px auto;
