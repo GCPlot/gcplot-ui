@@ -223,7 +223,7 @@ class SidebarLeft extends React.Component {
               <I name="plus" /> New Analyse Group
             </NavLink>
           </li>
-          <li className="header">Analyses</li>
+          <li className="header">Analyse Groups</li>
           {this.state.analyses.map(function (item, i) {
             return (
               <ul className="sidebar-menu" key={i}>

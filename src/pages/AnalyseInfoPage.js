@@ -304,7 +304,7 @@ class AnalyseInfoPage extends React.Component {
               <Tab disabled={this.props.params.analyseId == GCPlotCore.ANONYMOUS_ANALYSE_ID} eventKey={2} title="Manage">
               <Panel header="Danger Zone">
               <form role="form">
-                 <Button className="btn btn-block btn-danger" style={{color: "white"}} onClick={() => this.setState(update(this.state, { show: {$set: true}}))}>Delete Analyse</Button>
+                 <Button className="btn btn-block btn-danger" style={{color: "white"}} onClick={() => this.setState(update(this.state, { show: {$set: true}}))}>Delete Analyse Group</Button>
               </form>
               <div className="static-modal">
                 <Modal container={this} show={this.state.show} onHide={close}>
@@ -312,7 +312,7 @@ class AnalyseInfoPage extends React.Component {
                     <Modal.Title>Delete "{this.state.analyse.name}"</Modal.Title>
                   </Modal.Header>
                   <Modal.Body>
-                    <h4>Are you sure you want to delete this analyse?</h4>
+                    <h4>Are you sure you want to delete this Analyse Group?</h4>
                   </Modal.Body>
                   <Modal.Footer>
                     <Button bsStyle="danger" onClick={this.onDeleteClick.bind(this)}>Delete</Button>
