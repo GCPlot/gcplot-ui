@@ -220,7 +220,7 @@ class SidebarLeft extends React.Component {
           <li className="header">Control Panel</li>
           <li className="treeview">
             <NavLink to="/analyse/new">
-              <I name="plus" /> New Analyse
+              <I name="plus" /> New Analyse Group
             </NavLink>
           </li>
           <li className="header">Analyses</li>

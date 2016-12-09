@@ -261,7 +261,7 @@ class AnalyseInfoPage extends React.Component {
       <div className="content-wrapper">
       <section className="content-header">
         <h1>
-          Analyse Info
+          Analyse Group
           <small>{this.state.analyse.name}</small>
         </h1>
       </section>
