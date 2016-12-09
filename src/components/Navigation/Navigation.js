@@ -39,6 +39,8 @@ class Navigation extends React.Component {
 
   profileClicked() {
     browserHistory.push("/profile");
+    document.dispatchEvent(new MouseEvent('click'));
+    return null;
   }
 
   render() {
