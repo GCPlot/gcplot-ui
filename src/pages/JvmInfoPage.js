@@ -4,6 +4,7 @@ import $ from 'jquery';
 
 import React from 'react';
 import { Row, Col, Panel, Tabs, Tab, ButtonGroup, Table, ProgressBar, Input, Modal, Button } from 'react-bootstrap';
+import Checkbox from 'rc-checkbox';
 import I from 'react-fontawesome';
 import GCPlotCore from '../core';
 import moment from 'moment-timezone';
@@ -76,7 +77,7 @@ class JvmInfoPage extends React.Component {
       dateRangeState: {
         startDate: moment(),
         endDate: moment(),
-        timeEnabled: false
+        timeEnabled: 0
       },
       data: [],
       desiredSurvivorSize: -1,
@@ -197,7 +198,8 @@ class JvmInfoPage extends React.Component {
           this.state.analyse = analyses[i];
           this.state.dateRangeState = {
             endDate: endDate,
-            startDate: startDate
+            startDate: startDate,
+            timeEnabled: this.state.dateRangeState.timeEnabled
           };
           this.setState(this.state);
           break;
@@ -242,7 +244,7 @@ class JvmInfoPage extends React.Component {
   onTimeChange(e) {
     this.setState(update(this.state, {
       dateRangeState: {
-        timeEnabled: {$set: e.target.checked}
+        timeEnabled: {$set: (e.target.checked ? 1 : 0)}
       }
     }));
   }
@@ -287,7 +289,7 @@ class JvmInfoPage extends React.Component {
     var start = moment(this.state.dateRangeState.startDate, this.tz());
     var end = moment(this.state.dateRangeState.endDate, this.tz());
 
-    if (!this.state.dateRangeState.timeEnabled) {
+    if (this.state.dateRangeState.timeEnabled == 0) {
         start.hour(0).minute(0).second(0).millisecond(0);
         end.hour(23).minute(59).second(59).millisecond(999);
     }
@@ -714,9 +716,9 @@ class JvmInfoPage extends React.Component {
                             <p>
                                 <b>Times Range:</b>
                             </p>
-                            <input type="checkbox" className="col-xs-1" value={this.state.dateRangeState.timeEnabled} onChange={this.onTimeChange.bind(this)}/>
-                            <TimePicker disabled={!this.state.dateRangeState.timeEnabled} value={this.state.dateRangeState.startDate} onChange={this.handleChangeStart.bind(this)}/>
-                            <TimePicker disabled={!this.state.dateRangeState.timeEnabled} value={this.state.dateRangeState.endDate} onChange={this.handleChangeEnd.bind(this)}/>
+                            <Checkbox className="col-xs-1" checked={this.state.dateRangeState.timeEnabled} onChange={this.onTimeChange.bind(this)} />
+                            <TimePicker disabled={this.state.dateRangeState.timeEnabled == 0} value={this.state.dateRangeState.startDate} onChange={this.handleChangeStart.bind(this)}/>
+                            <TimePicker disabled={this.state.dateRangeState.timeEnabled == 0} value={this.state.dateRangeState.endDate} onChange={this.handleChangeEnd.bind(this)}/>
                         </Col>
                     </Row>
                 </Panel>
