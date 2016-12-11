@@ -10,10 +10,16 @@ import ProfilePage from './pages/ProfilePage'
 import TermsOfService from './pages/TermsOfService'
 import RealtimeConnection from './pages/RealtimeConnection'
 import FAQ from './pages/FAQ'
+var ReactGA = require('react-ga');
+ReactGA.initialize('UA-88807066-1');
 
 export default () => {
+  var logPageView = function() {
+    ReactGA.set({ page: window.location.pathname });
+    ReactGA.pageview(window.location.pathname);
+  };
   return (
-    <Router history={browserHistory}>
+    <Router onUpdate={logPageView} history={browserHistory}>
       <Route path="/" component={MainLayout}>
         <IndexRoute component={DashboardPage} />
         <Route path="/dashboard" component={DashboardPage} />

@@ -95,6 +95,7 @@
     "jsonpipe": "^2.0.1",
     "react-datepicker": "^0.34.0",
     "react-google-charts": "^1.2.1",
-    "rc-checkbox": "^1.4.3"
+    "rc-checkbox": "^1.4.3",
+    "react-ga": "^2.1.2"
   }
 }
