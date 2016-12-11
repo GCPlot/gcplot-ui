@@ -42,7 +42,7 @@ class FAQ extends React.Component {
                 <dd>There is also a default 'Files' Analysis Group, which contains all manually uploaded log files (via 'Quick Process' page):</dd>
                 <p><img width="180px" height="111px" src="/img/files-group.png" /></p>
                 <p/>
-                <dt>7. Can I select some particular interval in the log?</dt>
+                <dt>7. Can I select a particular interval while building the report?</dt>
                 <dd>Of course. You can set the interval to the exact second, while the width of the interval can be started from the minute.</dd>
                 <p/>
                 <dt>8. How to tell JVM to start producing GC logs?</dt>

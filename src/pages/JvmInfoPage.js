@@ -101,6 +101,8 @@ class JvmInfoPage extends React.Component {
       usedAvgPie: [['', 1]],
       pauseTimeBar: [['', 1]],
       pauseAvgBar: [['', 1]],
+      pauseVsAll: [['', 1]],
+      durationVsAll: [['', 1]],
       pauseDurationRange: {
         from: this.toDateTz(moment()),
         to: this.toDateTz(moment())
@@ -521,7 +523,8 @@ class JvmInfoPage extends React.Component {
                 $set: metaspaceUsage
             },
             stats: {
-              $set: this.statsPostProcessing(stats)
+              $set: this.statsPostProcessing(stats, (typeof firstTime == 'undefined') ?
+               0 : firstTime.valueOf() - lastTime.valueOf())
             },
             pauseDurationRange: {
                 from: {
@@ -559,7 +562,7 @@ class JvmInfoPage extends React.Component {
     }.bind(this));
   }
 
-  statsPostProcessing(stats) {
+  statsPostProcessing(stats, intervalMs) {
     if (stats == null || $.isEmptyObject(stats.generation_total)) {
       return null;
     }
@@ -630,6 +633,24 @@ class JvmInfoPage extends React.Component {
     if (pauseAvgBar.length > 0) {
       this.state.pauseAvgBar = pauseAvgBar;
     }
+    if (intervalMs > 0) {
+      var stwMs = (stats.stats.pause_time + stats.full_stats.pause_time) / 1000;
+      this.state.pauseVsAll = [['Application', intervalMs - stwMs], ['STW', stwMs]];
+      var concMs = 0;
+      for (var gen_id in stats.phase_stats) {
+        if (stats.phase_stats.hasOwnProperty(gen_id)) {
+            var gen = stats.phase_stats[gen_id];
+            concMs += gen.pause_time;
+        }
+      }
+      concMs /= 1000;
+      if (concMs > 0) {
+        this.state.durationVsAll = [['Application Only', intervalMs - concMs - stwMs], ['Concurrent (Application + GC)', concMs]];
+      } else {
+        this.state.durationVsAll = [['Application Only', intervalMs - stwMs]];
+      }
+    }
+
     return stats;
   }
 
@@ -822,6 +843,42 @@ class JvmInfoPage extends React.Component {
                         </Row>
                     </Tab>
                     <Tab eventKey={2} title="Pauses">
+                      <Row>
+                        <Col md={12}>
+                          <Panel>
+                            <Row>
+                              <Col md={6}>
+                        <Chart chartType="PieChart" options={{
+                            displayAnnotations: true,
+                            title: 'Stop-The-World vs Application'
+                        }} rows={this.state.pauseVsAll} columns={[
+                            {
+                                'type': 'string',
+                                'label': 'Title'
+                            }, {
+                                'type': 'number',
+                                'label': 'Value'
+                            }
+                        ]} graph_id="stwieu1" width="100%" height="200px" legend_toggle={false}/>
+                      </Col>
+                      <Col md={6}>
+                        <Chart chartType="PieChart" options={{
+                            displayAnnotations: true,
+                            title: 'Concurrent vs Application'
+                        }} rows={this.state.durationVsAll} columns={[
+                            {
+                                'type': 'string',
+                                'label': 'Title'
+                            }, {
+                                'type': 'number',
+                                'label': 'Value'
+                            }
+                        ]} graph_id="stwied1" width="100%" height="200px" legend_toggle={false}/>
+                      </Col>
+                      </Row>
+                        </Panel>
+                        </Col>
+                      </Row>
                         <Panel><Chart chartType="ScatterChart" options={{
             displayAnnotations: true,
             title: 'Pause Durations (Stop-The-World only)',
