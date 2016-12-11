@@ -1,6 +1,8 @@
 import React from 'react';
 import GCPlotCore from '../core'
 var update = require('react-addons-update');
+var ReactGA = require('react-ga');
+ReactGA.initialize('UA-88807066-1');
 
 class NewPasswordLayout extends React.Component {
   constructor(props) {

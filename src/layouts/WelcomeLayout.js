@@ -4,6 +4,8 @@ import GCPlotCore from '../core'
 var update = require('react-addons-update');
 var Recaptcha = require('react-recaptcha');
 var Spinner = require('react-spinkit');
+var ReactGA = require('react-ga');
+ReactGA.initialize('UA-88807066-1');
 
 class WelcomeLayout extends React.Component {
     constructor(props) {
