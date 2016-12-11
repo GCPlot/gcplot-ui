@@ -750,7 +750,7 @@ class JvmInfoPage extends React.Component {
                                                 return <dd>There is no info about the last GC Event observed.</dd>
                                             }
                                         })()}
-                                        <dt>Analyse Type</dt>
+                                        <dt>Analysis Type</dt>
                                         {(() => {
                                             if (this.state.analyse.cnts) {
                                                 return <dd>Continuous, with Realtime Connection support.</dd>

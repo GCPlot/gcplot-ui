@@ -109,7 +109,7 @@ class NewAnalysePage extends React.Component {
       <div className="content-wrapper">
         <section className="content-header">
           <h1>
-            Analyse Group
+            Analysis Group
             </h1>
       </section>
       <section className="content">

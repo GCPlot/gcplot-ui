@@ -9,6 +9,7 @@ import QuickProcessPage from './pages/QuickProcessPage'
 import ProfilePage from './pages/ProfilePage'
 import TermsOfService from './pages/TermsOfService'
 import RealtimeConnection from './pages/RealtimeConnection'
+import FAQ from './pages/FAQ'
 
 export default () => {
   return (
@@ -23,6 +24,7 @@ export default () => {
         <Route path="/profile" component={ProfilePage} />
         <Route path="/terms" component={TermsOfService} />
         <Route path="/realtime-connection" component={RealtimeConnection} />
+        <Route path="/faq" component={FAQ} />
       </Route>
     </Router>
   );

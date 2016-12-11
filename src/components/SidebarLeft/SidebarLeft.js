@@ -220,10 +220,10 @@ class SidebarLeft extends React.Component {
           <li className="header">Control Panel</li>
           <li className="treeview">
             <NavLink to="/analyse/new">
-              <I name="plus" /> New Analyse Group
+              <I name="plus" /> New Analysis Group
             </NavLink>
           </li>
-          <li className="header">Analyse Groups</li>
+          <li className="header">Analysis Groups</li>
           {this.state.analyses.map(function (item, i) {
             return (
               <ul className="sidebar-menu" key={i}>

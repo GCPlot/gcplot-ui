@@ -43,7 +43,7 @@ GCPlotCore.ERRORS = {
   '404': 'Not found',
   '405': 'Same passwords',
   '407': 'Resource wasn\'t found',
-  '513': 'Unknown Analyse Group',
+  '513': 'Unknown Analysis Group',
   '514': 'Unknown JVM Id',
   '769': 'Invalid request param'
 };
