@@ -13,6 +13,8 @@ class WelcomeLayout extends React.Component {
         require('../styles/skeleton/custom.css');
         require('../styles/skeleton/normalize.css');
         require('../styles/skeleton/skeleton.css');
+        ReactGA.set({ page: window.location.pathname });
+        ReactGA.pageview(window.location.pathname);
 
         this.state = {
             recoverErrorStyle: {
