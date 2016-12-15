@@ -244,7 +244,7 @@ class WelcomeLayout extends React.Component {
                             <input style={{display: (this.state.showForgotPassword ? "none":"inline")}} className="u-full-width" type="email" id="login" placeholder="Username or email" ref={(r) => this.liLoginText = r}/>
                             <input style={{display: (this.state.showForgotPassword ? "none":"inline")}} className="u-full-width" type="password" id="password" placeholder="Password" ref={(r) => this.liPasswordText = r}/>
                             <input style={{display: (!this.state.showForgotPassword ? "none":"inline")}} className="u-full-width" type="email" placeholder="Email" ref={(r) => this.emailRecoverText = r}/>
-                            <a style={{display: (this.state.showForgotPassword ? "none":"inline")}} onClick={this.onForgotMyPassword.bind(this)} href="#">Forgot your password?</a>
+                            <p><a style={{display: (this.state.showForgotPassword ? "none":"inline")}} onClick={this.onForgotMyPassword.bind(this)} href="#">Forgot your password?</a></p>
                             <p style={{display: (!this.state.showForgotPassword ? "none":"inline")}} style={this.state.recoverErrorStyle}>{this.state.recoverErrorStyle.value}</p>
                             <input style={{display: (!this.state.showForgotPassword ? "none":"inline")}} className="button-primary" type="submit" onClick={this.onPasswordRecover.bind(this)} value="Restore"/>
                             <p style={{display: (this.state.showForgotPassword ? "none":"inline")}} style={this.state.loginErrorStyle}>{this.state.loginErrorStyle.value}</p>
@@ -253,7 +253,7 @@ class WelcomeLayout extends React.Component {
                                     return <Spinner spinnerName="three-bounce"/>
                                 }
                             })()}
-                            <input style={{display: (this.state.showForgotPassword ? "none":"inline"), "margin-top": "10px"}} className="button-primary" type="submit" onClick={this.onLogin.bind(this)} value="Login"/>
+                            <input style={{display: (this.state.showForgotPassword ? "none":"inline")}} className="button-primary" type="submit" onClick={this.onLogin.bind(this)} value="Login"/>
                             <h2>Sign up</h2>
                             <input className="u-full-width" type="text" placeholder="Username" ref={(r) => this.usernameText = r}/>
                             <input className="u-full-width" type="text" placeholder="First Name" ref={(r) => this.firstNameText = r}/>
@@ -268,8 +268,8 @@ class WelcomeLayout extends React.Component {
                                     return <Spinner spinnerName="three-bounce"/>
                                 }
                             })()}
-                            <a href="/assets/terms.html" target="_blank">Terms Of Service</a>
-                            <input className="button-primary" type="submit" style={{"margin-top": "10px"}} onClick={this.submitClicked.bind(this)} value="Submit"/>
+                            <p><a href="/assets/terms.html" target="_blank">Terms Of Service</a></p>
+                            <input className="button-primary" type="submit" onClick={this.submitClicked.bind(this)} value="Submit"/>
                         </section>
                     </div>
                 </div>
