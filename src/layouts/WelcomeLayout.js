@@ -241,8 +241,8 @@ class WelcomeLayout extends React.Component {
                     <div className="three columns">
                         <section className="header">
                             <h2>Log In</h2>
-                            <input style={{display: (this.state.showForgotPassword ? "none":"inline")}} className="u-full-width" type="email" placeholder="Username or email" ref={(r) => this.liLoginText = r}/>
-                            <input style={{display: (this.state.showForgotPassword ? "none":"inline")}} className="u-full-width" type="password" placeholder="Password" ref={(r) => this.liPasswordText = r}/>
+                            <input style={{display: (this.state.showForgotPassword ? "none":"inline")}} className="u-full-width" type="email" id="login" placeholder="Username or email" ref={(r) => this.liLoginText = r}/>
+                            <input style={{display: (this.state.showForgotPassword ? "none":"inline")}} className="u-full-width" type="password" id="password" placeholder="Password" ref={(r) => this.liPasswordText = r}/>
                             <input style={{display: (!this.state.showForgotPassword ? "none":"inline")}} className="u-full-width" type="email" placeholder="Email" ref={(r) => this.emailRecoverText = r}/>
                             <a style={{display: (this.state.showForgotPassword ? "none":"inline")}} onClick={this.onForgotMyPassword.bind(this)} href="#">Forgot your password?</a>
                             <p style={{display: (!this.state.showForgotPassword ? "none":"inline")}} style={this.state.recoverErrorStyle}>{this.state.recoverErrorStyle.value}</p>
