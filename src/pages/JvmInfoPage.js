@@ -859,7 +859,7 @@ class JvmInfoPage extends React.Component {
                                 'type': 'number',
                                 'label': 'Value'
                             }
-                        ]} graph_id="stwieu1" width="100%" height="200px" legend_toggle={false}/>
+                        ]} graph_id="stwieu1" width="100%" height="130px" legend_toggle={false}/>
                       </Col>
                       <Col md={6}>
                         <Chart chartType="PieChart" options={{
@@ -873,7 +873,7 @@ class JvmInfoPage extends React.Component {
                                 'type': 'number',
                                 'label': 'Value'
                             }
-                        ]} graph_id="stwied1" width="100%" height="200px" legend_toggle={false}/>
+                        ]} graph_id="stwied1" width="100%" height="130px" legend_toggle={false}/>
                       </Col>
                       </Row>
                         </Panel>
