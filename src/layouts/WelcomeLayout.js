@@ -237,8 +237,9 @@ class WelcomeLayout extends React.Component {
                                 </div>
                             </div>
                             <h3>
-                                Analyse graphs & stats
+                                Analyze graphs & stats
                             </h3>
+                            <h4>Build a detailed report about any single collection</h4>
                             <img width="100%" src="/img/laptop.png"/>
                             <p />
                         </section>
