@@ -217,7 +217,7 @@ class WelcomeLayout extends React.Component {
                                 <b>GC</b>Plot
                             </h1>
                             <h2 className="title">
-                                Universal JVM Garbage Collector Logs Analyser
+                                Universal JVM Garbage Collector Logs Analyzer
                             </h2>
                             <h3>
                                 Made by developers for the developers
@@ -233,7 +233,7 @@ class WelcomeLayout extends React.Component {
                                 </div>
                                 <div className="four columns value-prop">
                                     <img className="value-img" src="img/plug.png" width="200" height="200"/>
-                                    Connect multiple JVMs in realtime or upload individual log files - all made as straightforward as possible.
+                                    Connect multiple JVMs in realtime or upload individual GC log files - all made as straightforward as possible.
                                 </div>
                             </div>
                         </section>
