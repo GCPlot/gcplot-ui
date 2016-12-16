@@ -224,18 +224,23 @@ class WelcomeLayout extends React.Component {
                             </h3>
                             <div className="value-props row">
                                 <div className="four columns value-prop">
-                                    <img className="value-img" src="img/missile.png" width="100" height="200"/>
+                                    <img className="value-img" src="/img/missile.png" width="75" height="150"/>
                                     Monitor how your Garbage Collector flies continuously - on the complex system or just a simple app.
                                 </div>
                                 <div className="four columns value-prop">
-                                    <img className="value-img" src="img/reports.png" width="200" height="200"/>
+                                    <img className="value-img" src="/img/reports.png" width="148" height="150"/>
                                     Decent amount of reports, charts and hints will help you to undertand all pitfalls in your GC configuration.
                                 </div>
                                 <div className="four columns value-prop">
-                                    <img className="value-img" src="img/plug.png" width="200" height="200"/>
+                                    <img className="value-img" src="/img/plug.png" width="150" height="150"/>
                                     Connect multiple JVMs in realtime or upload individual GC log files - all made as straightforward as possible.
                                 </div>
                             </div>
+                            <h3>
+                                Analyse graphs & stats
+                            </h3>
+                            <img width="100%" src="/img/laptop.png"/>
+                            <p />
                         </section>
                     </div>
                     <div className="three columns">
