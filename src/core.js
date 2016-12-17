@@ -197,6 +197,18 @@ GCPlotCore.login = function(username, password, callback, errorCallback) {
       }));
 };
 
+GCPlotCore.sendConfirmation = function(callback, errorCallback) {
+  $.get(GCPlotCore.authUrl("/user/send/confirmation"),
+      GCPlotCore.dataHandler(function(data) {
+        var r = JSON.parse(data);
+        if (r.hasOwnProperty('error')) {
+          errorCallback(r.error, GCPlotCore.ERRORS[r.error], r.message);
+        } else {
+          callback();
+        }
+      }));
+}
+
 /*
 * userData -> {
 *   username, first_name, last_name, password, email
