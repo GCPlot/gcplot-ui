@@ -281,9 +281,9 @@ class WelcomeLayout extends React.Component {
                 </div>
                 <div className="row">
                 <div className="twelve columns">
-                  <section style={{"margin-top": "0px !important"}} className="header">
+                  <section style={{"margin-top": "0px", "padding-top": "0px"}} className="header">
                 <footer id="footer" style={{"margin-bottom": "20px", "padding-bottom": "20px"}}>
-                    <p style={{"margin-bottom": "-5px", "font-size": "12px"}}>Copyright © {new Date().getFullYear()} GCPlot</p><a className="footer-link" href="http://blog.gcplot.com" target="_blank">Blog</a><span style={{"margin-left": "5px", "margin-right": "5px"}}>|</span><a className="footer-link" href="/assets/terms.html" target="_blank">Terms Of Service</a><span style={{"margin-left": "5px", "margin-right": "5px"}}>|</span><a className="footer-link" href="mailto:support@gcplot.com" target="_blank">Contact</a>
+                    <p style={{"margin-bottom": "-5px", "font-size": "12px"}}>Copyright © {new Date().getFullYear()} GCPlot</p><a className="footer-link" href="http://blog.gcplot.com" target="_blank">Blog</a><span style={{"margin-left": "5px", "margin-right": "5px"}}>|</span><a className="footer-link" href="https://www.facebook.com/gcplot" target="_blank">Facebook</a><span style={{"margin-left": "5px", "margin-right": "5px"}}>|</span><a className="footer-link" href="/assets/terms.html" target="_blank">Terms Of Service</a><span style={{"margin-left": "5px", "margin-right": "5px"}}>|</span><a className="footer-link" href="mailto:support@gcplot.com" target="_blank">Contact</a>
                 </footer>
               </section>
               </div>
