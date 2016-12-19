@@ -34,7 +34,7 @@ class Navigation extends React.Component {
 
   signOutClicked() {
     GCPlotCore.logoff();
-    location.reload();
+    location.replace("/");
   }
 
   profileClicked() {
@@ -62,7 +62,7 @@ class Navigation extends React.Component {
               className=""
               title={
                 <span>
-                  <span className="hidden-xs">{this.state.full_name}</span>
+                  <span>{this.state.full_name}</span>
                 </span>
               }
               noCaret

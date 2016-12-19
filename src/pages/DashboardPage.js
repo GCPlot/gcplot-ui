@@ -52,7 +52,7 @@ class DashboardPage extends React.Component {
     return <div className="content-wrapper">
     <section className="content-header">
       <h1>
-        GCPLOT
+        
         <small>DASHBOARD</small>
       </h1>
     </section>
