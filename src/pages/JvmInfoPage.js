@@ -1037,7 +1037,7 @@ class JvmInfoPage extends React.Component {
         ]} graph_id="lpdc" width="100%" height="400px" legend_toggle={false}/>
                             <Chart chartType="ScatterChart" options={{
                                 displayAnnotations: true,
-                                title: 'Concurrent Pause Durations (Non-STW)',
+                                title: 'Concurrent Phase Durations (Non-STW)',
                                 tooltip: {
                                     isHtml: true
                                 },
@@ -1067,7 +1067,7 @@ class JvmInfoPage extends React.Component {
                             ]} graph_id="conc_events" width="100%" height="400px" legend_toggle={false}/>
                             <Chart chartType="ScatterChart" options={{
                                 displayAnnotations: true,
-                                title: 'Log(x) Concurrent Pause Durations (Non-STW)',
+                                title: 'Log(x) Concurrent Phase Durations (Non-STW)',
                                 tooltip: {
                                     isHtml: true
                                 },
