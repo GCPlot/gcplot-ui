@@ -875,7 +875,7 @@ class JvmInfoPage extends React.Component {
                               <Col md={6}>
                         <Chart chartType="PieChart" options={{
                             displayAnnotations: true,
-                            title: 'Stop-The-World vs Application'
+                            title: 'Stop-The-World vs Application Time'
                         }} rows={this.state.pauseVsAll} columns={[
                             {
                                 'type': 'string',
@@ -889,7 +889,7 @@ class JvmInfoPage extends React.Component {
                       <Col md={6}>
                         <Chart chartType="PieChart" options={{
                             displayAnnotations: true,
-                            title: 'Concurrent vs Application'
+                            title: 'Concurrent vs Application Time'
                         }} rows={this.state.durationVsAll} columns={[
                             {
                                 'type': 'string',
