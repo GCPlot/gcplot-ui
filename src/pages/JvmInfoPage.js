@@ -482,7 +482,7 @@ class JvmInfoPage extends React.Component {
         if (typeof stats.cause_stats != 'undefined') {
           var sum = 0;
           for (var cause in stats.cause_stats) {
-              if (stats.cause_stats.hasOwnProperty(cause)) {
+              if (stats.cause_stats.hasOwnProperty(cause) && cause != 0) {
                   var count = stats.cause_stats[cause];
                   sum += count;
               }
@@ -491,7 +491,7 @@ class JvmInfoPage extends React.Component {
               if (stats.cause_stats.hasOwnProperty(cause)) {
                   var count = stats.cause_stats[cause];
                   var name = GCPlotCore.CAUSES[cause];
-                  if (name != null && count > 0) {
+                  if (name != null && count > 0 && cause != 0) {
                     causes.push([name + " (" + count + ")", ((count / sum) * 100)]);
                   }
               }
@@ -1564,7 +1564,7 @@ class JvmInfoPage extends React.Component {
                               <Col md={12}>
                           <Chart chartType="BarChart" options={{
                               displayAnnotations: true,
-                              title: 'Young GC Causes *',
+                              title: 'GC Causes *',
                               chartArea: {
                                 width: '50%'
                               }
