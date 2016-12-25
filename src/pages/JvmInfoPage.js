@@ -479,17 +479,17 @@ class JvmInfoPage extends React.Component {
         }
 
         var causes = [];
-        if (typeof stats.cause_stats_y != 'undefined') {
+        if (typeof stats.cause_stats != 'undefined') {
           var sum = 0;
-          for (var cause in stats.cause_stats_y) {
-              if (stats.cause_stats_y.hasOwnProperty(cause)) {
-                  var count = stats.cause_stats_y[cause];
+          for (var cause in stats.cause_stats) {
+              if (stats.cause_stats.hasOwnProperty(cause)) {
+                  var count = stats.cause_stats[cause];
                   sum += count;
               }
           }
-          for (var cause in stats.cause_stats_y) {
-              if (stats.cause_stats_y.hasOwnProperty(cause)) {
-                  var count = stats.cause_stats_y[cause];
+          for (var cause in stats.cause_stats) {
+              if (stats.cause_stats.hasOwnProperty(cause)) {
+                  var count = stats.cause_stats[cause];
                   var name = GCPlotCore.CAUSES[cause];
                   if (name != null && count > 0) {
                     causes.push([name + " (" + count + ")", ((count / sum) * 100)]);
