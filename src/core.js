@@ -47,6 +47,7 @@ GCPlotCore.ERRORS = {
   '514': 'Unknown JVM Id',
   '769': 'Invalid request param'
 };
+
 GCPlotCore.PHASES = {
   0: 'Other',
   1: 'G1 Initial Mark',
@@ -61,7 +62,27 @@ GCPlotCore.PHASES = {
   10: 'CMS Remark',
   11: 'CMS Concurrent Sweep',
   12: 'CMS Concurrent Reset'
-}
+};
+
+GCPlotCore.CAUSES = {
+  0: 'Other',
+  1: 'System.gc()',
+  2: 'Allocation Profiler',
+  3: 'JvmtiEnv ForceGarbageCollection',
+  4: 'GC Locker',
+  5: 'Heap Inspection',
+  6: 'Heap Dump',
+  7: 'No GC',
+  8: 'Allocation Failure',
+  9: 'Perm Generation Full',
+  10: 'Metadata GC Threshold',
+  11: 'CMS Initial Mark',
+  12: 'CMS Final Remark',
+  13: 'Adaptive Size Ergonomics',
+  14: 'G1 Evacuation Pause',
+  15: 'G1 Humongous Allocation',
+  16: 'Last Ditch Collection'
+};
 
 GCPlotCore.YOUNG_GEN = 1;
 GCPlotCore.TENURED_GEN = 2;

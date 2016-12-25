@@ -110,6 +110,7 @@ class JvmInfoPage extends React.Component {
       stats: null,
       isLoading: false,
       show: false,
+      causes: [['', 1]],
       delete: {
         message: ""
       },
@@ -476,6 +477,27 @@ class JvmInfoPage extends React.Component {
         if (metaspaceUsage.length == 0) {
           metaspaceUsage = [[this.toDateTz(moment()), null, null]];
         }
+
+        var causes = [];
+        if (typeof stats.cause_stats_y != 'undefined') {
+          var sum = 0;
+          for (var cause in stats.cause_stats_y) {
+              if (stats.cause_stats_y.hasOwnProperty(cause)) {
+                  var count = stats.cause_stats_y[cause];
+                  sum += count;
+              }
+          }
+          for (var cause in stats.cause_stats_y) {
+              if (stats.cause_stats_y.hasOwnProperty(cause)) {
+                  var count = stats.cause_stats_y[cause];
+                  var name = GCPlotCore.CAUSES[cause];
+                  if (name != null && count > 0) {
+                    causes.push([name + " (" + count + ")", ((count / sum) * 100)]);
+                  }
+              }
+          }
+        }
+
         this.setState(update(this.state, {
             pauseDurationData: {
                 $set: pauseDurationData
@@ -521,6 +543,9 @@ class JvmInfoPage extends React.Component {
             },
             metaspaceUsage: {
                 $set: metaspaceUsage
+            },
+            causes: {
+                $set: causes
             },
             stats: {
               $set: this.statsPostProcessing(stats, (typeof firstTime == 'undefined') ?
@@ -1531,7 +1556,32 @@ class JvmInfoPage extends React.Component {
                           </Col>
                       </Row>
                     </Tab>
-                    <Tab eventKey={6} title="Phases">
+                    <Tab eventKey={6} title="Phases & Causes">
+                      <Row>
+                        <Col md={12}>
+                          <Panel>
+                            <Row>
+                              <Col md={12}>
+                          <Chart chartType="BarChart" options={{
+                              displayAnnotations: true,
+                              title: 'Young GC Causes *',
+                              chartArea: {
+                                width: '50%'
+                              }
+                          }} rows={this.state.causes} columns={[
+                              {
+                                  'type': 'string',
+                                  'label': 'Cause'
+                              }, {
+                                  'type': 'number',
+                                  'label': '% Events'
+                              }
+                          ]} graph_id="cbch" width="100%" height="200px" legend_toggle={false}/>
+                        </Col>
+                      </Row>
+                        </Panel>
+                        </Col>
+                      </Row>
                       <Row>
                         <Col md={12}>
                           {(() => {
@@ -1554,7 +1604,25 @@ class JvmInfoPage extends React.Component {
                       <Row>
                           <Col md={12}>
                             <div className="callout callout-info">
-                              <p>Only <u>concurrent</u> phases from the OldGen collections are included.</p>
+                              <p><b>*</b> Possible GC Causes:</p>
+                              <ul>
+                                <li><b>System.gc()</b> - something called System.gc(). You can pass <code>-XX:+DisableExplicitGC</code> flag to disable such behavior.</li>
+                                <li><b>Allocation Profiler</b> - prior to Java 8 you would see this if running with the <code>-Xaprof</code> flag, which was removed then. It would be triggered just before the JVM exits.</li>
+                                <li><b>JvmtiEnv ForceGarbageCollection</b> - something called the JVM tool interface function ForceGarbageCollection.</li>
+                                <li><b>GC Locker</b> - gc is triggered when a JNI critical region was released. GC is blocked when any thread is in the JNI Critical region. If GC was requested during that period, that GC is invoked after all the threads come out of the JNI critical region.</li>
+                                <li><b>Heap Inspection</b> - GC was initiated by an inspection operation on the heap, most probably by <a href="http://docs.oracle.com/javase/7/docs/technotes/tools/share/jmap.html" target="_blank">jmap</a> tool with <code>-histo:live</code> flags enabled.</li>
+                                <li><b>Heap Dump</b> - GC was initiated before dumping the heap.</li>
+                                <li><b>No GC</b> - when using the mbeans this is the cause that typically gets reported for a major GC. Occurs only in CMS.</li>
+                                <li><b>Allocation Failure</b> - there is an allocation request that is bigger than the available space in Young generation and minor GC is required. On linux the JVM will trigger a GC if the kernel indicates there isn't much memory left via <a href="http://lwn.net/Articles/267013/" target="_blank">mem_notify</a>.</li>
+                                <li><b>Perm Generation Full</b> - triggered as a result of an allocation failure in PermGen. Actual for Java versions prior to 8.</li>
+                                <li><b>Metadata GC Threshold</b> - triggered as a result of an allocation failure in Metaspace. Metaspace replaced PermGen in Java 8.</li>
+                                <li><b>CMS Initial Mark</b> - initial mark phase of CMS, for more details see <a href="https://blogs.oracle.com/jonthecollector/entry/hey_joe_phases_of_cms" target="_blank">Phases of CMS</a>.</li>
+                                <li><b>CMS Final Remark</b> - final remark phase of CMS, for more details see <a href="https://blogs.oracle.com/jonthecollector/entry/hey_joe_phases_of_cms" target="_blank">Phases of CMS</a>.</li>
+                                <li><b>Adaptive Size Ergonomics</b> - indicates you are using the adaptive heap size policy, enabled via <code>-XX:+UseAdaptiveSizePolicy</code> flag. It is <b>on</b> by default for recent Java versions.</li>
+                                <li><b>G1 Evacuation Pause</b> - an evacuation pause is the most common YoungGen cause for G1 and indicates that it is copying live objects from one set of regions (Young and sometimes Young + Tenured) to another set of regions.</li>
+                                <li><b>G1 Humongous Allocation</b> - a humongous allocation is one where the size is greater than 50% of the G1 region size. This cause is also used for any collections used to free up enough space for the allocation.</li>
+                                <li><b>Last Ditch Collection</b> - For PermGen (Java 7 or earlier) and Metaspace (Java 8+) a last ditch collection will be triggered if an allocation fails and the memory pool cannot be expanded.</li>
+                              </ul>
                             </div>
                           </Col>
                       </Row>
