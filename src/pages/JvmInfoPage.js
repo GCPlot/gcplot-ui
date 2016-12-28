@@ -103,6 +103,7 @@ class JvmInfoPage extends React.Component {
       pauseAvgBar: [['', 1]],
       pauseVsAll: [['', 1]],
       durationVsAll: [['', 1]],
+      percentiles: [[0, 0]],
       pauseDurationRange: {
         from: this.toDateTz(moment()),
         to: this.toDateTz(moment())
@@ -676,6 +677,23 @@ class JvmInfoPage extends React.Component {
       }
     }
 
+    var percentiles = [];
+    function compare(a,b) {
+      if (a[0] < b[0])
+        return -1;
+      if (a[0] > b[0])
+        return 1;
+      return 0;
+    }
+    for (var q in stats.percentiles) {
+      if (stats.percentiles.hasOwnProperty(q)) {
+          var perc = stats.percentiles[q];
+          percentiles.push([parseFloat(q * 100), perc / 1000]);
+      }
+    }
+    percentiles.sort(compare);
+    this.state.percentiles = percentiles;
+
     return stats;
   }
 
@@ -872,9 +890,12 @@ class JvmInfoPage extends React.Component {
                         <Col md={12}>
                           <Panel>
                             <Row>
-                              <Col md={6}>
+                              <Col md={4}>
                         <Chart chartType="PieChart" options={{
                             displayAnnotations: true,
+                            chartArea: {
+                              width: '100%'
+                            },
                             title: 'Stop-The-World vs Application Time'
                         }} rows={this.state.pauseVsAll} columns={[
                             {
@@ -884,11 +905,14 @@ class JvmInfoPage extends React.Component {
                                 'type': 'number',
                                 'label': 'Value'
                             }
-                        ]} graph_id="stwieu1" width="100%" height="130px" legend_toggle={false}/>
+                        ]} graph_id="stwieu1" width="100%" height="230px" legend_toggle={false}/>
                       </Col>
-                      <Col md={6}>
+                      <Col md={4}>
                         <Chart chartType="PieChart" options={{
                             displayAnnotations: true,
+                            chartArea: {
+                              width: '100%'
+                            },
                             title: 'Concurrent vs Application Time'
                         }} rows={this.state.durationVsAll} columns={[
                             {
@@ -898,13 +922,34 @@ class JvmInfoPage extends React.Component {
                                 'type': 'number',
                                 'label': 'Value'
                             }
-                        ]} graph_id="stwied1" width="100%" height="130px" legend_toggle={false}/>
+                        ]} graph_id="stwied1" width="100%" height="230px" legend_toggle={false}/>
+                      </Col>
+                      <Col md={4}>
+                        <Table style={{"font-size": "12px"}} bordered>
+                            <thead>
+                                <tr>
+                                    <th style={{width: '20%'}}>Percentiles</th>
+                                    <th style={{width: '40%'}}>STW Pause (ms)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {(() => {
+                                    return this.state.percentiles.map(function(r, i) {
+                                        return <tr>
+                                            <td>{r[0] + "%"}</td>
+                                            <td>{r[1]}</td>
+                                        </tr>;
+                                    });
+                                })()}
+                            </tbody>
+                        </Table>
                       </Col>
                       </Row>
                         </Panel>
                         </Col>
                       </Row>
-                        <Panel><Chart chartType="ScatterChart" options={{
+                      <Row><Col md={12}>
+                        <Panel><Row><Col md={12}><Chart chartType="ScatterChart" options={{
             displayAnnotations: true,
             title: 'Pause Durations (Stop-The-World only)',
             tooltip: {
@@ -969,7 +1014,8 @@ class JvmInfoPage extends React.Component {
                     'html': true
                 }
             }
-        ]} graph_id="pdc" width="100%" height="400px" legend_toggle={false}/><Chart chartType="ScatterChart" options={{
+        ]} graph_id="pdc" width="100%" height="400px" legend_toggle={false}/></Col>
+        <Col md={12}><Chart chartType="ScatterChart" options={{
             displayAnnotations: true,
             title: 'Log(x) Pause Durations (Stop-The-World only)',
             tooltip: {
@@ -1034,8 +1080,8 @@ class JvmInfoPage extends React.Component {
                     'html': true
                 }
             }
-        ]} graph_id="lpdc" width="100%" height="400px" legend_toggle={false}/>
-                            <Chart chartType="ScatterChart" options={{
+        ]} graph_id="lpdc" width="100%" height="400px" legend_toggle={false}/></Col>
+                            <Col md={12}><Chart chartType="ScatterChart" options={{
                                 displayAnnotations: true,
                                 title: 'Concurrent Phase Durations (Non-STW)',
                                 tooltip: {
@@ -1064,8 +1110,8 @@ class JvmInfoPage extends React.Component {
                                         'html': true
                                     }
                                 }
-                            ]} graph_id="conc_events" width="100%" height="400px" legend_toggle={false}/>
-                            <Chart chartType="ScatterChart" options={{
+                            ]} graph_id="conc_events" width="100%" height="400px" legend_toggle={false}/></Col>
+                            <Col md={12}><Chart chartType="ScatterChart" options={{
                                 displayAnnotations: true,
                                 title: 'Log(x) Concurrent Phase Durations (Non-STW)',
                                 tooltip: {
@@ -1094,8 +1140,9 @@ class JvmInfoPage extends React.Component {
                                         'html': true
                                     }
                                 }
-                            ]} graph_id="lconc_events" width="100%" height="400px" legend_toggle={false}/>
+                            ]} graph_id="lconc_events" width="100%" height="400px" legend_toggle={false}/></Col></Row>
                         </Panel>
+                      </Col></Row>
                     </Tab>
                     <Tab eventKey={3} title="Memory">
                         <Chart chartType="LineChart" options={{
