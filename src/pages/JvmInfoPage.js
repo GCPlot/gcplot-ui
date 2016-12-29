@@ -24,6 +24,37 @@ class JvmInfoPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = this.initialState();
+    this.state.resizeHandler = this.onWindowResize.bind(this);
+    $(window).resize(this.state.resizeHandler);
+  }
+
+  onWindowResize() {
+    this.stwVsAppTimeChart.forceUpdate();
+    this.concVsAppTimeChart.forceUpdate();
+    this.pauseDurChart.forceUpdate();
+    this.logPauseDurChart.forceUpdate();
+    this.concPhaseDurChart.forceUpdate();
+    this.logConcPhaseDurChart.forceUpdate();
+    this.promotionRateChart.forceUpdate();
+    this.allocationRateChart.forceUpdate();
+    this.ygUsedBeforeChart.forceUpdate();
+    this.ygUsedAfterChart.forceUpdate();
+    this.ygTotalChart.forceUpdate();
+    this.tenuredUsedChart.forceUpdate();
+    this.tenuredTotalChart.forceUpdate();
+    this.msUsedBAChart.forceUpdate();
+    this.heapBeforeChart.forceUpdate();
+    this.heapAfterChart.forceUpdate();
+    this.heapTotalChart.forceUpdate();
+    this.avTotalSizeGenChart.forceUpdate();
+    this.avUsedSizeGenChart.forceUpdate();
+    this.stwTotalPauseChart.forceUpdate();
+    this.stwAvgPauseChart.forceUpdate();
+    this.gcCausesChart.forceUpdate();
+  }
+
+  componentWillUnmount() {
+    $(window).off("resize", this.state.resizeHandler);
   }
 
   hAxis(postfix) {
@@ -498,6 +529,9 @@ class JvmInfoPage extends React.Component {
               }
           }
         }
+        if (causes.length == 0) {
+          causes = [['', 0]];
+        }
 
         this.setState(update(this.state, {
             pauseDurationData: {
@@ -891,7 +925,7 @@ class JvmInfoPage extends React.Component {
                           <Panel>
                             <Row>
                               <Col md={4}>
-                        <Chart chartType="PieChart" options={{
+                        <Chart ref={(r) => this.stwVsAppTimeChart = r} chartType="PieChart" options={{
                             displayAnnotations: true,
                             chartArea: {
                               width: '100%'
@@ -908,7 +942,7 @@ class JvmInfoPage extends React.Component {
                         ]} graph_id="stwieu1" width="100%" height="230px" legend_toggle={false}/>
                       </Col>
                       <Col md={4}>
-                        <Chart chartType="PieChart" options={{
+                        <Chart ref={(r) => this.concVsAppTimeChart = r} chartType="PieChart" options={{
                             displayAnnotations: true,
                             chartArea: {
                               width: '100%'
@@ -949,7 +983,7 @@ class JvmInfoPage extends React.Component {
                         </Col>
                       </Row>
                       <Row><Col md={12}>
-                        <Panel><Row><Col md={12}><Chart chartType="ScatterChart" options={{
+                        <Panel><Row><Col md={12}><Chart ref={(r) => this.pauseDurChart = r} chartType="ScatterChart" options={{
             displayAnnotations: true,
             title: 'Pause Durations (Stop-The-World only)',
             tooltip: {
@@ -1015,7 +1049,7 @@ class JvmInfoPage extends React.Component {
                 }
             }
         ]} graph_id="pdc" width="100%" height="400px" legend_toggle={false}/></Col>
-        <Col md={12}><Chart chartType="ScatterChart" options={{
+        <Col md={12}><Chart chartType="ScatterChart" ref={(r) => this.logPauseDurChart = r} options={{
             displayAnnotations: true,
             title: 'Log(x) Pause Durations (Stop-The-World only)',
             tooltip: {
@@ -1081,7 +1115,7 @@ class JvmInfoPage extends React.Component {
                 }
             }
         ]} graph_id="lpdc" width="100%" height="400px" legend_toggle={false}/></Col>
-                            <Col md={12}><Chart chartType="ScatterChart" options={{
+                            <Col md={12}><Chart ref={(r) => this.concPhaseDurChart = r} chartType="ScatterChart" options={{
                                 displayAnnotations: true,
                                 title: 'Concurrent Phase Durations (Non-STW)',
                                 tooltip: {
@@ -1111,7 +1145,7 @@ class JvmInfoPage extends React.Component {
                                     }
                                 }
                             ]} graph_id="conc_events" width="100%" height="400px" legend_toggle={false}/></Col>
-                            <Col md={12}><Chart chartType="ScatterChart" options={{
+                            <Col md={12}><Chart ref={(r) => this.logConcPhaseDurChart = r} chartType="ScatterChart" options={{
                                 displayAnnotations: true,
                                 title: 'Log(x) Concurrent Phase Durations (Non-STW)',
                                 tooltip: {
@@ -1145,7 +1179,7 @@ class JvmInfoPage extends React.Component {
                       </Col></Row>
                     </Tab>
                     <Tab eventKey={3} title="Memory">
-                        <Chart chartType="LineChart" options={{
+                        <Chart ref={(r) => this.promotionRateChart = r} chartType="LineChart" options={{
                             displayAnnotations: true,
                             title: 'Promotion Rate',
                             hAxis: this.hAxis(),
@@ -1161,7 +1195,7 @@ class JvmInfoPage extends React.Component {
                                 'label': 'Promotion Rate'
                             }
                         ]} graph_id="prmc" width="100%" height="400px" legend_toggle={false}/>
-                        <Chart chartType="LineChart" options={{
+                        <Chart ref={(r) => this.allocationRateChart = r} chartType="LineChart" options={{
                             displayAnnotations: true,
                             title: 'Allocation Rate',
                             hAxis: this.hAxis(),
@@ -1177,7 +1211,7 @@ class JvmInfoPage extends React.Component {
                                 'label': 'Allocation Rate'
                             }
                         ]} graph_id="armc" width="100%" height="400px" legend_toggle={false}/>
-                        <Chart chartType="LineChart" options={{
+                        <Chart ref={(r) => this.ygUsedBeforeChart = r}  chartType="LineChart" options={{
                             displayAnnotations: true,
                             title: 'Young Generation Used Before GC',
                             hAxis: this.hAxis(),
@@ -1196,7 +1230,7 @@ class JvmInfoPage extends React.Component {
                                 'label': 'Young Used Before EMA'
                             }
                         ]} graph_id="yubc" width="100%" height="400px" legend_toggle={false}/>
-                        <Chart chartType="LineChart" options={{
+                        <Chart ref={(r) => this.ygUsedAfterChart = r} chartType="LineChart" options={{
                             displayAnnotations: true,
                             title: 'Young Generation Used After GC',
                             hAxis: this.hAxis(),
@@ -1215,7 +1249,7 @@ class JvmInfoPage extends React.Component {
                                 'label': 'Young Used After EMA'
                             }
                         ]} graph_id="yuac" width="100%" height="400px" legend_toggle={false}/>
-                        <Chart chartType="LineChart" options={{
+                        <Chart ref={(r) => this.ygTotalChart = r} chartType="LineChart" options={{
                             displayAnnotations: true,
                             title: 'Young Total Size',
                             hAxis: this.hAxis(),
@@ -1234,7 +1268,7 @@ class JvmInfoPage extends React.Component {
                                 'label': 'Young Total EMA'
                             }
                         ]} graph_id="yutc" width="100%" height="400px" legend_toggle={false}/>
-                        <Chart chartType="LineChart" options={{
+                        <Chart ref={(r) => this.tenuredUsedChart = r} chartType="LineChart" options={{
                             displayAnnotations: true,
                             annotations: {
                               stemColor: 'red'
@@ -1257,7 +1291,7 @@ class JvmInfoPage extends React.Component {
                                 'label': 'Tenured Used EMA'
                             }
                         ]} graph_id="tuac" width="100%" height="400px" legend_toggle={false}/>
-                        <Chart chartType="LineChart" options={{
+                        <Chart ref={(r) => this.tenuredTotalChart = r} chartType="LineChart" options={{
                             displayAnnotations: true,
                             title: 'Tenured Total Size',
                             annotations: {
@@ -1280,7 +1314,7 @@ class JvmInfoPage extends React.Component {
                                 'label': 'Tenured Total EMA'
                             }
                         ]} graph_id="tutc" width="100%" height="400px" legend_toggle={false}/>
-                        <Chart chartType="ScatterChart" options={{
+                        <Chart ref={(r) => this.msUsedBAChart = r} chartType="ScatterChart" options={{
                             displayAnnotations: true,
                             title: 'Metaspace/Perm Used Before and After',
                             hAxis: this.hAxis(),
@@ -1307,7 +1341,7 @@ class JvmInfoPage extends React.Component {
                                 'label': 'Used After'
                             }
                         ]} graph_id="mutc" width="100%" height="400px" legend_toggle={false}/>
-                        <Chart chartType="LineChart" options={{
+                        <Chart ref={(r) => this.heapBeforeChart = r} chartType="LineChart" options={{
                             displayAnnotations: true,
                             title: 'Heap Used Before GC',
                             hAxis: this.hAxis(),
@@ -1326,7 +1360,7 @@ class JvmInfoPage extends React.Component {
                                 'label': 'Heap Used Before EMA'
                             }
                         ]} graph_id="hubc" width="100%" height="400px" legend_toggle={false}/>
-                        <Chart chartType="LineChart" options={{
+                        <Chart ref={(r) => this.heapAfterChart = r} chartType="LineChart" options={{
                             displayAnnotations: true,
                             title: 'Heap Used After GC',
                             hAxis: this.hAxis(),
@@ -1345,7 +1379,7 @@ class JvmInfoPage extends React.Component {
                                 'label': 'Heap Used After EMA'
                             }
                         ]} graph_id="huac" width="100%" height="400px" legend_toggle={false}/>
-                        <Chart chartType="LineChart" options={{
+                        <Chart ref={(r) => this.heapTotalChart = r} chartType="LineChart" options={{
                             displayAnnotations: true,
                             title: 'Heap Total Size',
                             hAxis: this.hAxis(),
@@ -1455,7 +1489,7 @@ class JvmInfoPage extends React.Component {
                                   </Table>
                               </Col>
                               <Col md={6}>
-                                <Chart chartType="PieChart" options={{
+                                <Chart ref={(r) => this.avTotalSizeGenChart = r} chartType="PieChart" options={{
                                     displayAnnotations: true,
                                     title: 'Average Total Size by Generation'
                                 }} rows={this.state.totalAvgPie} columns={[
@@ -1513,7 +1547,7 @@ class JvmInfoPage extends React.Component {
                                   </Table>
                               </Col>
                               <Col md={6}>
-                                <Chart chartType="PieChart" options={{
+                                <Chart ref={(r) => this.avUsedSizeGenChart = r} chartType="PieChart" options={{
                                     displayAnnotations: true,
                                     title: 'Average Used Size by Generation'
                                 }} rows={this.state.usedAvgPie} columns={[
@@ -1535,7 +1569,7 @@ class JvmInfoPage extends React.Component {
                       <Panel>
                         <Row>
                           <Col md={6}>
-                    <Chart chartType="BarChart" options={{
+                    <Chart ref={(r) => this.stwTotalPauseChart = r} chartType="BarChart" options={{
                         displayAnnotations: true,
                         title: 'STW Total Pauses'
                     }} rows={this.state.pauseTimeBar} columns={[
@@ -1549,7 +1583,7 @@ class JvmInfoPage extends React.Component {
                     ]} graph_id="stwieu" width="100%" height="300px" legend_toggle={false}/>
                   </Col>
                   <Col md={6}>
-                    <Chart chartType="BarChart" options={{
+                    <Chart ref={(r) => this.stwAvgPauseChart = r} chartType="BarChart" options={{
                         displayAnnotations: true,
                         title: 'STW Avg Pause'
                     }} rows={this.state.pauseAvgBar} columns={[
@@ -1609,7 +1643,7 @@ class JvmInfoPage extends React.Component {
                           <Panel>
                             <Row>
                               <Col md={12}>
-                          <Chart chartType="BarChart" options={{
+                          <Chart ref={(r) => this.gcCausesChart = r} chartType="BarChart" options={{
                               displayAnnotations: true,
                               title: 'GC Causes *',
                               chartArea: {
