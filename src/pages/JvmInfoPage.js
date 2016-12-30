@@ -638,7 +638,6 @@ class JvmInfoPage extends React.Component {
         }
         oas.push([occupied, total]);
       }
-      console.log(oas[oas.length - 1][0] / oas[oas.length - 1][1]);
       if (ageMark != -1 && r.occupied.length - ageMark >= 3 && avgDiffAfterMark / (r.occupied.length - ageMark) <= MIN_SURVIVOR_DIFF_RATIO) {
         msg = "It seems that starting from " + (ageMark + 1) + " age nearly all objects are not being garbage collected. This might lead to excessive copy operations on every Young GC insead of a proper promotion. You can cut this number with <code>-XX:+MaxTenuringThreshold=" + ageMark + "</code> JVM flag.";
       } else if (oas.length >= 2 && oas[oas.length - 1][0] / oas[oas.length - 1][1] >= 0.20) {
