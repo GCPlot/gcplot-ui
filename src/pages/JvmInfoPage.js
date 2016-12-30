@@ -20,6 +20,8 @@ var Spinner = require('react-spinkit');
 var clipboard = require('clipboard-js');
 var update = require('react-addons-update');
 
+var MIN_SURVIVOR_DIFF_RATIO = 0.045;
+
 class JvmInfoPage extends React.Component {
   constructor(props) {
     super(props);
@@ -140,6 +142,7 @@ class JvmInfoPage extends React.Component {
         to: this.toDateTz(moment())
       },
       stats: null,
+      survivorWarnMsg: '',
       isLoading: false,
       show: false,
       causes: [['', 1]],
@@ -608,12 +611,49 @@ class JvmInfoPage extends React.Component {
       if (typeof r.dss != 'undefined' && r.dss > 0) {
         dss = r.dss;
       }
-      for  (var i = 0; i < r.occupied.length; i++) {
-        oas.push([r.occupied[i], r.total[i]]);
+      var msg = '';
+      var ageMark = -1;
+      var avgDiffAfterMark = -1;
+      var prevAge = -1;
+      for (var i = 0; i < r.occupied.length; i++) {
+        var occupied = r.occupied[i];
+        var total = r.total[i];
+        if (r.occupied.length >= 5) {
+          if (prevAge != -1) {
+            var ratio;
+            if (prevAge > occupied) {
+              ratio = occupied / prevAge;
+            } else {
+              ratio = prevAge / occupied;
+            }
+            if (1 - ratio <= MIN_SURVIVOR_DIFF_RATIO || avgDiffAfterMark != -1) {
+              if (ageMark == -1) {
+                ageMark = i;
+                avgDiffAfterMark = 0;
+              }
+              avgDiffAfterMark += 1 - ratio;
+            }
+          }
+          prevAge = occupied;
+        }
+        oas.push([occupied, total]);
+      }
+      console.log(oas[oas.length - 1][0] / oas[oas.length - 1][1]);
+      if (ageMark != -1 && r.occupied.length - ageMark >= 3 && avgDiffAfterMark / (r.occupied.length - ageMark) <= MIN_SURVIVOR_DIFF_RATIO) {
+        msg = "It seems that starting from " + (ageMark + 1) + " age nearly all objects are not being garbage collected. This might lead to excessive copy operations on every Young GC insead of a proper promotion. You can cut this number with <code>-XX:+MaxTenuringThreshold=" + ageMark + "</code> JVM flag.";
+      } else if (oas.length >= 2 && oas[oas.length - 1][0] / oas[oas.length - 1][1] >= 0.20) {
+        msg = "You have an insufficient age distribution. This might lead to the excessive promotion rate, resulting in more often Tenured GC, and/or faster memory fragmentation. We recommend to increase this number with <code>-XX:+MaxTenuringThreshold</code> flag.";
+      } else if (oas.length == 0) {
+        msg = "No data about Tenuring Distribution is available. You can add <code>-XX:+PrintTenuringDistribution</code> to start analyzing it.";
+      } else if (oas.length <= 2) {
+        msg = "You have a very low age distribution. This might lead to extremely high promotion rate with bad consequences like often Tenured collections and/or faster memory fragmentation. You can upgrade it using <code>-XX:+MaxTenuringThreshold=N</code> flag.";
+      } else {
+        msg = "Your Tenuring Distribution configuration looks just fine!";
       }
       this.setState(update(this.state, {
         desiredSurvivorSize: {$set: dss},
-        objectsAges: {$set: oas}
+        objectsAges: {$set: oas},
+        survivorWarnMsg: {$set: msg}
       }));
     }.bind(this), function(code, title, msg) {
       this.setState(update(this.state, {
@@ -1439,6 +1479,13 @@ class JvmInfoPage extends React.Component {
                                             })()}
                                         </tbody>
                                     </Table>
+                                    {(() => {
+                                        if (this.state.survivorWarnMsg != '') {
+                                            return <div className="callout callout-info">
+                                              <p dangerouslySetInnerHTML={{__html: this.state.survivorWarnMsg}}></p>
+                                            </div>;
+                                        }
+                                    })()}
                                 </Col>
                             </Row>
                         </Panel>
