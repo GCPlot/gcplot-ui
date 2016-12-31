@@ -641,7 +641,7 @@ class JvmInfoPage extends React.Component {
       if (ageMark != -1 && r.occupied.length - ageMark >= 4 && avgDiffAfterMark / (r.occupied.length - ageMark) <= MIN_SURVIVOR_DIFF_RATIO) {
         msg = "It seems that starting from " + (ageMark + 1) + " age nearly all objects are not being garbage collected. This might lead to excessive copy operations on every Young GC insead of a proper promotion. You can cut this number with <code>-XX:+MaxTenuringThreshold=" + ageMark + "</code> JVM flag.";
       } else if (oas.length >= 2 && oas[oas.length - 1][0] / oas[oas.length - 1][1] >= 0.20) {
-        msg = "You have an insufficient age distribution. This might lead to the excessive promotion rate, resulting in more often Tenured GC, and/or faster memory fragmentation. We recommend to increase this number with <code>-XX:+MaxTenuringThreshold</code> flag.";
+        msg = "You have an insufficient age distribution. This might lead to the excessive promotion rate, resulting in more often Tenured GC, and/or faster memory fragmentation. We recommend to increase this number with <code>-XX:+MaxTenuringThreshold=N</code> flag.";
       } else if (oas.length == 0) {
         msg = "No data about Tenuring Distribution is available. You can add <code>-XX:+PrintTenuringDistribution</code> to start analyzing it.";
       } else if (oas.length <= 2) {
