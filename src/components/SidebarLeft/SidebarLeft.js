@@ -260,7 +260,7 @@ class SidebarLeft extends React.Component {
             </NavLink>
           </li>
           <li className="treeview">
-            <a href="https://blog.gcplot.com" target="_blank"><I name="book" /> Blog</a>
+            <a href="http://blog.gcplot.com" target="_blank"><I name="book" /> Blog</a>
           </li>
           <li className="treeview">
             <NavLink to="/terms">
