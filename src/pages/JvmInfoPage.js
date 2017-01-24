@@ -365,10 +365,13 @@ class JvmInfoPage extends React.Component {
     var allocationRateData = [];
     var promotionRateData = [];
 
+    var tenuredUsedBeforeMarkData = [];
+    var tenuredTotalMarkData = [];
+    var tenuredUsedAfterMarkData = [];
+
     var metaspaceUsage = [];
 
     var stats = null;
-    var lastTenured = 0;
     var lastTime, firstTime = null;
     GCPlotCore.lazyGCEvents({
         analyse_id: this.state.analyse_id,
@@ -418,13 +421,14 @@ class JvmInfoPage extends React.Component {
                             b: Math.max(d.tc.b - d.cp.b, 0),
                             a: Math.max(d.tc.a - d.cp.a, 0),
                             t: Math.max(d.tc.t - d.cp.t, 0)
-                          }, true, lastTenured > 0 ? '' : null);
-                          if (lastTenured > 0) lastTenured = 0;
+                          }, true, null);
                         }
                         logPauseDurationData.push([jdate, Math.log10(d.p / 1000), tt, null, tt, null, tt, null, tt]);
                         pauseDurationData.push([jdate, d.p / 1000, tt, null, tt, null, tt, null, tt]);
                     } else if ($.inArray(GCPlotCore.TENURED_GEN, d.g) >= 0) {
-                        lastTenured = d.d;
+                        tenuredUsedBeforeMarkData.push([jdate, '', null, null]);
+                        tenuredUsedAfterMarkData.push([jdate, '', null, null]);
+                        tenuredTotalMarkData.push([jdate, '', null, null]);
                         logPauseDurationData.push([jdate, null, tt, Math.log10(d.p / 1000), tt, null, tt,null, tt]);
                         pauseDurationData.push([jdate, null, tt, d.p / 1000, tt, null, tt, null, tt]);
                     } else if ($.inArray(GCPlotCore.METASPACE_GEN, d.g) >= 0 || $.inArray(GCPlotCore.PERM_GEN, d.g) >= 0) {
@@ -436,7 +440,9 @@ class JvmInfoPage extends React.Component {
                     }
                 } else {
                     if ($.inArray(GCPlotCore.TENURED_GEN, d.g) >= 0) {
-                      lastTenured = d.d;
+                      tenuredUsedBeforeMarkData.push([jdate, '', null, null]);
+                      tenuredUsedAfterMarkData.push([jdate, '', null, null]);
+                      tenuredTotalMarkData.push([jdate, '', null, null]);
                     }
                     logPauseDurationData.push([jdate, null, tt, null, tt, null, tt, Math.log10(d.p / 1000), tt]);
                     pauseDurationData.push([jdate, null, tt, null, tt, null, tt, d.p / 1000, tt]);
@@ -508,6 +514,16 @@ class JvmInfoPage extends React.Component {
           tenuredUsedBeforeData = [[this.toDateTz(moment()), null, null, null]];
           tenuredUsedAfterData = tenuredUsedBeforeData;
           tenuredTotalData = tenuredUsedBeforeData;
+        } else {
+          tenuredUsedBeforeMarkData.forEach(function(i) {
+            tenuredUsedBeforeData.push(i);
+          });
+          tenuredUsedAfterMarkData.forEach(function(i) {
+            tenuredUsedAfterData.push(i);
+          });
+          tenuredTotalMarkData.forEach(function(i) {
+            tenuredTotalData.push(i);
+          });
         }
         if (metaspaceUsage.length == 0) {
           metaspaceUsage = [[this.toDateTz(moment()), null, null]];
@@ -1312,6 +1328,7 @@ class JvmInfoPage extends React.Component {
                             annotations: {
                               stemColor: 'red'
                             },
+                            interpolateNulls: true,
                             colors: ['#3366CC', '#AAAA11'],
                             title: 'Tenured Used',
                             hAxis: this.hAxis(" | Tenured Occured (red lines)"),
@@ -1336,6 +1353,7 @@ class JvmInfoPage extends React.Component {
                             annotations: {
                               stemColor: 'red'
                             },
+                            interpolateNulls: true,
                             colors: ['#3366CC', '#AAAA11'],
                             hAxis: this.hAxis(" | Tenured Occured (red lines)"),
                             vAxis: {
