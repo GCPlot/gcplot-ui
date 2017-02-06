@@ -56,7 +56,7 @@ class JvmInfoPage extends React.Component {
   }
 
   componentWillUnmount() {
-    $(window).off("resize", this.state.resizeHandler);
+    $(window).off("resize");
   }
 
   hAxis(postfix) {
