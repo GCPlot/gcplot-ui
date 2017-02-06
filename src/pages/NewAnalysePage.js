@@ -58,7 +58,7 @@ class NewAnalysePage extends React.Component {
   }
 
   createClicked() {
-    if (this.nameText.getValue().length == 0) {
+    if (this.nameText.value.length == 0) {
       this.setState(update(this.state, {
         errorStyle: {
             display: {$set: "block"},
@@ -71,7 +71,7 @@ class NewAnalysePage extends React.Component {
         createDisabled: {$set: true}
       }));
       var req = {
-        name: this.nameText.getValue(),
+        name: this.nameText.value,
         cnts: true,
         tz: this.tzPicker.prevValue,
         ext: ""
@@ -81,11 +81,11 @@ class NewAnalysePage extends React.Component {
         var jvm = this.state.cmps[this.state.jvms[i].props.cid + ""];
         console.log(jvm);
         jvms.push({
-          id: jvm.jvmIdText.getValue(),
+          id: jvm.jvmIdText.value,
           an_id: "",
-          name: jvm.jvmNameText.getValue(),
-          vm_ver: parseInt(jvm.versionSelector.getValue()),
-          gc_type: parseInt(jvm.typeSelector.getValue()),
+          name: jvm.jvmNameText.value,
+          vm_ver: parseInt(jvm.versionSelector.value),
+          gc_type: parseInt(jvm.typeSelector.value),
           headers: ""
         });
       }

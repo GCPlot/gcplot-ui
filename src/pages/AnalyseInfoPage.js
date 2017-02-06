@@ -161,11 +161,11 @@ class AnalyseInfoPage extends React.Component {
     for (var i = 0; i < this.state.jvmsAdded.length; i++) {
       var cmp = this.state.cmps[this.state.jvmsAdded[i]];
       jvmsToAdd.push({
-        id: cmp.jvmIdText.getValue(),
+        id: cmp.jvmIdText.value,
         an_id: "",
-        name: cmp.jvmNameText.getValue(),
-        vm_ver: parseInt(cmp.versionSelector.getValue()),
-        gc_type: parseInt(cmp.typeSelector.getValue()),
+        name: cmp.jvmNameText.value,
+        vm_ver: parseInt(cmp.versionSelector.value),
+        gc_type: parseInt(cmp.typeSelector.value),
         headers: ""
       });
     }
@@ -176,10 +176,10 @@ class AnalyseInfoPage extends React.Component {
       if ($.inArray(jvm, this.state.jvmsAdded) < 0 && $.inArray(jvm, this.state.jvmsRemoved) < 0) {
         jvmsToUpdate.push({
           an_id: "",
-          jvm_id: cmp.jvmIdText.getValue(),
-          name: cmp.jvmNameText.getValue(),
-          vm_ver: parseInt(cmp.versionSelector.getValue()),
-          gc_type: parseInt(cmp.typeSelector.getValue()),
+          jvm_id: cmp.jvmIdText.value,
+          name: cmp.jvmNameText.value,
+          vm_ver: parseInt(cmp.versionSelector.value),
+          gc_type: parseInt(cmp.typeSelector.value),
         });
       }
     }

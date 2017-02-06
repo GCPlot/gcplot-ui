@@ -65,7 +65,7 @@ class ProfilePage extends React.Component {
           value: {$set: ""}
       }
     }));
-    GCPlotCore.changeUsername(this.usernameText.getValue(), function() {
+    GCPlotCore.changeUsername(this.usernameText.value, function() {
       this.setState(update(this.state, {
         usernameErrorStyle: {
             display: {$set: "block"},
@@ -102,7 +102,7 @@ class ProfilePage extends React.Component {
           value: {$set: ""}
       }
     }));
-    GCPlotCore.changePassword(this.oldPasswordText.getValue(), this.newPasswordText.getValue(), function() {
+    GCPlotCore.changePassword(this.oldPasswordText.value, this.newPasswordText.value, function() {
       this.setState(update(this.state, {
         passwordErrorStyle: {
             display: {$set: "block"},
