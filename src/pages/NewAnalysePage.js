@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { browserHistory } from 'react-router'
-import { Row, Col, Panel, Input, ButtonInput, Popover, Modal, Button, DropdownButton, MenuItem } from 'react-bootstrap';
+import { Row, Col, Panel, FormControl, FormGroup, ButtonInput, Popover, Modal, Button, DropdownButton, MenuItem } from 'react-bootstrap';
 import I from 'react-fontawesome';
 import CreateJvm from '../components/Jvm/CreateJvm'
 import GCPlotCore from '../core'
@@ -120,7 +120,7 @@ class NewAnalysePage extends React.Component {
           <Button type="button" disabled={this.state.createDisabled} bsStyle="primary" onClick={this.createClicked.bind(this)}>Create</Button>
         </div>}>
           <form role="form">
-            <Input type="text" label="Display Name" placeholder="Enter name" ref={(r) => this.nameText = r} />
+            <FormGroup><FormControl type="text" label="Display Name" placeholder="Enter name" inputRef={(r) => this.nameText = r} /></FormGroup>
             <label htmlFor="tzSelect">Timezone</label>
             <p>
             <TimezonePicker

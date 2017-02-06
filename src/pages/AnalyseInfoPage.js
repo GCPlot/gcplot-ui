@@ -3,7 +3,7 @@
 import $ from 'jquery';
 
 import React from 'react';
-import { Row, Col, Panel, Tabs, Tab, ButtonGroup, Input, Modal, Button } from 'react-bootstrap';
+import { Row, Col, Panel, Tabs, Tab, ButtonGroup, InputGroup, FormControl, FormGroup, Modal, Button } from 'react-bootstrap';
 import { browserHistory } from 'react-router'
 import I from 'react-fontawesome';
 import CreateJvm from '../components/Jvm/CreateJvm'
@@ -282,10 +282,14 @@ class AnalyseInfoPage extends React.Component {
             </Modal>
           </div>
           <Panel>
-            <Tabs defaultActiveKey={1}>
+            <Tabs id="atabs" defaultActiveKey={1}>
               <Tab eventKey={1} title="Info">
-                <Input type="text" label="ID" value={this.state.analyse.id} addonAfter={<I name="clipboard" style={{cursor: "pointer"}} onClick={this.copyIdClick.bind(this)} />} disabled={true}/>
-                <Input type="text" label="Display Name" value={this.state.analyse.name} onChange={this.handleNameChange.bind(this)} placeholder="Enter name" ref={(r) => this.nameText = r} />
+                <FormGroup>
+                <InputGroup>
+                  <FormControl type="text" label="ID" value={this.state.analyse.id} disabled={true}/>
+                  <InputGroup.Addon><I name="clipboard" style={{cursor: "pointer"}} onClick={this.copyIdClick.bind(this)} /></InputGroup.Addon>
+                </InputGroup></FormGroup>
+                <FormGroup><FormControl type="text" label="Display Name" value={this.state.analyse.name} onChange={this.handleNameChange.bind(this)} placeholder="Enter name" inputRef={(r) => this.nameText = r} /></FormGroup>
                 <label htmlFor="tzSelect">Timezone</label>
                 <TimezonePicker
                   absolute      = {false}

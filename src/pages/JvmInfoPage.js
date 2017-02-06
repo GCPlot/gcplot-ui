@@ -3,7 +3,7 @@
 import $ from 'jquery';
 
 import React from 'react';
-import { Row, Col, Panel, Tabs, Tab, ButtonGroup, Table, ProgressBar, Input, Modal, Button } from 'react-bootstrap';
+import { Row, Col, Panel, Tabs, Tab, ButtonGroup, Table, ProgressBar, InputGroup, FormControl, FormGroup, Modal, Button } from 'react-bootstrap';
 import Checkbox from 'rc-checkbox';
 import I from 'react-fontawesome';
 import GCPlotCore from '../core';
@@ -26,37 +26,6 @@ class JvmInfoPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = this.initialState();
-    this.state.resizeHandler = this.onWindowResize.bind(this);
-    $(window).resize(this.state.resizeHandler);
-  }
-
-  onWindowResize() {
-    this.stwVsAppTimeChart.forceUpdate();
-    this.concVsAppTimeChart.forceUpdate();
-    this.pauseDurChart.forceUpdate();
-    this.logPauseDurChart.forceUpdate();
-    this.concPhaseDurChart.forceUpdate();
-    this.logConcPhaseDurChart.forceUpdate();
-    this.promotionRateChart.forceUpdate();
-    this.allocationRateChart.forceUpdate();
-    this.ygUsedBeforeChart.forceUpdate();
-    this.ygUsedAfterChart.forceUpdate();
-    this.ygTotalChart.forceUpdate();
-    this.tenuredUsedChart.forceUpdate();
-    this.tenuredTotalChart.forceUpdate();
-    this.msUsedBAChart.forceUpdate();
-    this.heapBeforeChart.forceUpdate();
-    this.heapAfterChart.forceUpdate();
-    this.heapTotalChart.forceUpdate();
-    this.avTotalSizeGenChart.forceUpdate();
-    this.avUsedSizeGenChart.forceUpdate();
-    this.stwTotalPauseChart.forceUpdate();
-    this.stwAvgPauseChart.forceUpdate();
-    this.gcCausesChart.forceUpdate();
-  }
-
-  componentWillUnmount() {
-    $(window).off("resize");
   }
 
   hAxis(postfix) {
@@ -153,6 +122,31 @@ class JvmInfoPage extends React.Component {
         message: ""
       }
     };
+  }
+
+  componentWillUnmount() {
+    this.stwVsAppTimeChart.componentWillUnmount();
+    this.concVsAppTimeChart.componentWillUnmount();
+    this.pauseDurChart.componentWillUnmount();
+    this.logPauseDurChart.componentWillUnmount();
+    this.concPhaseDurChart.componentWillUnmount();
+    this.logConcPhaseDurChart.componentWillUnmount();
+    this.promotionRateChart.componentWillUnmount();
+    this.allocationRateChart.componentWillUnmount();
+    this.ygUsedBeforeChart.componentWillUnmount();
+    this.ygUsedAfterChart.componentWillUnmount();
+    this.ygTotalChart.componentWillUnmount();
+    this.tenuredUsedChart.componentWillUnmount();
+    this.tenuredTotalChart.componentWillUnmount();
+    this.msUsedBAChart.componentWillUnmount();
+    this.heapBeforeChart.componentWillUnmount();
+    this.heapAfterChart.componentWillUnmount();
+    this.heapTotalChart.componentWillUnmount();
+    this.avTotalSizeGenChart.componentWillUnmount();
+    this.avUsedSizeGenChart.componentWillUnmount();
+    this.stwTotalPauseChart.componentWillUnmount();
+    this.stwAvgPauseChart.componentWillUnmount();
+    this.gcCausesChart.componentWillUnmount();
   }
 
   toDateTz(mm) {
@@ -294,7 +288,7 @@ class JvmInfoPage extends React.Component {
     } else {
       phase = null;
     }
-    return '<dl style="padding: 10px; width: 250px; font-size: 16px"><dt>Time</dt><dd>' + date.format('DD, MMM, YYYY - HH:mm:ss') + '</dd><dt>Pause (Ms)</dt><dd>' +
+    return '<dl style="padding: 10px; width: 250px; fontSize: 16px"><dt>Time</dt><dd>' + date.format('DD, MMM, YYYY - HH:mm:ss') + '</dd><dt>Pause (Ms)</dt><dd>' +
         (d.p / 1000) + '</dd>' + (phase == null ? '' : '<dt>Phase</dt><dd>' + phase + '</dd>') + '</dl>';
   }
 
@@ -875,7 +869,7 @@ class JvmInfoPage extends React.Component {
                         </Col>
                     </Row>
                 </Panel>
-                <Tabs defaultActiveKey={1}>
+                <Tabs id="tabs" defaultActiveKey={1}>
                     <Tab eventKey={1} title="General Stats">
                         <Row>
                             <Col md={12}>
@@ -1014,7 +1008,7 @@ class JvmInfoPage extends React.Component {
                         ]} graph_id="stwied1" width="100%" height="230px" legend_toggle={false}/>
                       </Col>
                       <Col md={4}>
-                        <Table style={{"font-size": "12px"}} bordered>
+                        <Table style={{"fontSize": "12px"}} bordered>
                             <thead>
                                 <tr>
                                     <th style={{width: '20%'}}>Percentiles</th>
@@ -1024,7 +1018,7 @@ class JvmInfoPage extends React.Component {
                             <tbody>
                                 {(() => {
                                     return this.state.percentiles.map(function(r, i) {
-                                        return <tr>
+                                        return <tr key={i + "_perc"}>
                                             <td>{r[0] + "%"}</td>
                                             <td>{r[1]}</td>
                                         </tr>;
@@ -1482,14 +1476,14 @@ class JvmInfoPage extends React.Component {
                                         <tbody>
                                             {(() => {
                                                 return this.state.objectsAges.map(function(r, i) {
-                                                    return <tr>
+                                                    return <tr key={i}>
                                                         <td>{i + 1}</td>
                                                         <td>{r[0]}</td>
                                                         <td>{r[1]}</td>
                                                         <td>
                                                             <ProgressBar now={Number.isInteger(r[0])
                                                                 ? (100 - ((r[1] - r[0] + 1) / r[1] * 100))
-                                                                : 0} bsStyle="primary" className="progress-xs"/>
+                                                                : 0} bsStyle="info" className="progress-xs"/>
                                                         </td>
                                                     </tr>;
                                                 });
@@ -1531,7 +1525,7 @@ class JvmInfoPage extends React.Component {
                                                       var gen = this.state.stats.generation_total[gen_id];
                                                       var name = GCPlotCore.generationName(gen_id);
                                                       if (name != null) {
-                                                        items.push(<tr>
+                                                        items.push(<tr key={gen_id}>
                                                             <td>{name}</td>
                                                             <td><code>{GCPlotCore.humanFileSize(gen.avg * 1024)}</code></td>
                                                             <td><code>{GCPlotCore.humanFileSize(gen.min * 1024)}</code></td>
@@ -1540,7 +1534,7 @@ class JvmInfoPage extends React.Component {
                                                       }
                                                   }
                                               }
-                                              items.push(<tr>
+                                              items.push(<tr key="heap">
                                                   <td>Heap</td>
                                                   <td><code>{GCPlotCore.humanFileSize(this.state.stats.heap_total.avg * 1024)}</code></td>
                                                   <td><code>{GCPlotCore.humanFileSize(this.state.stats.heap_total.min * 1024)}</code></td>
@@ -1589,7 +1583,7 @@ class JvmInfoPage extends React.Component {
                                                       var gen = this.state.stats.generation_usage[gen_id];
                                                       var name = GCPlotCore.generationName(gen_id);
                                                       if (name != null) {
-                                                        items.push(<tr>
+                                                        items.push(<tr key={name}>
                                                             <td>{name}</td>
                                                             <td><code>{GCPlotCore.humanFileSize(gen.avg * 1024)}</code></td>
                                                             <td><code>{gen.min == null ? "-" : GCPlotCore.humanFileSize(gen.min * 1024)}</code></td>
@@ -1598,7 +1592,7 @@ class JvmInfoPage extends React.Component {
                                                       }
                                                   }
                                               }
-                                              items.push(<tr>
+                                              items.push(<tr key="heap">
                                                   <td>Heap</td>
                                                   <td><code>{GCPlotCore.humanFileSize(this.state.stats.heap_usage.avg * 1024)}</code></td>
                                                   <td><code>{GCPlotCore.humanFileSize(this.state.stats.heap_usage.min * 1024)}</code></td>
@@ -1787,19 +1781,19 @@ class JvmInfoPage extends React.Component {
                                       {(() => {
                                         var items = [];
                                         if (this.state.stats != null) {
-                                          items.push(<tr>
+                                          items.push(<tr key="pmt">
                                             <td>Promoted Total</td>
                                             <td><code>{GCPlotCore.humanFileSize(this.state.stats.promoted_total * 1024)}</code></td>
                                           </tr>);
-                                          items.push(<tr>
+                                          items.push(<tr key="pmr">
                                             <td>Promotion Rate (MB/Sec)</td>
                                             <td><code>{(this.state.stats.promotion_rate / 1024).toFixed(2)}</code></td>
                                           </tr>);
-                                          items.push(<tr>
+                                          items.push(<tr key="act">
                                             <td>Allocated Total</td>
                                             <td><code>{GCPlotCore.humanFileSize(this.state.stats.allocated_total * 1024)}</code></td>
                                           </tr>);
-                                          items.push(<tr>
+                                          items.push(<tr key="acr">
                                             <td>Allocation Rate (MB/Sec)</td>
                                             <td><code>{(this.state.stats.allocation_rate / 1024).toFixed(2)}</code></td>
                                           </tr>);
@@ -1829,9 +1823,15 @@ class JvmInfoPage extends React.Component {
                                 <Button onClick={close}>Close</Button>
                             </Modal.Footer>
                         </Modal>
-                        <Input type="text" label="ID" value={this.props.params.jvmId} addonAfter={< I name = "clipboard" style = {{cursor: "pointer"}}onClick = {
-                            this.copyIdClick.bind(this)
-                        } />} disabled={true}/>
+                        <FormGroup>
+                        <InputGroup>
+                          <FormControl type="text" label="ID" value={this.props.params.jvmId} disabled={true}/>
+                              <InputGroup.Addon><I name = "clipboard" style = {{cursor: "pointer"}} onClick = {
+                                  this.copyIdClick.bind(this)
+                              } /></InputGroup.Addon>
+                        </InputGroup>
+                      </FormGroup>
+                      <FormGroup>
                         <Button className="btn btn-block btn-danger" style={{
                             color: "white"
                         }} onClick={() => this.setState(update(this.state, {
@@ -1839,6 +1839,7 @@ class JvmInfoPage extends React.Component {
                                 $set: true
                             }
                         }))}>Delete JVM</Button>
+                      </FormGroup>
                     </Tab>
                 </Tabs>
             </section>

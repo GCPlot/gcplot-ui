@@ -3,7 +3,7 @@
 import $ from 'jquery';
 
 import React from 'react';
-import { Row, Col, Panel, Tabs, Tab, ButtonGroup, Input, Modal, ButtonInput, Button } from 'react-bootstrap';
+import { Row, Col, Panel, Tabs, Tab, ButtonGroup, FormControl, FormGroup, InputGroup, Modal, ButtonInput, Button } from 'react-bootstrap';
 import GCPlotCore from '../core'
 import I from 'react-fontawesome';
 var update = require('react-addons-update');
@@ -143,13 +143,19 @@ class ProfilePage extends React.Component {
         <Col md={12}>
           <Panel>
             <form role="form">
-                <Input type="text" label="Full Name" disabled={true} value={this.state.fullname} />
-                <Input type="text" label="API Token" disabled={true} value={this.state.token} addonAfter={< I name = "clipboard" style = {{cursor: "pointer"}} onClick = {
-                    this.copyIdClick.bind(this)
-                } />} />
-                <Input type="text" label="E-mail" disabled={true} value={this.state.email} addonAfter={< I name = "clipboard" style = {{cursor: "pointer"}} onClick = {
-                    this.copyEmailClick.bind(this)
-                } />} />
+                <FormGroup><FormControl type="text" label="Full Name" disabled={true} value={this.state.fullname} /></FormGroup>
+                <FormGroup><InputGroup>
+                  <FormControl type="text" label="API Token" disabled={true} value={this.state.token} />
+                  <InputGroup.Addon><I name = "clipboard" style = {{cursor: "pointer"}} onClick = {
+                      this.copyIdClick.bind(this)
+                  } /></InputGroup.Addon>
+                </InputGroup></FormGroup>
+                <FormGroup><InputGroup>
+                  <FormControl type="text" label="E-mail" disabled={true} value={this.state.email} />
+                  <InputGroup.Addon><I name = "clipboard" style = {{cursor: "pointer"}} onClick = {
+                      this.copyEmailClick.bind(this)
+                  } /></InputGroup.Addon>
+                </InputGroup></FormGroup>
             </form>
           </Panel>
         </Col>
@@ -158,7 +164,7 @@ class ProfilePage extends React.Component {
         <Col md={6}>
           <Panel header="Username">
             <form role="form">
-                  <Input type="text" label="Username" value={this.state.username} onChange={this.handleUsernameChange.bind(this)} ref={(r) => this.usernameText = r}/>
+                  <FormGroup><FormControl type="text" label="Username" value={this.state.username} onChange={this.handleUsernameChange.bind(this)} inputRef={(r) => this.usernameText = r}/></FormGroup>
                   <p style={this.state.usernameErrorStyle}>{this.state.usernameErrorStyle.value}</p>
                   <button className="btn btn-block btn-primary" onClick={this.onUpdateUsernameClick.bind(this)} disabled={this.state.updateUsernameDisabled}>Update</button>
             </form>
@@ -167,9 +173,9 @@ class ProfilePage extends React.Component {
         <Col md={6}>
           <Panel header="Password">
             <form role="form">
-                  <Input type="password" placeholder="Old Password" ref={(r) => this.oldPasswordText = r}/>
-                  <Input type="password" placeholder="New Password" ref={(r) => this.newPasswordText = r}/>
-                  <Input type="password" placeholder="Repeat New Password" ref={(r) => this.newPasswordRepeatText = r}/>
+                  <FormGroup><FormControl type="password" placeholder="Old Password" inputRef={(r) => this.oldPasswordText = r}/></FormGroup>
+                  <FormGroup><FormControl type="password" placeholder="New Password" inputRef={(r) => this.newPasswordText = r}/></FormGroup>
+                  <FormGroup><FormControl type="password" placeholder="Repeat New Password" inputRef={(r) => this.newPasswordRepeatText = r}/></FormGroup>
                   <p style={this.state.passwordErrorStyle}>{this.state.passwordErrorStyle.value}</p>
                   <button className="btn btn-block btn-primary" onClick={this.onUpdatePasswordClick.bind(this)} disabled={this.state.updatePasswordDisabled}>Update</button>
             </form>
