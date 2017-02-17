@@ -400,10 +400,10 @@ class JvmInfoPage extends React.Component {
               // if not concurrent
               var tt = this.buildTooltip(lastTime, d);
               if (typeof d.c == 'undefined') {
+                var hasTotal = typeof d.tc != 'undefined';
                 if (d.g.length == 1) {
                     if ($.inArray(GCPlotCore.YOUNG_GEN, d.g) >= 0) {
                         var hasYoung = typeof d.cp != 'undefined';
-                        var hasTotal = typeof d.tc != 'undefined';
                         if (hasYoung) {
                             this.fillCapacity(jdate, youngUsedBeforeData, youngUsedAfterData, youngTotalData, d.cp);
                         }
@@ -437,6 +437,22 @@ class JvmInfoPage extends React.Component {
                       tenuredUsedBeforeMarkData.push([jdate, '', null, null]);
                       tenuredUsedAfterMarkData.push([jdate, '', null, null]);
                       tenuredTotalMarkData.push([jdate, '', null, null]);
+                    }
+                    // Full GC tends to contain details about YOUNG, TENURED, etc. We should use this info for Memory graphs
+                    if ($.inArray(GCPlotCore.YOUNG_GEN, d.g) >= 0 && typeof d.ecp != 'undefined' && typeof d.ecp[GCPlotCore.YOUNG_GEN_STR] != 'undefined') {
+                      var youngCapacity = d.ecp[GCPlotCore.YOUNG_GEN_STR];
+                      this.fillCapacity(jdate, youngUsedBeforeData, youngUsedAfterData, youngTotalData, youngCapacity);
+
+                      if (hasTotal) {
+                        this.fillCapacity(jdate, tenuredUsedBeforeData, tenuredUsedAfterData, tenuredTotalData, {
+                          b: Math.max(d.tc.b - youngCapacity.b, 0),
+                          a: Math.max(d.tc.a - youngCapacity.a, 0),
+                          t: Math.max(d.tc.t - youngCapacity.t, 0)
+                        }, true, null);
+                      }
+                    }
+                    if (hasTotal) {
+                      this.fillCapacity(jdate, heapUsedBeforeData, heapUsedAfterData, heapTotalData, d.tc);
                     }
                     logPauseDurationData.push([jdate, null, tt, null, tt, null, tt, Math.log10(d.p / 1000), tt]);
                     pauseDurationData.push([jdate, null, tt, null, tt, null, tt, d.p / 1000, tt]);
