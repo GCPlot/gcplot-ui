@@ -21,7 +21,7 @@ class FAQ extends React.Component {
             <Panel>
               <dl>
                 <dt>1. What JVMs does your analyzer support?</dt>
-                <dd>Currently, we support all stable versions of the Hotspot JVM. We are also planning to start supporting Java 9 logs at Q1 2017.</dd>
+                <dd>Currently, we support all stable versions of the Hotspot JVM. We are also planning to start supporting Java 9 logs at Q2 2017.</dd>
                 <p/>
                 <dt>2. Is GCPlot free to use?</dt>
                 <dd>Yes, at the moment it's in beta stage and completely free.</dd>
