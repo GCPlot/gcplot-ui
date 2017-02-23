@@ -125,28 +125,34 @@ class JvmInfoPage extends React.Component {
   }
 
   componentWillUnmount() {
-    this.stwVsAppTimeChart.componentWillUnmount();
-    this.concVsAppTimeChart.componentWillUnmount();
-    this.pauseDurChart.componentWillUnmount();
-    this.logPauseDurChart.componentWillUnmount();
-    this.concPhaseDurChart.componentWillUnmount();
-    this.logConcPhaseDurChart.componentWillUnmount();
-    this.promotionRateChart.componentWillUnmount();
-    this.allocationRateChart.componentWillUnmount();
-    this.ygUsedBeforeChart.componentWillUnmount();
-    this.ygUsedAfterChart.componentWillUnmount();
-    this.ygTotalChart.componentWillUnmount();
-    this.tenuredUsedChart.componentWillUnmount();
-    this.tenuredTotalChart.componentWillUnmount();
-    this.msUsedBAChart.componentWillUnmount();
-    this.heapBeforeChart.componentWillUnmount();
-    this.heapAfterChart.componentWillUnmount();
-    this.heapTotalChart.componentWillUnmount();
-    this.avTotalSizeGenChart.componentWillUnmount();
-    this.avUsedSizeGenChart.componentWillUnmount();
-    this.stwTotalPauseChart.componentWillUnmount();
-    this.stwAvgPauseChart.componentWillUnmount();
-    this.gcCausesChart.componentWillUnmount();
+    this.destroyChart(this.stwVsAppTimeChart);
+    this.destroyChart(this.concVsAppTimeChart);
+    this.destroyChart(this.pauseDurChart);
+    this.destroyChart(this.logPauseDurChart);
+    this.destroyChart(this.concPhaseDurChart);
+    this.destroyChart(this.logConcPhaseDurChart);
+    this.destroyChart(this.promotionRateChart);
+    this.destroyChart(this.allocationRateChart);
+    this.destroyChart(this.ygUsedBeforeChart);
+    this.destroyChart(this.ygUsedAfterChart);
+    this.destroyChart(this.ygTotalChart);
+    this.destroyChart(this.tenuredUsedChart);
+    this.destroyChart(this.tenuredTotalChart);
+    this.destroyChart(this.msUsedBAChart);
+    this.destroyChart(this.heapBeforeChart);
+    this.destroyChart(this.heapAfterChart);
+    this.destroyChart(this.heapTotalChart);
+    this.destroyChart(this.avTotalSizeGenChart);
+    this.destroyChart(this.avUsedSizeGenChart);
+    this.destroyChart(this.stwTotalPauseChart);
+    this.destroyChart(this.stwAvgPauseChart);
+    this.destroyChart(this.gcCausesChart);
+  }
+
+  destroyChart(cmp) {
+    try {
+      cmp.componentWillUnmount();
+    } catch(err) {}
   }
 
   toDateTz(mm) {
