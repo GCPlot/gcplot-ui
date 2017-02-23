@@ -114,7 +114,7 @@ class JvmInfoPage extends React.Component {
       survivorWarnMsg: '',
       isLoading: false,
       show: false,
-      causes: [['', 1]],
+      causes: [['No data', 1]],
       delete: {
         message: ""
       },
@@ -559,7 +559,7 @@ class JvmInfoPage extends React.Component {
           }
         }
         if (causes.length == 0) {
-          causes = [['', 0]];
+          causes = [['No data', 0]];
         }
 
         this.setState(update(this.state, {
@@ -1248,7 +1248,9 @@ class JvmInfoPage extends React.Component {
                       </Col></Row>
                     </Tab>
                     <Tab eventKey={3} title="Memory">
-                        <Chart ref={(r) => this.promotionRateChart = r} chartType="LineChart" options={{
+                        {(() => {
+                          if (this.state.promotionRateData.length > 1) {
+                            return <Chart ref={(r) => this.promotionRateChart = r} chartType="LineChart" options={{
                             displayAnnotations: true,
                             title: 'Promotion Rate',
                             hAxis: this.hAxis(),
@@ -1264,7 +1266,11 @@ class JvmInfoPage extends React.Component {
                                 'label': 'Promotion Rate'
                             }
                         ]} graph_id="prmc" width="100%" height="400px" legend_toggle={false}/>
-                        <Chart ref={(r) => this.allocationRateChart = r} chartType="LineChart" options={{
+                        }
+                      })()}
+                      {(() => {
+                        if (this.state.allocationRateData.length > 1) {
+                          return <Chart ref={(r) => this.allocationRateChart = r} chartType="LineChart" options={{
                             displayAnnotations: true,
                             title: 'Allocation Rate',
                             hAxis: this.hAxis(),
@@ -1280,7 +1286,11 @@ class JvmInfoPage extends React.Component {
                                 'label': 'Allocation Rate'
                             }
                         ]} graph_id="armc" width="100%" height="400px" legend_toggle={false}/>
-                        <Chart ref={(r) => this.ygUsedBeforeChart = r}  chartType="LineChart" options={{
+                        }
+                      })()}
+                      {(() => {
+                        if (this.state.youngUsedBeforeData.length > 1) {
+                          return <Chart ref={(r) => this.ygUsedBeforeChart = r}  chartType="LineChart" options={{
                             displayAnnotations: true,
                             title: 'Young Generation Used Before GC',
                             hAxis: this.hAxis(),
@@ -1299,7 +1309,11 @@ class JvmInfoPage extends React.Component {
                                 'label': 'Young Used Before EMA'
                             }
                         ]} graph_id="yubc" width="100%" height="400px" legend_toggle={false}/>
-                        <Chart ref={(r) => this.ygUsedAfterChart = r} chartType="LineChart" options={{
+                        }
+                      })()}
+                      {(() => {
+                        if (this.state.youngUsedAfterData.length > 1) {
+                          return <Chart ref={(r) => this.ygUsedAfterChart = r} chartType="LineChart" options={{
                             displayAnnotations: true,
                             title: 'Young Generation Used After GC',
                             hAxis: this.hAxis(),
@@ -1318,7 +1332,11 @@ class JvmInfoPage extends React.Component {
                                 'label': 'Young Used After EMA'
                             }
                         ]} graph_id="yuac" width="100%" height="400px" legend_toggle={false}/>
-                        <Chart ref={(r) => this.ygTotalChart = r} chartType="LineChart" options={{
+                        }
+                      })()}
+                      {(() => {
+                        if (this.state.youngTotalData.length > 1) {
+                          return <Chart ref={(r) => this.ygTotalChart = r} chartType="LineChart" options={{
                             displayAnnotations: true,
                             title: 'Young Total Size',
                             hAxis: this.hAxis(),
@@ -1337,7 +1355,11 @@ class JvmInfoPage extends React.Component {
                                 'label': 'Young Total EMA'
                             }
                         ]} graph_id="yutc" width="100%" height="400px" legend_toggle={false}/>
-                        <Chart ref={(r) => this.tenuredUsedChart = r} chartType="LineChart" options={{
+                        }
+                      })()}
+                      {(() => {
+                        if (this.state.tenuredUsedAfterData.length > 1) {
+                          return <Chart ref={(r) => this.tenuredUsedChart = r} chartType="LineChart" options={{
                             displayAnnotations: true,
                             annotations: {
                               stemColor: 'red'
@@ -1361,7 +1383,11 @@ class JvmInfoPage extends React.Component {
                                 'label': 'Tenured Used EMA'
                             }
                         ]} graph_id="tuac" width="100%" height="400px" legend_toggle={false}/>
-                        <Chart ref={(r) => this.tenuredTotalChart = r} chartType="LineChart" options={{
+                        }
+                      })()}
+                      {(() => {
+                        if (this.state.tenuredTotalData.length > 1) {
+                          return <Chart ref={(r) => this.tenuredTotalChart = r} chartType="LineChart" options={{
                             displayAnnotations: true,
                             title: 'Tenured Total Size',
                             annotations: {
@@ -1385,7 +1411,11 @@ class JvmInfoPage extends React.Component {
                                 'label': 'Tenured Total EMA'
                             }
                         ]} graph_id="tutc" width="100%" height="400px" legend_toggle={false}/>
-                        <Chart ref={(r) => this.msUsedBAChart = r} chartType="ScatterChart" options={{
+                        }
+                      })()}
+                      {(() => {
+                        if (this.state.metaspaceUsage.length > 1) {
+                          return <Chart ref={(r) => this.msUsedBAChart = r} chartType="ScatterChart" options={{
                             displayAnnotations: true,
                             title: 'Metaspace/Perm Used Before and After',
                             hAxis: this.hAxis(),
@@ -1412,6 +1442,8 @@ class JvmInfoPage extends React.Component {
                                 'label': 'Used After'
                             }
                         ]} graph_id="mutc" width="100%" height="400px" legend_toggle={false}/>
+                        }
+                      })()}
                         <Chart ref={(r) => this.heapBeforeChart = r} chartType="LineChart" options={{
                             displayAnnotations: true,
                             title: 'Heap Used Before GC',
@@ -1763,30 +1795,16 @@ class JvmInfoPage extends React.Component {
                       <Row>
                           <Col md={12}>
                             <div className="callout callout-info">
-                              <p><b>*</b> Possible GC Causes:</p>
-                              <ul>
-                                <li><b>System.gc()</b> - something called System.gc(). You can pass <code>-XX:+DisableExplicitGC</code> flag to disable such behavior.</li>
-                                <li><b>Allocation Profiler</b> - prior to Java 8 you would see this if running with the <code>-Xaprof</code> flag, which was removed then. It would be triggered just before the JVM exits.</li>
-                                <li><b>JvmtiEnv ForceGarbageCollection</b> - something called the JVM tool interface function ForceGarbageCollection.</li>
-                                <li><b>GC Locker</b> - gc is triggered when a JNI critical region was released. GC is blocked when any thread is in the JNI Critical region. If GC was requested during that period, that GC is invoked after all the threads come out of the JNI critical region.</li>
-                                <li><b>Heap Inspection</b> - GC was initiated by an inspection operation on the heap, most probably by <a href="http://docs.oracle.com/javase/7/docs/technotes/tools/share/jmap.html" target="_blank">jmap</a> tool with <code>-histo:live</code> flags enabled.</li>
-                                <li><b>Heap Dump</b> - GC was initiated before dumping the heap.</li>
-                                <li><b>No GC</b> - when using the mbeans this is the cause that typically gets reported for a major GC. Occurs only in CMS.</li>
-                                <li><b>Allocation Failure</b> - there is an allocation request that is bigger than the available space in Young generation and minor GC is required. On linux the JVM will trigger a GC if the kernel indicates there isn't much memory left via <a href="http://lwn.net/Articles/267013/" target="_blank">mem_notify</a>.</li>
-                                <li><b>Perm Generation Full</b> - triggered as a result of an allocation failure in PermGen. Actual for Java versions prior to 8.</li>
-                                <li><b>Metadata GC Threshold</b> - triggered as a result of an allocation failure in Metaspace. Metaspace replaced PermGen in Java 8.</li>
-                                <li><b>CMS Initial Mark</b> - initial mark phase of CMS, for more details see <a href="https://blogs.oracle.com/jonthecollector/entry/hey_joe_phases_of_cms" target="_blank">Phases of CMS</a>.</li>
-                                <li><b>CMS Final Remark</b> - final remark phase of CMS, for more details see <a href="https://blogs.oracle.com/jonthecollector/entry/hey_joe_phases_of_cms" target="_blank">Phases of CMS</a>.</li>
-                                <li><b>Adaptive Size Ergonomics</b> - indicates you are using the adaptive heap size policy, enabled via <code>-XX:+UseAdaptiveSizePolicy</code> flag. It is <b>on</b> by default for recent Java versions.</li>
-                                <li><b>G1 Evacuation Pause</b> - an evacuation pause is the most common YoungGen cause for G1 and indicates that it is copying live objects from one set of regions (Young and sometimes Young + Tenured) to another set of regions.</li>
-                                <li><b>G1 Humongous Allocation</b> - a humongous allocation is one where the size is greater than 50% of the G1 region size. This cause is also used for any collections used to free up enough space for the allocation.</li>
-                                <li><b>Last Ditch Collection</b> - For PermGen (Java 7 or earlier) and Metaspace (Java 8+) a last ditch collection will be triggered if an allocation fails and the memory pool cannot be expanded.</li>
-                              </ul>
+                              <p><b>*</b> Read more about possible GC Causes in our <a href="https://blog.gcplot.com/2017/01/19/java-gc-causes-distilled" target="_blank">blog post</a>.</p>
                             </div>
                           </Col>
                       </Row>
                     </Tab>
-                    <Tab eventKey={7} title="Objects">
+                    {(() => {
+                      if (this.state.stats != null && (this.state.stats.promoted_total > 0 ||
+                      this.state.stats.promotion_rate > 0 || this.state.stats.allocated_total > 0 ||
+                    this.state.stats.allocation_rate > 0)) {
+                      return <Tab eventKey={7} title="Objects">
                         <Row>
                             <Col md={10}>
                               <Panel>
@@ -1800,19 +1818,25 @@ class JvmInfoPage extends React.Component {
                                   <tbody>
                                       {(() => {
                                         var items = [];
-                                        if (this.state.stats != null) {
+                                        if (this.state.stats.promoted_total > 0) {
                                           items.push(<tr key="pmt">
                                             <td>Promoted Total</td>
                                             <td><code>{GCPlotCore.humanFileSize(this.state.stats.promoted_total * 1024)}</code></td>
                                           </tr>);
+                                        }
+                                        if (this.state.stats.promotion_rate > 0) {
                                           items.push(<tr key="pmr">
                                             <td>Promotion Rate (MB/Sec)</td>
                                             <td><code>{(this.state.stats.promotion_rate / 1024).toFixed(2)}</code></td>
                                           </tr>);
+                                        }
+                                        if (this.state.stats.allocated_total > 0) {
                                           items.push(<tr key="act">
                                             <td>Allocated Total</td>
                                             <td><code>{GCPlotCore.humanFileSize(this.state.stats.allocated_total * 1024)}</code></td>
                                           </tr>);
+                                        }
+                                        if (this.state.stats.allocation_rate > 0) {
                                           items.push(<tr key="acr">
                                             <td>Allocation Rate (MB/Sec)</td>
                                             <td><code>{(this.state.stats.allocation_rate / 1024).toFixed(2)}</code></td>
@@ -1829,6 +1853,8 @@ class JvmInfoPage extends React.Component {
                             </Col>
                         </Row>
                     </Tab>
+                    }
+                  })()}
                     <Tab eventKey={8} title="Manage">
                         <Modal container={this} show={this.state.show} onHide={close}>
                             <Modal.Header closeButton>
