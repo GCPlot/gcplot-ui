@@ -688,27 +688,31 @@ class JvmInfoPage extends React.Component {
   }
 
   statsPostProcessing(stats, intervalMs) {
-    if (stats == null || $.isEmptyObject(stats.generation_total)) {
+    if (stats == null) {
       return null;
     }
-    if (typeof stats.generation_total[GCPlotCore.TENURED_GEN_STR] == 'undefined') {
-      var gty = stats.generation_total[GCPlotCore.YOUNG_GEN_STR];
-      var gtt = stats.heap_total;
-      // the min for young is actually is max for tenured
-      stats.generation_total[GCPlotCore.TENURED_GEN_STR] = {
-        min: Math.max(gtt.max - gty.max, 0),
-        max: Math.max(gtt.min - gty.min, 0),
-        avg: Math.max(gtt.avg - gty.avg, 0)
-      };
+    if (!$.isEmptyObject(stats.generation_total)) {
+      if (typeof stats.generation_total[GCPlotCore.TENURED_GEN_STR] == 'undefined') {
+        var gty = stats.generation_total[GCPlotCore.YOUNG_GEN_STR];
+        var gtt = stats.heap_total;
+        // the min for young is actually is max for tenured
+        stats.generation_total[GCPlotCore.TENURED_GEN_STR] = {
+          min: Math.max(gtt.max - gty.max, 0),
+          max: Math.max(gtt.min - gty.min, 0),
+          avg: Math.max(gtt.avg - gty.avg, 0)
+        };
+      }
     }
-    if (typeof stats.generation_usage[GCPlotCore.TENURED_GEN_STR] == 'undefined') {
-      var gty = stats.generation_usage[GCPlotCore.YOUNG_GEN_STR];
-      var gtt = stats.heap_usage;
-      stats.generation_usage[GCPlotCore.TENURED_GEN_STR] = {
-        min: null,
-        max: null,
-        avg: Math.max(gtt.avg - gty.avg, 0)
-      };
+    if (!$.isEmptyObject(stats.generation_usage)) {
+      if (typeof stats.generation_usage[GCPlotCore.TENURED_GEN_STR] == 'undefined') {
+        var gty = stats.generation_usage[GCPlotCore.YOUNG_GEN_STR];
+        var gtt = stats.heap_usage;
+        stats.generation_usage[GCPlotCore.TENURED_GEN_STR] = {
+          min: null,
+          max: null,
+          avg: Math.max(gtt.avg - gty.avg, 0)
+        };
+      }
     }
     var totalAvgPie = [];
     var usedAvgPie = [];
