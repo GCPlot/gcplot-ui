@@ -1726,7 +1726,9 @@ class JvmInfoPage extends React.Component {
                           var metaspace = this.state.stats.generation_stats[GCPlotCore.METASPACE_GEN_STR];
                           var perm = this.state.stats.generation_stats[GCPlotCore.PERM_GEN_STR];
 
-                          items.push(<GenerationStats md={3} key={"g" + GCPlotCore.YOUNG_GEN_STR} stats={young} title={GCPlotCore.generationName(GCPlotCore.YOUNG_GEN_STR)} />)
+                          if (typeof young != 'undefined') {
+                            items.push(<GenerationStats md={3} key={"g" + GCPlotCore.YOUNG_GEN_STR} stats={young} title={GCPlotCore.generationName(GCPlotCore.YOUNG_GEN_STR)} />)
+                          }
                           if (typeof tenured != 'undefined' && tenured.pause_count != 0) {
                               items.push(<GenerationStats md={3} key={"g" + GCPlotCore.TENURED_GEN_STR} stats={tenured} title={GCPlotCore.generationName(GCPlotCore.TENURED_GEN_STR)} />)
                           }
