@@ -372,7 +372,7 @@ class JvmInfoPage extends React.Component {
     var metaspaceUsage = [];
 
     var stats = null;
-    var lastTime, firstTime = null;
+    var lastTime = null, firstTime = null;
     GCPlotCore.lazyGCEvents({
         analyse_id: this.state.analyse_id,
         jvm_id: this.state.jvm_id,
@@ -401,7 +401,10 @@ class JvmInfoPage extends React.Component {
               if (firstTime == null) {
                   firstTime = moment.utc(d.d).tz(this.tz());
               }
-              lastTime = moment.utc(d.d).tz(this.tz());
+              var nextTime = moment.utc(d.d).tz(this.tz());
+              if (lastTime == null || nextTime.isBefore(lastTime)) {
+                lastTime = nextTime;
+              }
               var jdate = this.toDateTz(lastTime);
               // if not concurrent
               var tt = this.buildTooltip(lastTime, d);
