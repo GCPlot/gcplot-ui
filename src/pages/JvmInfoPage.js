@@ -405,9 +405,9 @@ class JvmInfoPage extends React.Component {
               if (lastTime == null || nextTime.isBefore(lastTime)) {
                 lastTime = nextTime;
               }
-              var jdate = this.toDateTz(lastTime);
+              var jdate = this.toDateTz(nextTime);
               // if not concurrent
-              var tt = this.buildTooltip(lastTime, d);
+              var tt = this.buildTooltip(nextTime, d);
               if (typeof d.c == 'undefined') {
                 var hasTotal = typeof d.tc != 'undefined';
                 if (d.g.length == 1) {
