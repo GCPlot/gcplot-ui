@@ -5,35 +5,29 @@ import { Row, Col, Panel, FormControl, FormGroup, ButtonInput, Button, DropdownB
 import I from 'react-fontawesome';
 import GCPlotCore from '../../core'
 
+var uuid = require('uuid4');
 var update = require('react-addons-update');
 
 class CreateJvm extends React.Component {
   constructor(props) {
     super(props);
-    var rstr = GCPlotCore.rstr(7);
+    var rstr = GCPlotCore.rstr(4);
 
     var title = this.props.title || "New JVM";
     var versionValue = this.props.versionValue || "7";
     var collectorValue = this.props.collectorValue || "3";
-    var jvmId = this.props.jvmId || "vm-" + rstr;
+    var jvmId = this.props.jvmId || uuid();
     var jvmName = this.props.jvmName || "VM " + rstr
-    var idDisabled = this.props.idDisabled || false;
     this.state = {
       title: title,
       versionValue: versionValue,
       collectorValue: collectorValue,
       jvmId: jvmId,
-      jvmName: jvmName,
-      idDisabled: idDisabled
+      jvmName: jvmName
     };
   }
 
   componentDidUpdate() {
-    if (this.props.idDisabled != this.state.idDisabled) {
-      this.setState(update(this.state, {
-        idDisabled: {$set: this.props.idDisabled}
-      }));
-    }
   }
 
   componentDidMount() {
@@ -51,7 +45,6 @@ class CreateJvm extends React.Component {
       <Col md={this.props.md}>
         <Panel header={<div>{this.state.title}<I name="close pull-right" onClick={this.props.closeClickHandler} style={{cursor: "pointer"}} /></div>}>
           <form role="form">
-            <FormGroup><FormControl type="text" label="Unique ID" disabled={this.state.idDisabled} defaultValue={this.state.jvmId} placeholder="JVM Identifier" inputRef={(r) => this.jvmIdText = r}/></FormGroup>
             <FormGroup><FormControl type="text" label="Name" defaultValue={this.state.jvmName} placeholder="Display Name" inputRef={(r) => this.jvmNameText = r}/></FormGroup>
             <FormGroup><FormControl componentClass="select" label="Version" className="select2" defaultValue={this.state.versionValue} style={{width: '100%'}} inputRef={(r) => this.versionSelector = r}>
               <option value="1">Hotspot 1.2.2</option>

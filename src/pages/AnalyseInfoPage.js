@@ -11,6 +11,7 @@ import GCPlotCore from '../core'
 import TimezonePicker from 'react-bootstrap-timezone-picker';
 import 'react-bootstrap-timezone-picker/dist/react-bootstrap-timezone-picker.min.css';
 
+var uuid = require('uuid4');
 var clipboard = require('clipboard-js');
 var update = require('react-addons-update');
 
@@ -161,7 +162,7 @@ class AnalyseInfoPage extends React.Component {
     for (var i = 0; i < this.state.jvmsAdded.length; i++) {
       var cmp = this.state.cmps[this.state.jvmsAdded[i]];
       jvmsToAdd.push({
-        id: cmp.jvmIdText.value,
+        id: cmp.state.jvmId,
         an_id: "",
         name: cmp.jvmNameText.value,
         vm_ver: parseInt(cmp.versionSelector.value),
@@ -176,7 +177,7 @@ class AnalyseInfoPage extends React.Component {
       if ($.inArray(jvm, this.state.jvmsAdded) < 0 && $.inArray(jvm, this.state.jvmsRemoved) < 0) {
         jvmsToUpdate.push({
           an_id: "",
-          jvm_id: cmp.jvmIdText.value,
+          jvm_id: cmp.state.jvmId,
           name: cmp.jvmNameText.value,
           vm_ver: parseInt(cmp.versionSelector.value),
           gc_type: parseInt(cmp.typeSelector.value),
@@ -229,8 +230,8 @@ class AnalyseInfoPage extends React.Component {
   }
 
   addJvmClicked() {
-    var rstr = GCPlotCore.rstr(7);
-    var newId = "vm-" + rstr; // TODO move to utils with uniqueness checks
+    var rstr = GCPlotCore.rstr(4);
+    var newId = uuid();
     var newVer = {};
     var newCol = {};
     var newName = {};
@@ -365,8 +366,7 @@ class AnalyseInfoPage extends React.Component {
                          return this.state.analyse.jvm_ids.map(function(r, i) {
                            console.log(r + "|" + ($.inArray(r, this.state.initialJvmIds) >= 0));
                            return <CreateJvm md={3} cid={r} key={r} pp={this} title="JVM" versionValue={this.state.analyse.jvm_vers[r]}
-                           collectorValue={this.state.analyse.jvm_gcts[r]} jvmName={this.state.analyse.jvm_names[r] || r} jvmId={r}
-                           idDisabled={$.inArray(r, this.state.initialJvmIds) >= 0} closeClickHandler={this.jvmCloseClicked.bind(this,
+                           collectorValue={this.state.analyse.jvm_gcts[r]} jvmName={this.state.analyse.jvm_names[r] || r} jvmId={r} closeClickHandler={this.jvmCloseClicked.bind(this,
                              r)}></CreateJvm>;
                        }.bind(this));
                      }.bind(this))()}

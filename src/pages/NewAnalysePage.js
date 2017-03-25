@@ -74,6 +74,8 @@ class NewAnalysePage extends React.Component {
         name: this.nameText.value,
         cnts: true,
         tz: this.tzPicker.prevValue,
+        source_type: "INTERNAL", // TODO implement properly
+        source_config: "",
         ext: ""
       };
       var jvms = [];
@@ -81,7 +83,7 @@ class NewAnalysePage extends React.Component {
         var jvm = this.state.cmps[this.state.jvms[i].props.cid + ""];
         console.log(jvm);
         jvms.push({
-          id: jvm.jvmIdText.value,
+          id: jvm.state.jvmId,
           an_id: "",
           name: jvm.jvmNameText.value,
           vm_ver: parseInt(jvm.versionSelector.value),

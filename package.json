@@ -85,17 +85,18 @@
     "react-recaptcha": "^2.2.6",
     "react-addons-update": "15.4.x",
     "react-router": "^3.0.2",
-    "react-spinkit": "^1.1.11",
-    "script-loader": "^0.6.1",
+    "react-spinkit": "^2.1.1",
+    "script-loader": "^0.7.0",
     "select2": "^4.0.2",
     "timepicker": "^1.8.11",
     "react-bootstrap-timezone-picker": "^1.0.10",
-    "rc-time-picker": "^2.2.1",
+    "rc-time-picker": "^2.3.3",
     "clipboard-js": "^0.3.1",
-    "jsonpipe": "^2.0.1",
-    "react-datepicker": "^0.34.0",
-    "react-google-charts": "^1.5.2",
-    "rc-checkbox": "^1.4.3",
-    "react-ga": "^2.1.2"
+    "jsonpipe": "^2.1.1",
+    "react-datepicker": "^0.43.0",
+    "react-google-charts": "^1.5.3",
+    "rc-checkbox": "^1.5.0",
+    "react-ga": "^2.1.2",
+    "uuid4": "^1.0.0"
   }
 }
