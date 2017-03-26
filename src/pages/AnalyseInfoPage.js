@@ -21,6 +21,8 @@ class AnalyseInfoPage extends React.Component {
       this.state = {
         analyse: {
           name: "",
+          source_type: "NONE",
+          source_config: "",
           jvm_ids: [],
           jvm_vers: {},
           jvm_names: {},
@@ -37,6 +39,22 @@ class AnalyseInfoPage extends React.Component {
           show: false,
           title: "",
           msg: ""
+        },
+        updateSourceCaption: "Update",
+        updateSourceDisabled: false,
+        updateSourceError: {
+          display: "none",
+          value: "",
+          color: 'red'
+        },
+        sources: {
+          s3: {
+            bucket: "",
+            accessKey: "",
+            secretKey: "",
+            region: "us-east-1",
+            prefix: ""
+          }
         },
         show: false,
         showSave: false,
@@ -62,10 +80,21 @@ class AnalyseInfoPage extends React.Component {
       analyse: {
         id: {$set: this.props.params.analyseId},
         name: {$set: ""},
+        source_type: {$set: "NONE"},
+        source_config: {$set: ""},
         jvm_ids: {$set: []},
         jvm_vers: {$set: {}},
         jvm_names: {$set: {}},
         jvm_gcts: {$set: {}}
+      },
+      sources: {
+        s3: {
+          bucket: {$set: ""},
+          accessKey: {$set: ""},
+          secretKey: {$set: ""},
+          region: {$set: "us-east-1"},
+          prefix: {$set: ""}
+        }
       },
       jvmsAdded: {$set: []},
       jvmsRemoved: {$set: []},
@@ -83,6 +112,27 @@ class AnalyseInfoPage extends React.Component {
       var analyses = r.analyses;
       for (var i = 0; i < analyses.length; i++) {
         if (analyses[i].id == this.props.params.analyseId) {
+          if (analyses[i].source_type == "S3") {
+            analyses[i].source_config.split(';').forEach((s) => {
+              var ind = s.indexOf('=');
+              if (ind != -1) {
+                var key = s.substring(0, ind);
+                var value = s.substring(ind + 1);
+
+                if (key == "s3.bucket") {
+                  this.state.sources.s3.bucket = value;
+                } else if (key == "s3.access_key") {
+                  this.state.sources.s3.accessKey = value;
+                } else if (key == "s3.secret_key") {
+                  this.state.sources.s3.secretKey = value;
+                } else if (key == "s3.region.id") {
+                  this.state.sources.s3.region = value;
+                } else if (key == "s3.prefix") {
+                  this.state.sources.s3.prefix = value;
+                }
+              }
+            });
+          }
           this.setState(update(this.state, {
             analyse: {$set: analyses[i]},
             initialJvmIds: {$set: analyses[i].jvm_ids}
@@ -253,6 +303,51 @@ class AnalyseInfoPage extends React.Component {
     clipboard.copy(this.state.analyse.id);
   }
 
+  onSourceSaveClick() {
+    this.setState(update(this.state, {
+      updateSourceError: {
+        display: {$set: "none"},
+        value: {$set: ""},
+      },
+      updateSourceDisabled: {$set: true},
+      updateSourceCaption: {$set: "Updating ..."}
+    }));
+
+    GCPlotCore.updateAnalyzeSource({
+      id: this.state.analyse.id,
+      source_type: this.state.analyse.source_type,
+      source_config: this.buildSourceConfig()
+    }, () => {
+      setTimeout(() => {
+        this.setState(update(this.state, {
+          updateSourceDisabled: {$set: false},
+          updateSourceCaption: {$set: "Update"}
+        }));
+      }, 2000);
+    }, (code, title, msg) => {
+      this.setState(update(this.state, {
+        updateSourceError: {
+          display: {$set: "inline"},
+          value: {$set: msg},
+        },
+        updateSourceDisabled: {$set: false},
+        updateSourceCaption: {$set: "Update"}
+      }));
+    });
+  }
+
+  buildSourceConfig() {
+    var cfg = '';
+    if (this.state.analyse.source_type == "S3") {
+      cfg += 's3.bucket=' + this.state.sources.s3.bucket + ';';
+      cfg += 's3.access_key=' + this.state.sources.s3.accessKey + ';';
+      cfg += 's3.secret_key=' + this.state.sources.s3.secretKey + ';';
+      cfg += 's3.region.id=' + this.state.sources.s3.region + ';';
+      cfg += 's3.prefix=' + this.state.sources.s3.prefix;
+    }
+    return cfg;
+  }
+
   render() {
     let gclose = () => this.setState(update(this.state, { gerror: { show: {$set: false} } }));
     let close = () => this.setState(update(this.state, { show: {$set: false}}));
@@ -285,6 +380,7 @@ class AnalyseInfoPage extends React.Component {
           <Panel>
             <Tabs id="atabs" defaultActiveKey={1}>
               <Tab eventKey={1} title="Info">
+                <Panel footer={<Button type="submit" onClick={this.onUpdateClick.bind(this)} disabled={this.state.updateDisabled} bsStyle="primary">{this.state.updateCaption}</Button>}>
                 <FormGroup>
                 <InputGroup>
                   <FormControl type="text" label="ID" value={this.state.analyse.id} disabled={true}/>
@@ -302,13 +398,54 @@ class AnalyseInfoPage extends React.Component {
                 />
                 <p/>
                 <p style={this.state.errorStyle}>{this.state.errorStyle.value}</p>
-                <button className="btn btn-block btn-primary" onClick={this.onUpdateClick.bind(this)} disabled={this.state.updateDisabled}>{this.state.updateCaption}</button>
                 <p/>
                 <p/>
+              </Panel>
               </Tab>
               {(() => {
                 if (this.props.params.analyseId != GCPlotCore.ANONYMOUS_ANALYSE_ID) {
-                return <Tab eventKey={2} title="Manage">
+                  return <Tab eventKey={2} title="Logs Source">
+                    <Panel footer={<Button type="submit" disabled={this.state.updateSourceDisabled} onClick={this.onSourceSaveClick.bind(this)} bsStyle="primary">{this.state.updateSourceCaption}</Button>}>
+                    <label htmlFor="sourceSelector">Source</label>
+                    <FormGroup><FormControl componentClass="select" id="sourceSelector" label="Source" value={this.state.analyse.source_type} onChange={(e) => {this.setState(update(this.state, {analyse:{source_type:{$set:e.target.value}}}))}} className="select2" style={{width: '100%'}}>
+                      <option value="NONE">Disabled</option>
+                      <option value="INTERNAL">GCPlot Default</option>
+                      <option value="S3">External S3 Storage</option>
+                    </FormControl></FormGroup>
+                    {(() => {
+                      if (this.state.analyse.source_type == "S3") {
+                        return <Panel>
+                          <FormGroup><FormControl type="text" label="Bucket" value={this.state.sources.s3.bucket} onChange={(e) => {this.setState(update(this.state, {sources:{s3:{bucket:{$set:e.target.value}}}}))}} placeholder="Bucket Name"/></FormGroup>
+                          <FormGroup><FormControl type="text" label="Access Key" value={this.state.sources.s3.accessKey} onChange={(e) => {this.setState(update(this.state, {sources:{s3:{accessKey:{$set:e.target.value}}}}))}} placeholder="Access Key"/></FormGroup>
+                          <FormGroup><FormControl type="text" label="Secret Key" value={this.state.sources.s3.secretKey} onChange={(e) => {this.setState(update(this.state, {sources:{s3:{secretKey:{$set:e.target.value}}}}))}} placeholder="Secret Key"/></FormGroup>
+                          <FormGroup><FormControl componentClass="select" id="regionSelector" label="Region" value={this.state.sources.s3.region} onChange={(e) => {this.setState(update(this.state, {sources:{s3:{region:{$set:e.target.value}}}}))}} className="select2" style={{width: '100%'}}>
+                            <option value="us-east-1">US East (N. Virginia) - us-east-1</option>
+                            <option value="us-east-2">US East (Ohio) - us-east-2</option>
+                            <option value="us-west-1">US West (N. California) - us-west-1</option>
+                            <option value="us-west-2">US West (Oregon) - us-west-2</option>
+                            <option value="ca-central-1">Canada (Central) - ca-central-1</option>
+                            <option value="ap-south-1">Asia Pacific (Mumbai) - ap-south-1</option>
+                            <option value="ap-northeast-2">Asia Pacific (Seoul) - ap-northeast-2</option>
+                            <option value="ap-southeast-1">Asia Pacific (Singapore) - ap-southeast-1</option>
+                            <option value="ap-southeast-2">Asia Pacific (Sydney) - ap-southeast-2</option>
+                            <option value="ap-northeast-1">Asia Pacific (Tokyo) - ap-northeast-1</option>
+                            <option value="eu-central-1">EU (Frankfurt) - eu-central-1</option>
+                            <option value="eu-west-1">EU (Ireland) - eu-west-1</option>
+                            <option value="eu-west-2">EU (London) - eu-west-2</option>
+                            <option value="sa-east-1">South America (São Paulo) - sa-east-1</option>
+                          </FormControl></FormGroup>
+                          <FormGroup><FormControl type="text" label="Path Prefix (Optional)" value={this.state.sources.s3.prefix} onChange={(e) => {this.setState(update(this.state, {sources:{s3:{prefix:{$set:e.target.value}}}}))}} placeholder="Path Prefix (Optional)"/></FormGroup>
+                        </Panel>;
+                      }
+                    })()}
+                    <p style={this.state.updateSourceError}>{this.state.updateSourceError.value}</p>
+                  </Panel>
+                  </Tab>;
+                }
+              })()}
+              {(() => {
+                if (this.props.params.analyseId != GCPlotCore.ANONYMOUS_ANALYSE_ID) {
+                return <Tab eventKey={3} title="Manage">
                 <Panel header="Danger Zone">
                 <form role="form">
                    <Button className="btn btn-block btn-danger" style={{color: "white"}} onClick={() => this.setState(update(this.state, { show: {$set: true}}))}>Delete Analysis Group</Button>
@@ -333,7 +470,7 @@ class AnalyseInfoPage extends React.Component {
               })()}
               {(() => {
                 if (this.props.params.analyseId != GCPlotCore.ANONYMOUS_ANALYSE_ID) {
-                  return <Tab disabled={this.props.params.analyseId == GCPlotCore.ANONYMOUS_ANALYSE_ID} eventKey={3} title="JVMs">
+                  return <Tab eventKey={4} title="JVMs">
                   <div className="static-modal">
                     <Modal container={this} show={this.state.showSave} onHide={closeSave}>
                       <Modal.Header closeButton>

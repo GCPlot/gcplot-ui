@@ -74,7 +74,7 @@ class NewAnalysePage extends React.Component {
         name: this.nameText.value,
         cnts: true,
         tz: this.tzPicker.prevValue,
-        source_type: "INTERNAL", // TODO implement properly
+        source_type: "NONE",
         source_config: "",
         ext: ""
       };

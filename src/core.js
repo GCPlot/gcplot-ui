@@ -42,10 +42,13 @@ GCPlotCore.ERRORS = {
   '403': 'Access denied',
   '404': 'Not found',
   '405': 'Same passwords',
+  '406': 'User already exists',
   '407': 'Resource wasn\'t found',
+  '6485': 'Old Password mismatch with new one',
   '513': 'Unknown Analysis Group',
   '514': 'Unknown JVM Id',
-  '769': 'Invalid request param'
+  '769': 'Invalid request param',
+  '516': 'Analysis Group - Logs Source Error'
 };
 
 GCPlotCore.PHASES = {
@@ -373,6 +376,25 @@ GCPlotCore.addAnalyse = function(req, callback, errorCallback) {
     success: function(data) {
       var r = JSON.parse(data);
       console.log("add analyse response " + data);
+      if (r.hasOwnProperty('error')) {
+        errorCallback(r.error, GCPlotCore.ERRORS[r.error], r.message);
+      } else {
+        sessionStorage.removeItem(GCPlotCore.ANALYSES);
+        GCPlotCore.trigger(GCPlotCore.ANALYSES_CHANGED_EVENT);
+        callback();
+      }
+    }
+  });
+}
+
+GCPlotCore.updateAnalyzeSource = function(req, callback, errorCallback) {
+  $.ajax({
+    type: "POST",
+    url: GCPlotCore.authUrl("/analyse/update/source"),
+    data: JSON.stringify(req),
+    contentType: "application/json",
+    success: function(data) {
+      var r = JSON.parse(data);
       if (r.hasOwnProperty('error')) {
         errorCallback(r.error, GCPlotCore.ERRORS[r.error], r.message);
       } else {
