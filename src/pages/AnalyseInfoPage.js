@@ -381,11 +381,15 @@ class AnalyseInfoPage extends React.Component {
             <Tabs id="atabs" defaultActiveKey={1}>
               <Tab eventKey={1} title="Info">
                 <Panel footer={<Button type="submit" onClick={this.onUpdateClick.bind(this)} disabled={this.state.updateDisabled} bsStyle="primary">{this.state.updateCaption}</Button>}>
-                <FormGroup>
-                <InputGroup>
-                  <FormControl type="text" label="ID" value={this.state.analyse.id} disabled={true}/>
-                  <InputGroup.Addon><I name="clipboard" style={{cursor: "pointer"}} onClick={this.copyIdClick.bind(this)} /></InputGroup.Addon>
-                </InputGroup></FormGroup>
+                {(() => {
+                  if (this.props.params.analyseId != GCPlotCore.ANONYMOUS_ANALYSE_ID) {
+                    return <FormGroup>
+                    <InputGroup>
+                      <FormControl type="text" label="ID" value={this.state.analyse.id} disabled={true}/>
+                      <InputGroup.Addon><I name="clipboard" style={{cursor: "pointer"}} onClick={this.copyIdClick.bind(this)} /></InputGroup.Addon>
+                    </InputGroup></FormGroup>;
+                  }
+                })()}
                 <FormGroup><FormControl type="text" label="Display Name" value={this.state.analyse.name} onChange={this.handleNameChange.bind(this)} placeholder="Enter name" inputRef={(r) => this.nameText = r} /></FormGroup>
                 <label htmlFor="tzSelect">Timezone</label>
                 <TimezonePicker
