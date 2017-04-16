@@ -404,7 +404,7 @@ class AnalyseInfoPage extends React.Component {
               </Tab>
               {(() => {
                 if (this.props.params.analyseId != GCPlotCore.ANONYMOUS_ANALYSE_ID) {
-                  return <Tab eventKey={2} title="Logs Source">
+                  return <Tab eventKey={2} title="Data Source">
                     <Panel footer={<Button type="submit" disabled={this.state.updateSourceDisabled} onClick={this.onSourceSaveClick.bind(this)} bsStyle="primary">{this.state.updateSourceCaption}</Button>}>
                     <label htmlFor="sourceSelector">Source</label>
                     <FormGroup><FormControl componentClass="select" id="sourceSelector" label="Source" value={this.state.analyse.source_type} onChange={(e) => {this.setState(update(this.state, {analyse:{source_type:{$set:e.target.value}}}))}} className="select2" style={{width: '100%'}}>
