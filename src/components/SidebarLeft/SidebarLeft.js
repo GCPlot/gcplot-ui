@@ -232,7 +232,7 @@ class SidebarLeft extends React.Component {
                 <I name="pie-chart" /> <span>{this.truncate(item.name, 16, false)}</span>
                 <I name="angle-left pull-right" />
                 {(function() {
-                    return <small className="label pull-right bg-green edit-toggle" onClick={this.analyseEditClicked.bind(this,   item)}>info</small>;
+                    return <small className="label pull-right bg-blue edit-toggle" onClick={this.analyseEditClicked.bind(this,   item)}>config</small>;
                 }.bind(this))()}
               </NavLink>
               <ul className="treeview-menu">
