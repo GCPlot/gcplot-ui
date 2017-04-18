@@ -250,21 +250,20 @@ class SidebarLeft extends React.Component {
           }.bind(this))}
           <li className="header">Help</li>
           <li className="treeview">
-            <NavLink to="/realtime-connection">
-              <I name="plug" /> Realtime Connection
-            </NavLink>
+            <a href="https://docs.gcplot.com" target="_blank"><I name="book" /> Documentation</a>
           </li>
           <li className="treeview">
-            <NavLink to="/faq">
-              <I name="question-circle" /> FAQ
-            </NavLink>
+            <a href="https://docs.gcplot.com/log-files-processing.html" target="_blank"><I name="plug" /> Realtime Connection</a>
           </li>
           <li className="treeview">
-            <a href="http://blog.gcplot.com" target="_blank"><I name="book" /> Blog</a>
+            <a href="https://docs.gcplot.com/faq.html" target="_blank"><I name="question-circle" /> FAQ</a>
+          </li>
+          <li className="treeview">
+            <a href="http://blog.gcplot.com" target="_blank"><I name="pencil" /> Blog</a>
           </li>
           <li className="treeview">
             <NavLink to="/terms">
-              <I name="question-circle" /> Terms Of Service
+              <I name="life-ring" /> Terms Of Service
             </NavLink>
           </li>
         </ul>
