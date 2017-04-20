@@ -308,6 +308,17 @@ GCPlotCore.analyses = function(callback, errorCallback) {
   }
 }
 
+GCPlotCore.getAnalysis = function(id, callback, errorCallback) {
+  $.get(GCPlotCore.authUrl("/analyse/get?id=" + id), GCPlotCore.dataHandler(function(data) {
+    var r = JSON.parse(data);
+    if (r.hasOwnProperty('error')) {
+      errorCallback(r.error, GCPlotCore.ERRORS[r.error], r.message);
+    } else {
+      callback(r.result);
+    }
+  }));
+}
+
 GCPlotCore.changePasswordMail = function(email, callback, errorCallback) {
   var msg = { email: email };
   $.ajax({
