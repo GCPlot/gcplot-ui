@@ -248,10 +248,11 @@ class WelcomeLayout extends React.Component {
                             <h4><a href="https://docs.gcplot.com/log-files-processing.html" target="_blank">GCPlot Connector</a> technology allows you to deliver GC logs without any manual work, continuously</h4>
                             <h4>Check out our <a href="https://docs.gcplot.com" target="_blank">Knowledge Base</a> for more cool stuff</h4>
                             <p />
-                            <h3 style={{"margin-top": "80px"}}>
+                            <h2 style={{"margin-top": "80px"}}>
                                 Analyze graphs & stats
-                            </h3>
+                            </h2>
                             <h4>Build a detailed report about any single collection</h4>
+                            <h4>Already in toolbox of <span style={{color: "blue"}}>60+</span> companies</h4>
                             <img width="100%" src="/img/laptop.png"/>
                             <p />
                         </section>
