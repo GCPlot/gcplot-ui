@@ -695,9 +695,9 @@ class JvmInfoPage extends React.Component {
       }));
     }.bind(this));
     GCPlotCore.getAnalysis(this.state.analyse_id, function(analysis) {
-      this.setState(update(this.state), {
-        analyse: {$set: analysis} 
-      })
+      this.setState(update(this.state, {
+        analyse: {$set: analysis}
+      }));
     }.bind(this), function (code, title, msg) {});
   }
 
