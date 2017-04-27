@@ -571,6 +571,35 @@ class JvmInfoPage extends React.Component {
           causes = [['No data', 0]];
         }
 
+        var sf = function(l, r) {
+          return r[0] - l[0];
+        };
+        youngUsedBeforeData.sort(sf);
+        youngUsedAfterData.sort(sf);
+        setTimeout(function(d) {
+          d.sort(sf);
+          this.setState(update(this.state, {youngTotalData: {$set: d}}));
+        }.bind(this, youngTotalData), 0);
+        setTimeout(function(d) {
+          d.sort(sf);
+          this.setState(update(this.state, {heapUsedBeforeData: {$set: d}}));
+        }.bind(this, heapUsedBeforeData), 0);
+        setTimeout(function(d) {
+          d.sort(sf);
+          this.setState(update(this.state, {heapUsedAfterData: {$set: d}}));
+        }.bind(this, heapUsedAfterData), 0);
+        setTimeout(function(d) {
+          d.sort(sf);
+          this.setState(update(this.state, {heapTotalData: {$set: d}}));
+        }.bind(this, heapTotalData), 0);
+        setTimeout(function(d) {
+          d.sort(sf);
+          this.setState(update(this.state, {tenuredUsedAfterData: {$set: d}}));
+        }.bind(this, tenuredUsedAfterData), 0);
+        setTimeout(function(d) {
+          d.sort(sf);
+          this.setState(update(this.state, {tenuredTotalData: {$set: d}}));
+        }.bind(this, tenuredTotalData), 0);
         this.setState(update(this.state, {
             pauseDurationData: {
                 $set: pauseDurationData
@@ -595,24 +624,6 @@ class JvmInfoPage extends React.Component {
             },
             youngUsedAfterData: {
                 $set: youngUsedAfterData
-            },
-            youngTotalData: {
-                $set: youngTotalData
-            },
-            heapUsedBeforeData: {
-                $set: heapUsedBeforeData
-            },
-            heapUsedAfterData: {
-                $set: heapUsedAfterData
-            },
-            heapTotalData: {
-                $set: heapTotalData
-            },
-            tenuredUsedAfterData: {
-                $set: tenuredUsedAfterData
-            },
-            tenuredTotalData: {
-                $set: tenuredTotalData
             },
             metaspaceUsage: {
                 $set: metaspaceUsage
