@@ -389,7 +389,8 @@ class JvmInfoPage extends React.Component {
                     message: {
                         $set: GCPlotCore.ERRORS[d.error] + " (" + d.message + ")"
                     }
-                }
+                },
+                isLoading: {$set: false}
             }));
         } else {
             if (typeof d.stats == 'undefined' && typeof d.alr == 'undefined') {
@@ -496,7 +497,8 @@ class JvmInfoPage extends React.Component {
                 message: {
                     $set: GCPlotCore.ERRORS[r.error] + "(" + d.message + ")"
                 }
-            }
+            },
+            isLoading: {$set: false}
         }));
     }.bind(this), function(t, data) {
         if (data.jvm_id != this.props.params.jvmId) {
