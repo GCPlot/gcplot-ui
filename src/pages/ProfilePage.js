@@ -28,7 +28,12 @@ class ProfilePage extends React.Component {
           color: 'red',
           value: ""
       },
-      updatePasswordDisabled: false
+      updatePasswordDisabled: false,
+      emailErrorStyle: {
+          display: "none",
+          value: ""
+      },
+      updateEmailDisabled: false
     }
   }
 
@@ -131,6 +136,63 @@ class ProfilePage extends React.Component {
     }.bind(this));
   }
 
+  onUpdateEmailClick() {
+    if (this.state.email != this.oldEmailText.value) {
+      this.setState(update(this.state, {
+        updateEmailDisabled: {$set: false},
+        emailErrorStyle: {
+            display: {$set: "block"},
+            value: {$set: "Old e-mail is incorrect."}
+        }
+      }));
+    } else {
+      if (this.newEmailText.value == this.newEmailRepeatText.value) {
+        this.setState(update(this.state, {
+          updateEmailDisabled: {$set: true},
+          emailErrorStyle: {
+              display: {$set: "none"},
+              value: {$set: ""}
+          }
+        }));
+        GCPlotCore.changeEmail(this.newEmailText.value, () => {
+          this.setState(update(this.state, {
+            emailErrorStyle: {
+                display: {$set: "block"},
+                value: {$set: "E-mail successfully changed"},
+                color: {$set: 'black'}
+            },
+            email: {$set: this.newEmailText.value}
+          }));
+          setTimeout(function() {
+            this.setState(update(this.state, {
+              updateEmailDisabled: {$set: false},
+              emailErrorStyle: {
+                  display: {$set: "none"},
+                  value: {$set: ""}
+              }
+            }));
+          }.bind(this), 1000);
+        }, (code, title, msg) => {
+          this.setState(update(this.state, {
+            updateEmailDisabled: {$set: false},
+            emailErrorStyle: {
+                display: {$set: "block"},
+                value: {$set: msg}
+            }
+          }));
+        });
+      } else {
+        this.setState(update(this.state, {
+          updateEmailDisabled: {$set: false},
+          emailErrorStyle: {
+              display: {$set: "block"},
+              value: {$set: "E-mail values mismatch. Try entering again."}
+          }
+        }));
+      }
+    }
+  }
+
   render() {
     return <div className="content-wrapper">
     <section className="content-header">
@@ -142,7 +204,6 @@ class ProfilePage extends React.Component {
       <Row>
         <Col md={12}>
           <Panel>
-            <form role="form">
                 <FormGroup><FormControl type="text" label="Full Name" disabled={true} value={this.state.fullname} /></FormGroup>
                 <FormGroup><InputGroup>
                   <FormControl type="text" label="API Token" disabled={true} value={this.state.token} />
@@ -156,29 +217,31 @@ class ProfilePage extends React.Component {
                       this.copyEmailClick.bind(this)
                   } /></InputGroup.Addon>
                 </InputGroup></FormGroup>
-            </form>
           </Panel>
         </Col>
       </Row>
       <Row>
         <Col md={6}>
           <Panel header="Username">
-            <form role="form">
                   <FormGroup><FormControl type="text" label="Username" value={this.state.username} onChange={this.handleUsernameChange.bind(this)} inputRef={(r) => this.usernameText = r}/></FormGroup>
                   <p style={this.state.usernameErrorStyle}>{this.state.usernameErrorStyle.value}</p>
                   <button className="btn btn-block btn-primary" onClick={this.onUpdateUsernameClick.bind(this)} disabled={this.state.updateUsernameDisabled}>Update</button>
-            </form>
+          </Panel>
+          <Panel header="Change E-mail">
+              <FormGroup><FormControl type="email" placeholder="Old E-mail" inputRef={(r) => this.oldEmailText = r}/></FormGroup>
+              <FormGroup><FormControl type="email" placeholder="New E-mail" inputRef={(r) => this.newEmailText = r}/></FormGroup>
+              <FormGroup><FormControl type="email" placeholder="Repeat New E-mail" inputRef={(r) => this.newEmailRepeatText = r}/></FormGroup>
+              <p style={this.state.emailErrorStyle}>{this.state.emailErrorStyle.value}</p>
+              <button className="btn btn-block btn-primary" onClick={this.onUpdateEmailClick.bind(this)} disabled={this.state.updateEmailDisabled}>Update</button>
           </Panel>
         </Col>
         <Col md={6}>
           <Panel header="Password">
-            <form role="form">
                   <FormGroup><FormControl type="password" placeholder="Old Password" inputRef={(r) => this.oldPasswordText = r}/></FormGroup>
                   <FormGroup><FormControl type="password" placeholder="New Password" inputRef={(r) => this.newPasswordText = r}/></FormGroup>
                   <FormGroup><FormControl type="password" placeholder="Repeat New Password" inputRef={(r) => this.newPasswordRepeatText = r}/></FormGroup>
                   <p style={this.state.passwordErrorStyle}>{this.state.passwordErrorStyle.value}</p>
                   <button className="btn btn-block btn-primary" onClick={this.onUpdatePasswordClick.bind(this)} disabled={this.state.updatePasswordDisabled}>Update</button>
-            </form>
           </Panel>
         </Col>
       </Row>

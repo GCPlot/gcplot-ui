@@ -491,6 +491,28 @@ GCPlotCore.objectsAges = function(analyseId, jvmId, callback, errorCallback) {
   });
 }
 
+GCPlotCore.changeEmail = function(newEmail, callback, errorCallback) {
+  var msg = {
+    new_email: newEmail
+  };
+  $.ajax({
+    type: "POST",
+    url: GCPlotCore.authUrl("/user/change_email"),
+    data: JSON.stringify(msg),
+    contentType: "application/json",
+    success: function(data) {
+      var r = JSON.parse(data);
+      if (r.hasOwnProperty('error')) {
+        errorCallback(r.error, GCPlotCore.ERRORS[r.error], r.message);
+      } else if (!$.isEmptyObject(r)) {
+        callback();
+        sessionStorage.removeItem(GCPlotCore.USER_INFO, JSON.stringify(r.result));
+        GCPlotCore.trigger(GCPlotCore.PROFILE_CHANGED_EVENT);
+      }
+    }
+  });
+}
+
 GCPlotCore.createArray = function(len, itm) {
     var arr1 = [itm],
         arr2 = [];
