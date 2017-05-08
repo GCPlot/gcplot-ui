@@ -99,6 +99,8 @@ class JvmInfoPage extends React.Component {
       heapUsedAfterData: [[this.toDateTz(moment()), null, null]],
       heapTotalData: [[this.toDateTz(moment()), null, null]],
       metaspaceUsage: [[this.toDateTz(moment()), null, null]],
+      kernel: [[this.toDateTz(moment()), null]],
+      user: [[this.toDateTz(moment()), null]],
       totalAvgPie: [['', 1]],
       usedAvgPie: [['', 1]],
       pauseTimeBar: [['', 1]],
@@ -142,6 +144,8 @@ class JvmInfoPage extends React.Component {
     this.destroyChart(this.heapBeforeChart);
     this.destroyChart(this.heapAfterChart);
     this.destroyChart(this.heapTotalChart);
+    this.destroyChart(this.kernelChart);
+    this.destroyChart(this.userChart);
     this.destroyChart(this.avTotalSizeGenChart);
     this.destroyChart(this.avUsedSizeGenChart);
     this.destroyChart(this.stwTotalPauseChart);
@@ -365,6 +369,9 @@ class JvmInfoPage extends React.Component {
     var allocationRateData = [];
     var promotionRateData = [];
 
+    var kernel = [];
+    var user = [];
+
     var tenuredUsedBeforeMarkData = [];
     var tenuredTotalMarkData = [];
     var tenuredUsedAfterMarkData = [];
@@ -394,6 +401,7 @@ class JvmInfoPage extends React.Component {
             }));
         } else {
             if (typeof d.stats == 'undefined' && typeof d.alr == 'undefined') {
+              // here goes real GC events
               if (typeof d.g == 'undefined' || d.g == null) {
                   d.g = [1];
               }
@@ -407,9 +415,15 @@ class JvmInfoPage extends React.Component {
                 lastTime = nextTime;
               }
               var jdate = this.toDateTz(nextTime);
-              // if not concurrent
               var tt = this.buildTooltip(nextTime, d);
+              if (typeof d.s != 'undefined') {
+                kernel.push([jdate, d.s]);
+              }
+              if (typeof d.u != 'undefined') {
+                user.push([jdate, d.u]);
+              }
               if (typeof d.c == 'undefined') {
+                // if not concurrent
                 var hasTotal = typeof d.tc != 'undefined';
                 if (d.g.length == 1) {
                     if ($.inArray(GCPlotCore.YOUNG_GEN, d.g) >= 0) {
@@ -526,6 +540,12 @@ class JvmInfoPage extends React.Component {
           youngUsedAfterData = youngUsedBeforeData;
           youngTotalData = youngUsedBeforeData;
         }
+        if (kernel.length == 0) {
+          kernel = [[this.toDateTz(moment()), null]];
+        }
+        if (user.length == 0) {
+          user = [[this.toDateTz(moment()), null]];
+        }
         if (heapUsedBeforeData.length == 0) {
           heapUsedBeforeData = [[this.toDateTz(moment()), null, null]];
           heapUsedAfterData = heapUsedBeforeData;
@@ -578,6 +598,8 @@ class JvmInfoPage extends React.Component {
         };
         youngUsedBeforeData.sort(sf);
         youngUsedAfterData.sort(sf);
+        kernel.sort(sf);
+        user.sort(sf);
         setTimeout(function(d) {
           d.sort(sf);
           this.setState(update(this.state, {youngTotalData: {$set: d}}));
@@ -633,6 +655,8 @@ class JvmInfoPage extends React.Component {
             causes: {
                 $set: causes
             },
+            kernel: { $set: kernel },
+            user: { $set: user },
             stats: {
               $set: this.statsPostProcessing(stats, (typeof firstTime == 'undefined') ?
                0 : firstTime.valueOf() - lastTime.valueOf())
@@ -1529,7 +1553,53 @@ class JvmInfoPage extends React.Component {
                             }
                         ]} graph_id="hutc" width="100%" height="400px" legend_toggle={false}/>
                     </Tab>
-                    <Tab eventKey={4} title="Tenuring Stats">
+                    {(() => {
+                      if (this.state.kernel.length > 1 || this.state.user.length > 1) {
+                      return <Tab eventKey={4} title="System">
+                        {(() => {
+                          if (this.state.kernel.length > 1) {
+                            return <Chart ref={(r) => this.kernelChart = r} chartType="LineChart" options={{
+                            displayAnnotations: true,
+                            title: 'Kernel CPU Time',
+                            hAxis: this.hAxis(),
+                            vAxis: {
+                                title: 'Kernel CPU Time (sec)'
+                            }
+                        }} rows={this.state.kernel} columns={[
+                            {
+                                'type': 'datetime',
+                                'label': 'Time'
+                            }, {
+                                'type': 'number',
+                                'label': 'Kernel CPU Time'
+                            }
+                        ]} graph_id="krcpu" width="100%" height="400px"/>
+                        }
+                      })()}
+                      {(() => {
+                        if (this.state.user.length > 1) {
+                          return <Chart ref={(r) => this.userChart = r} chartType="LineChart" options={{
+                          displayAnnotations: true,
+                          title: 'User CPU Time',
+                          hAxis: this.hAxis(),
+                          vAxis: {
+                              title: 'User CPU Time (sec)'
+                          }
+                      }} rows={this.state.user} columns={[
+                          {
+                              'type': 'datetime',
+                              'label': 'Time'
+                          }, {
+                              'type': 'number',
+                              'label': 'User CPU Time'
+                          }
+                      ]} graph_id="uscpu" width="100%" height="400px"/>
+                      }
+                    })()}
+                      </Tab>
+                    }
+                  })()}
+                    <Tab eventKey={5} title="Tenuring Stats">
                         <Panel header="Tenuring Ages Statistic">
                             {(() => {
                                 if (this.state.desiredSurvivorSize > 0) {
@@ -1580,7 +1650,7 @@ class JvmInfoPage extends React.Component {
                             </Row>
                         </Panel>
                     </Tab>
-                    <Tab eventKey={5} title="Generations">
+                    <Tab eventKey={6} title="Generations">
                       <Row>
                         <Col md={12}>
                       <Panel header="Generations Total Sizes">
@@ -1776,7 +1846,7 @@ class JvmInfoPage extends React.Component {
                           </Col>
                       </Row>
                     </Tab>
-                    <Tab eventKey={6} title="Phases & Causes">
+                    <Tab eventKey={7} title="Phases & Causes">
                       <Row>
                         <Col md={12}>
                           <Panel>
@@ -1833,7 +1903,7 @@ class JvmInfoPage extends React.Component {
                       if (this.state.stats != null && (this.state.stats.promoted_total > 0 ||
                       this.state.stats.promotion_rate > 0 || this.state.stats.allocated_total > 0 ||
                     this.state.stats.allocation_rate > 0)) {
-                      return <Tab eventKey={7} title="Objects">
+                      return <Tab eventKey={8} title="Objects">
                         <Row>
                             <Col md={10}>
                               <Panel>
@@ -1884,7 +1954,7 @@ class JvmInfoPage extends React.Component {
                     </Tab>
                     }
                   })()}
-                    <Tab eventKey={8} title="Manage">
+                    <Tab eventKey={9} title="Manage">
                         <Modal container={this} show={this.state.show} onHide={close}>
                             <Modal.Header closeButton>
                                 <Modal.Title>Confirm Delete</Modal.Title>
