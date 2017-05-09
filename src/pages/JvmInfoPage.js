@@ -669,14 +669,14 @@ class JvmInfoPage extends React.Component {
             userAvg: { $set: (userSum / userCount) * 1000 },
             stats: {
               $set: this.statsPostProcessing(stats, (typeof firstTime == 'undefined') ?
-               0 : firstTime.valueOf() - lastTime.valueOf())
+               0 : lastTime.valueOf() - firstTime.valueOf())
             },
             pauseDurationRange: {
                 from: {
-                    $set: this.toDateTz(lastTime)
+                    $set: this.toDateTz(firstTime)
                 },
                 to: {
-                    $set: this.toDateTz(firstTime)
+                    $set: this.toDateTz(lastTime)
                 }
             },
             isLoading: {
