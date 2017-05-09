@@ -101,6 +101,8 @@ class JvmInfoPage extends React.Component {
       metaspaceUsage: [[this.toDateTz(moment()), null, null]],
       kernel: [[this.toDateTz(moment()), null]],
       user: [[this.toDateTz(moment()), null]],
+      kernelAvg: 0,
+      userAvg: 0,
       totalAvgPie: [['', 1]],
       usedAvgPie: [['', 1]],
       pauseTimeBar: [['', 1]],
@@ -371,6 +373,8 @@ class JvmInfoPage extends React.Component {
 
     var kernel = [];
     var user = [];
+    var kernelSum = 0, kernelCount = 0;
+    var userSum = 0, userCount = 0;
 
     var tenuredUsedBeforeMarkData = [];
     var tenuredTotalMarkData = [];
@@ -417,10 +421,14 @@ class JvmInfoPage extends React.Component {
               var jdate = this.toDateTz(nextTime);
               var tt = this.buildTooltip(nextTime, d);
               if (typeof d.s != 'undefined') {
-                kernel.push([jdate, d.s]);
+                kernel.push([jdate, d.s * 1000]);
+                kernelSum += d.s;
+                kernelCount++;
               }
               if (typeof d.u != 'undefined') {
-                user.push([jdate, d.u]);
+                user.push([jdate, d.u * 1000]);
+                userSum += d.u;
+                userCount++;
               }
               if (typeof d.c == 'undefined') {
                 // if not concurrent
@@ -656,7 +664,9 @@ class JvmInfoPage extends React.Component {
                 $set: causes
             },
             kernel: { $set: kernel },
+            kernelAvg: { $set: (kernelSum / kernelCount) * 1000 },
             user: { $set: user },
+            userAvg: { $set: (userSum / userCount) * 1000 },
             stats: {
               $set: this.statsPostProcessing(stats, (typeof firstTime == 'undefined') ?
                0 : firstTime.valueOf() - lastTime.valueOf())
@@ -1560,10 +1570,10 @@ class JvmInfoPage extends React.Component {
                           if (this.state.kernel.length > 1) {
                             return <Chart ref={(r) => this.kernelChart = r} chartType="LineChart" options={{
                             displayAnnotations: true,
-                            title: 'Kernel CPU Time',
+                            title: 'Kernel CPU Time (Average: ' + this.state.kernelAvg.toFixed(3) + ' ms)',
                             hAxis: this.hAxis(),
                             vAxis: {
-                                title: 'Kernel CPU Time (sec)'
+                                title: 'Kernel CPU Time (ms)'
                             }
                         }} rows={this.state.kernel} columns={[
                             {
@@ -1580,10 +1590,10 @@ class JvmInfoPage extends React.Component {
                         if (this.state.user.length > 1) {
                           return <Chart ref={(r) => this.userChart = r} chartType="LineChart" options={{
                           displayAnnotations: true,
-                          title: 'User CPU Time',
+                          title: 'User CPU Time (Average: ' + this.state.userAvg.toFixed(3) + ' ms)',
                           hAxis: this.hAxis(),
                           vAxis: {
-                              title: 'User CPU Time (sec)'
+                              title: 'User CPU Time (ms)'
                           }
                       }} rows={this.state.user} columns={[
                           {
