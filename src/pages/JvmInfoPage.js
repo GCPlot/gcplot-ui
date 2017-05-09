@@ -1570,7 +1570,7 @@ class JvmInfoPage extends React.Component {
                           if (this.state.kernel.length > 1) {
                             return <Chart ref={(r) => this.kernelChart = r} chartType="LineChart" options={{
                             displayAnnotations: true,
-                            title: 'Kernel CPU Time (Average: ' + this.state.kernelAvg.toFixed(3) + ' ms)',
+                            title: 'Kernel CPU Time (Average: ' + this.state.kernelAvg.toFixed(3) + ' ms) *',
                             hAxis: this.hAxis(),
                             vAxis: {
                                 title: 'Kernel CPU Time (ms)'
@@ -1590,7 +1590,7 @@ class JvmInfoPage extends React.Component {
                         if (this.state.user.length > 1) {
                           return <Chart ref={(r) => this.userChart = r} chartType="LineChart" options={{
                           displayAnnotations: true,
-                          title: 'User CPU Time (Average: ' + this.state.userAvg.toFixed(3) + ' ms)',
+                          title: 'User CPU Time (Average: ' + this.state.userAvg.toFixed(3) + ' ms) *',
                           hAxis: this.hAxis(),
                           vAxis: {
                               title: 'User CPU Time (ms)'
@@ -1606,6 +1606,20 @@ class JvmInfoPage extends React.Component {
                       ]} graph_id="uscpu" width="100%" height="400px"/>
                       }
                     })()}
+                    <Row>
+                      <Col md={12}>
+                        <div className="callout callout-info">
+                          <h4>System Help</h4>
+                          <ul>
+                            <li><b>Kernel</b> - the amount of CPU time spent in the kernel within the process.</li>
+                            <li><b>User</b> - the amount of CPU time spent in user-mode code (outside the kernel) within the process. Simply saying, it's an actual GC work.</li>
+                          </ul>
+                          Note that both values include <b>all available CPUs</b> (the sum of them).
+                          <hr></hr>
+                          If you observe high Kernel spikes, this is most probably the issue of underlying OS, not your GC algorithm or configuration.
+                        </div>
+                      </Col>
+                      </Row>
                       </Tab>
                     }
                   })()}
