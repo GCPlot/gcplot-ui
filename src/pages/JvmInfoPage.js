@@ -411,11 +411,11 @@ class JvmInfoPage extends React.Component {
               }
               if (d.g.length == 0)
                   return;
-              if (firstTime == null) {
+              var nextTime = moment.utc(d.d).tz(this.tz());
+              if (firstTime == null || nextTime.isBefore(firstTime)) {
                   firstTime = moment.utc(d.d).tz(this.tz());
               }
-              var nextTime = moment.utc(d.d).tz(this.tz());
-              if (lastTime == null || nextTime.isBefore(lastTime)) {
+              if (lastTime == null || nextTime.isAfter(lastTime)) {
                 lastTime = nextTime;
               }
               var jdate = this.toDateTz(nextTime);
