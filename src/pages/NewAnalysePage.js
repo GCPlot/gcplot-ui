@@ -6,8 +6,8 @@ import { Row, Col, Panel, FormControl, FormGroup, ButtonInput, Popover, Modal, B
 import I from 'react-fontawesome';
 import CreateJvm from '../components/Jvm/CreateJvm'
 import GCPlotCore from '../core'
-import TimezonePicker from 'react-bootstrap-timezone-picker';
-import 'react-bootstrap-timezone-picker/dist/react-bootstrap-timezone-picker.min.css';
+import TimezonePicker from '../tz_dist/react-bootstrap-timezone-picker.js';
+import '../tz_dist/react-bootstrap-timezone-picker.min.css';
 
 var update = require('react-addons-update');
 
