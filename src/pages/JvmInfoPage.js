@@ -81,6 +81,7 @@ class JvmInfoPage extends React.Component {
         endDate: moment(),
         timeEnabled: 0
       },
+      activeKey: (this.state || {}).activeKey || 1,
       data: [],
       desiredSurvivorSize: -1,
       objectsAges: [],
@@ -101,6 +102,22 @@ class JvmInfoPage extends React.Component {
       metaspaceUsage: [[this.toDateTz(moment()), null, null]],
       kernel: [[this.toDateTz(moment()), null]],
       user: [[this.toDateTz(moment()), null]],
+      _concurrentDurationData: [[this.toDateTz(moment()), null, '']],
+      _logConcurrentDurationData: [[this.toDateTz(moment()), null, '']],
+      _pauseDurationData: [[this.toDateTz(moment()), null, '', null, '', null, '', null, '']],
+      _logPauseDurationData: [[this.toDateTz(moment()), null, '', null, '', null, '', null, '']],
+      _promotionRateData: [[this.toDateTz(moment()), null]],
+      _allocationRateData: [[this.toDateTz(moment()), null]],
+      _youngUsedBeforeData: [[this.toDateTz(moment()), null, null]],
+      _youngUsedAfterData: [[this.toDateTz(moment()), null, null]],
+      _youngTotalData: [[this.toDateTz(moment()), null, null]],
+      _tenuredUsedAfterData: [[this.toDateTz(moment()), null, null, null]],
+      _tenuredTotalData: [[this.toDateTz(moment()), null, null, null]],
+      _heapUsedBeforeData: [[this.toDateTz(moment()), null, null]],
+      _heapUsedAfterData: [[this.toDateTz(moment()), null, null]],
+      _heapTotalData: [[this.toDateTz(moment()), null, null]],
+      _kernel: [[this.toDateTz(moment()), null]],
+      _user: [[this.toDateTz(moment()), null]],
       kernelAvg: 0,
       userAvg: 0,
       totalAvgPie: [['', 1]],
@@ -604,58 +621,40 @@ class JvmInfoPage extends React.Component {
         var sf = function(l, r) {
           return r[0] - l[0];
         };
-        youngUsedBeforeData.sort(sf);
-        youngUsedAfterData.sort(sf);
-        kernel.sort(sf);
-        user.sort(sf);
-        setTimeout(function(d) {
+        var setter = function (d, prop) {
           d.sort(sf);
-          this.setState(update(this.state, {youngTotalData: {$set: d}}));
-        }.bind(this, youngTotalData), 0);
-        setTimeout(function(d) {
-          d.sort(sf);
-          this.setState(update(this.state, {heapUsedBeforeData: {$set: d}}));
-        }.bind(this, heapUsedBeforeData), 0);
-        setTimeout(function(d) {
-          d.sort(sf);
-          this.setState(update(this.state, {heapUsedAfterData: {$set: d}}));
-        }.bind(this, heapUsedAfterData), 0);
-        setTimeout(function(d) {
-          d.sort(sf);
-          this.setState(update(this.state, {heapTotalData: {$set: d}}));
-        }.bind(this, heapTotalData), 0);
-        setTimeout(function(d) {
-          d.sort(sf);
-          this.setState(update(this.state, {tenuredUsedAfterData: {$set: d}}));
-        }.bind(this, tenuredUsedAfterData), 0);
-        setTimeout(function(d) {
-          d.sort(sf);
-          this.setState(update(this.state, {tenuredTotalData: {$set: d}}));
-        }.bind(this, tenuredTotalData), 0);
+          var obj = {};
+          obj[prop] = {$set: d};
+          this.setState(update(this.state, obj));
+        };
+        setter.bind(this, youngUsedBeforeData, '_youngUsedBeforeData')();
+        setter.bind(this, youngUsedAfterData, '_youngUsedAfterData')();
+        setter.bind(this, youngTotalData, '_youngTotalData')();
+        setter.bind(this, heapUsedBeforeData, '_heapUsedBeforeData')();
+        setter.bind(this, heapUsedAfterData, '_heapUsedAfterData')();
+        setter.bind(this, heapTotalData, '_heapTotalData')();
+        setter.bind(this, tenuredUsedAfterData, '_tenuredUsedAfterData')();
+        setter.bind(this, tenuredTotalData, '_tenuredTotalData')();
+        setter.bind(this, kernel, '_kernel')();
+        setter.bind(this, user, '_user')();
         this.setState(update(this.state, {
-            pauseDurationData: {
+            _pauseDurationData: {
                 $set: pauseDurationData
             },
-            logPauseDurationData: {
+            _logPauseDurationData: {
                 $set: logPauseDurationData
             },
-            concurrentDurationData: {
+            _concurrentDurationData: {
                 $set: concDurationData
             },
-            logConcurrentDurationData: {
+            _logConcurrentDurationData: {
                 $set: logConcDurationData
             },
-            promotionRateData: {
+            _promotionRateData: {
                 $set: promotionRateData
             },
-            allocationRateData: {
+            _allocationRateData: {
                 $set: allocationRateData
-            },
-            youngUsedBeforeData: {
-                $set: youngUsedBeforeData
-            },
-            youngUsedAfterData: {
-                $set: youngUsedAfterData
             },
             metaspaceUsage: {
                 $set: metaspaceUsage
@@ -663,9 +662,7 @@ class JvmInfoPage extends React.Component {
             causes: {
                 $set: causes
             },
-            kernel: { $set: kernel },
             kernelAvg: { $set: (kernelSum / kernelCount) * 1000 },
-            user: { $set: user },
             userAvg: { $set: (userSum / userCount) * 1000 },
             stats: {
               $set: this.statsPostProcessing(stats, (typeof firstTime == 'undefined') ?
@@ -683,7 +680,9 @@ class JvmInfoPage extends React.Component {
                 $set: false
             }
         }));
+        this.handleTabSelect(this.state.activeKey);
     }.bind(this));
+
     GCPlotCore.objectsAges(this.state.analyse_id, this.state.jvm_id, function(r, jvm_id) {
       if (jvm_id != this.props.params.jvmId) {
         return;
@@ -879,6 +878,38 @@ class JvmInfoPage extends React.Component {
     }.bind(this));
   }
 
+  handleTabSelect(key) {
+    this.state.activeKey = key;
+    if (key == 2) {
+      this.setState(update(this.state, {
+        pauseDurationData: {$set: this.state._pauseDurationData},
+        logPauseDurationData: {$set: this.state._logPauseDurationData},
+        concurrentDurationData: {$set: this.state._concurrentDurationData},
+        logConcurrentDurationData: {$set: this.state._logConcurrentDurationData}
+      }));
+    } else if (key == 3) {
+      this.setState(update(this.state, {
+        youngUsedBeforeData: {$set: this.state._youngUsedBeforeData},
+        youngUsedAfterData: {$set: this.state._youngUsedAfterData},
+        youngTotalData: {$set: this.state._youngTotalData},
+        heapUsedBeforeData: {$set: this.state._heapUsedBeforeData},
+        heapUsedAfterData: {$set: this.state._heapUsedAfterData},
+        heapTotalData: {$set: this.state._heapTotalData},
+        tenuredUsedAfterData: {$set: this.state._tenuredUsedAfterData},
+        tenuredTotalData: {$set: this.state._tenuredTotalData},
+        allocationRateData: {$set: this.state._allocationRateData},
+        promotionRateData: {$set: this.state._promotionRateData}
+      }));
+    } else if (key == 4) {
+      this.setState(update(this.state, {
+        kernel: {$set: this.state._kernel},
+        user: {$set: this.state._user}
+      }));
+    } else {
+      this.setState(this.state);
+    }
+  }
+
   render() {
     let gclose = () => this.setState(update(this.state, { gerror: { show: {$set: false} } }));
     let close = () => this.setState(update(this.state, {
@@ -950,7 +981,7 @@ class JvmInfoPage extends React.Component {
                         </Col>
                     </Row>
                 </Panel>
-                <Tabs id="tabs" defaultActiveKey={1}>
+                <Tabs id="tabs" activeKey={this.state.activeKey} onSelect={this.handleTabSelect.bind(this)}>
                     <Tab eventKey={1} title="General Stats">
                         <Row>
                             <Col md={12}>
@@ -1310,7 +1341,7 @@ class JvmInfoPage extends React.Component {
                     </Tab>
                     <Tab eventKey={3} title="Memory">
                         {(() => {
-                          if (this.state.promotionRateData.length > 1) {
+                          if (this.state._promotionRateData.length > 1) {
                             return <Chart ref={(r) => this.promotionRateChart = r} chartType="LineChart" options={{
                             displayAnnotations: true,
                             title: 'Promotion Rate',
@@ -1330,7 +1361,7 @@ class JvmInfoPage extends React.Component {
                         }
                       })()}
                       {(() => {
-                        if (this.state.allocationRateData.length > 1) {
+                        if (this.state._allocationRateData.length > 1) {
                           return <Chart ref={(r) => this.allocationRateChart = r} chartType="LineChart" options={{
                             displayAnnotations: true,
                             title: 'Allocation Rate',
@@ -1350,7 +1381,7 @@ class JvmInfoPage extends React.Component {
                         }
                       })()}
                       {(() => {
-                        if (this.state.youngUsedBeforeData.length > 1) {
+                        if (this.state._youngUsedBeforeData.length > 1) {
                           return <Chart ref={(r) => this.ygUsedBeforeChart = r}  chartType="LineChart" options={{
                             displayAnnotations: true,
                             title: 'Young Generation Used Before GC',
@@ -1373,7 +1404,7 @@ class JvmInfoPage extends React.Component {
                         }
                       })()}
                       {(() => {
-                        if (this.state.youngUsedAfterData.length > 1) {
+                        if (this.state._youngUsedAfterData.length > 1) {
                           return <Chart ref={(r) => this.ygUsedAfterChart = r} chartType="LineChart" options={{
                             displayAnnotations: true,
                             title: 'Young Generation Used After GC',
@@ -1396,7 +1427,7 @@ class JvmInfoPage extends React.Component {
                         }
                       })()}
                       {(() => {
-                        if (this.state.youngTotalData.length > 1) {
+                        if (this.state._youngTotalData.length > 1) {
                           return <Chart ref={(r) => this.ygTotalChart = r} chartType="LineChart" options={{
                             displayAnnotations: true,
                             title: 'Young Total Size',
@@ -1419,7 +1450,7 @@ class JvmInfoPage extends React.Component {
                         }
                       })()}
                       {(() => {
-                        if (this.state.tenuredUsedAfterData.length > 1) {
+                        if (this.state._tenuredUsedAfterData.length > 1) {
                           return <Chart ref={(r) => this.tenuredUsedChart = r} chartType="LineChart" options={{
                             displayAnnotations: true,
                             annotations: {
@@ -1447,7 +1478,7 @@ class JvmInfoPage extends React.Component {
                         }
                       })()}
                       {(() => {
-                        if (this.state.tenuredTotalData.length > 1) {
+                        if (this.state._tenuredTotalData.length > 1) {
                           return <Chart ref={(r) => this.tenuredTotalChart = r} chartType="LineChart" options={{
                             displayAnnotations: true,
                             title: 'Tenured Total Size',
@@ -1564,10 +1595,10 @@ class JvmInfoPage extends React.Component {
                         ]} graph_id="hutc" width="100%" height="400px" legend_toggle={false}/>
                     </Tab>
                     {(() => {
-                      if (this.state.kernel.length > 1 || this.state.user.length > 1) {
+                      if (this.state._kernel.length > 1 || this.state._user.length > 1) {
                       return <Tab eventKey={4} title="System">
                         {(() => {
-                          if (this.state.kernel.length > 1) {
+                          if (this.state._kernel.length > 1) {
                             return <Chart ref={(r) => this.kernelChart = r} chartType="LineChart" options={{
                             displayAnnotations: true,
                             title: 'Kernel CPU Time (Average: ' + this.state.kernelAvg.toFixed(3) + ' ms) *',
@@ -1587,7 +1618,7 @@ class JvmInfoPage extends React.Component {
                         }
                       })()}
                       {(() => {
-                        if (this.state.user.length > 1) {
+                        if (this.state._user.length > 1) {
                           return <Chart ref={(r) => this.userChart = r} chartType="LineChart" options={{
                           displayAnnotations: true,
                           title: 'User CPU Time (Average: ' + this.state.userAvg.toFixed(3) + ' ms) *',
