@@ -880,14 +880,14 @@ class JvmInfoPage extends React.Component {
 
   handleTabSelect(key) {
     this.state.activeKey = key;
-    if (key == 2) {
+    if (key == 2 && this.state.pauseDurationData != this.state._pauseDurationData) {
       this.setState(update(this.state, {
         pauseDurationData: {$set: this.state._pauseDurationData},
         logPauseDurationData: {$set: this.state._logPauseDurationData},
         concurrentDurationData: {$set: this.state._concurrentDurationData},
         logConcurrentDurationData: {$set: this.state._logConcurrentDurationData}
       }));
-    } else if (key == 3) {
+    } else if (key == 3 && this.state.youngUsedBeforeData != this.state._youngUsedBeforeData) {
       this.setState(update(this.state, {
         youngUsedBeforeData: {$set: this.state._youngUsedBeforeData},
         youngUsedAfterData: {$set: this.state._youngUsedAfterData},
@@ -900,7 +900,7 @@ class JvmInfoPage extends React.Component {
         allocationRateData: {$set: this.state._allocationRateData},
         promotionRateData: {$set: this.state._promotionRateData}
       }));
-    } else if (key == 4) {
+    } else if (key == 4 && this.state.kernel != this.state._kernel) {
       this.setState(update(this.state, {
         kernel: {$set: this.state._kernel},
         user: {$set: this.state._user}
