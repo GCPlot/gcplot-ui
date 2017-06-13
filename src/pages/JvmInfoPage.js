@@ -248,7 +248,7 @@ class JvmInfoPage extends React.Component {
           var tz = this.tz(analyses[i]);
           if (lastEvent) {
             endDate = moment.utc(lastEvent).tz(tz);
-            startDate = moment.utc(lastEvent).tz(tz).subtract(1, 'days');
+            startDate = moment.utc(lastEvent).tz(tz);
             if (startDate.hours() >= 0 || startDate.minutes() > 0) {
               startDate.subtract(1, 'minutes');
             }
