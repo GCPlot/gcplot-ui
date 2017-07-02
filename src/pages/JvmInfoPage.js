@@ -120,6 +120,8 @@ class JvmInfoPage extends React.Component {
       _user: [[this.toDateTz(moment()), null]],
       kernelAvg: 0,
       userAvg: 0,
+      stwEventsPerMinute: 'n/a',
+      stwPausePerMinute: 'n/a',
       totalAvgPie: [['', 1]],
       usedAvgPie: [['', 1]],
       pauseTimeBar: [['', 1]],
@@ -834,10 +836,21 @@ class JvmInfoPage extends React.Component {
       }
       concMs /= 1000;
       if (concMs > 0) {
-        this.state.durationVsAll = [['Application Only', intervalMs - concMs - stwMs], ['Concurrent (Application + GC)', concMs]];
+        this.state.durationVsAll = [['Application Only', Math.max(intervalMs - concMs - stwMs, 0)], ['Concurrent (Application + GC)', concMs]];
       } else {
-        this.state.durationVsAll = [['Application Only', intervalMs - stwMs]];
+        this.state.durationVsAll = [['Application Only', Math.max(intervalMs - stwMs, 0)]];
       }
+    }
+
+    if (stats.stw_pause_per_minute_count && stats.stw_pause_per_minute_sum
+      && stats.stw_events_per_minute_count && stats.stw_events_per_minute_sum) {
+        this.state.stwEventsPerMinute = (stats.stw_events_per_minute_sum / Math.max(stats.stw_events_per_minute_count, 1)).toFixed(0);
+        this.state.stwPausePerMinute = GCPlotCore.convertPause(stats.stw_pause_per_minute_sum / Math.max(stats.stw_pause_per_minute_count, 1));
+
+        if (this.state.stwEventsPerMinute <= 1 || this.state.stwPausePerMinute == 0) {
+          this.state.stwEventsPerMinute = 'n/a';
+          this.state.stwPausePerMinute = 'n/a';
+        }
     }
 
     var percentiles = [];
@@ -908,6 +921,10 @@ class JvmInfoPage extends React.Component {
     } else {
       this.setState(this.state);
     }
+  }
+
+  isSTWRates() {
+    return !(this.state.stwPausePerMinute == 'n/a' || this.state.stwEventsPerMinute == 'n/a');
   }
 
   render() {
@@ -1085,24 +1102,7 @@ class JvmInfoPage extends React.Component {
                         <Col md={12}>
                           <Panel>
                             <Row>
-                              <Col md={4}>
-                        <Chart ref={(r) => this.stwVsAppTimeChart = r} chartType="PieChart" options={{
-                            displayAnnotations: true,
-                            chartArea: {
-                              width: '100%'
-                            },
-                            title: 'Stop-The-World vs Application Time'
-                        }} rows={this.state.pauseVsAll} columns={[
-                            {
-                                'type': 'string',
-                                'label': 'Title'
-                            }, {
-                                'type': 'number',
-                                'label': 'Value'
-                            }
-                        ]} graph_id="stwieu1" width="100%" height="230px" legend_toggle={false}/>
-                      </Col>
-                      <Col md={4}>
+                      <Col md={8}>
                         <Chart ref={(r) => this.concVsAppTimeChart = r} chartType="PieChart" options={{
                             displayAnnotations: true,
                             chartArea: {
@@ -1117,27 +1117,65 @@ class JvmInfoPage extends React.Component {
                                 'type': 'number',
                                 'label': 'Value'
                             }
-                        ]} graph_id="stwied1" width="100%" height="230px" legend_toggle={false}/>
+                        ]} graph_id="stwied1" width="100%" height="145px" legend_toggle={false}></Chart>
+                        <Chart ref={(r) => this.stwVsAppTimeChart = r} chartType="PieChart" options={{
+                            displayAnnotations: true,
+                            chartArea: {
+                              width: '100%'
+                            },
+                            title: 'Stop-The-World vs Application Time'
+                        }} rows={this.state.pauseVsAll} columns={[
+                            {
+                                'type': 'string',
+                                'label': 'Title'
+                            }, {
+                                'type': 'number',
+                                'label': 'Value'
+                            }
+                        ]} graph_id="stwieu1" width="100%" height="145px" legend_toggle={false}></Chart>
                       </Col>
                       <Col md={4}>
-                        <Table style={{"fontSize": "12px"}} bordered>
-                            <thead>
+                        <Table style={{"fontSize": "13px"}} bordered>
+                            <thead style={{"fontSize": "12px"}}>
                                 <tr>
-                                    <th style={{width: '20%'}}>Percentiles</th>
-                                    <th style={{width: '40%'}}>STW Pause (ms)</th>
+                                    <th style={{width: '50%', padding: '5px'}} className="text-center bg-primary">Percentiles</th>
+                                    <th style={{width: '50%', padding: '5px'}} className="text-center bg-primary">STW Pause (ms)</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {(() => {
                                     return this.state.percentiles.map(function(r, i) {
                                         return <tr key={i + "_perc"}>
-                                            <td>{r[0] + "%"}</td>
-                                            <td>{r[1]}</td>
+                                            <td style={{ padding: '5px'}} className="text-center"><strong>{r[0] + "%"}</strong></td>
+                                            <td style={{ padding: '5px'}}>{r[1]}</td>
                                         </tr>;
                                     });
                                 })()}
                             </tbody>
                         </Table>
+                        {(() => {
+                          if (this.isSTWRates()) {
+                        return <Table style={{"fontSize": "13px"}} bordered>
+                          <thead style={{"fontSize": "12px"}}>
+                              <tr>
+                                  <th style={{ padding: '5px'}} colSpan="2" className="text-center bg-primary">Average Rates</th>
+                              </tr>
+                          </thead>
+                            <thead style={{"fontSize": "12px"}}>
+                                <tr>
+                                    <th style={{width: '50%', padding: '5px'}} className="text-center bg-primary">STW Pause per Minute</th>
+                                    <th style={{width: '50%', padding: '5px'}} className="text-center bg-primary">STW Events per Minute</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <td className="text-center">{this.state.stwPausePerMinute}</td>
+                                <td className="text-center">{this.state.stwEventsPerMinute}</td>
+                              </tr>
+                            </tbody>
+                        </Table>
+                      }
+                        })()}
                       </Col>
                       </Row>
                         </Panel>

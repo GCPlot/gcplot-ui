@@ -538,6 +538,14 @@ GCPlotCore.humanFileSize = function(bytes) {
     return bytes.toFixed(3)+' '+units[u];
 }
 
+GCPlotCore.convertPause = function(pause) {
+    if (pause < 1000000) {
+      return (pause / 1000).toFixed(3) + " ms";
+    } else {
+      return (pause / 1000000).toFixed(3) + " secs";
+    }
+}
+
 GCPlotCore.url = function(path) {
   return GCPlotCore.apiUrl() + path;
 }
