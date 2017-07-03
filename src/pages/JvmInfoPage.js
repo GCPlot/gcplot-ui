@@ -964,7 +964,7 @@ class JvmInfoPage extends React.Component {
                     <Col md={2}>
                         <Button type="button" bsStyle="default" disabled={this.state.isLoading} onClick={this.onReloadClick.bind(this)}>{(() => {
                                 if (this.state.isLoading) {
-                                    return <Spinner spinnerName="circle"/>
+                                    return <Spinner name="cube-grid"/>
                                 } else {
                                     return <div>Reload</div>
                                 }

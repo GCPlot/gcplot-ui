@@ -166,7 +166,7 @@ class QuickProcessPage extends React.Component {
         <div className={"callout " + this.state.errorStyle.className}>
         {(() => {
             if (this.state.isProcessing) {
-                return <Spinner spinnerName="three-bounce"/>
+                return <Spinner name="three-bounce"/>
             }
         })()}
           <p>{this.state.errorStyle.value}</p>

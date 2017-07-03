@@ -269,7 +269,7 @@ class WelcomeLayout extends React.Component {
                             <p style={{display: (this.state.showForgotPassword ? "none":"inline")}} style={this.state.loginErrorStyle}>{this.state.loginErrorStyle.value}</p>
                             {(() => {
                                 if (this.state.loginProgress && !this.state.showForgotPassword) {
-                                    return <Spinner spinnerName="three-bounce"/>
+                                    return <Spinner name="three-bounce"/>
                                 }
                             })()}
                             <input style={{display: (this.state.showForgotPassword ? "none":"inline")}} className="button-primary" type="submit" onClick={this.onLogin.bind(this)} value="Login"/>
@@ -284,7 +284,7 @@ class WelcomeLayout extends React.Component {
                             <p style={this.state.signupErrorStyle}>{this.state.signupErrorStyle.value}</p>
                             {(() => {
                                 if (this.state.submitProgress) {
-                                    return <Spinner spinnerName="three-bounce"/>
+                                    return <Spinner name="three-bounce"/>
                                 }
                             })()}
                             <p><a href="/assets/terms.html" target="_blank">Terms Of Service</a></p>
