@@ -214,7 +214,7 @@ class SidebarLeft extends React.Component {
           </li>
           <li className="treeview">
             <NavLink to="/quick_process">
-              <I name="upload" /> Quick process
+              <I name="upload" /> Upload GC Log
             </NavLink>
           </li>
           <li className="header">Control Panel</li>
