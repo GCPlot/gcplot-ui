@@ -31,7 +31,7 @@
   // Create Panel skin
   .panel-default {
     > .panel-heading {
-      @include gradient-horizontal(lighten($light-blue, 20%), lighten($blue, 20%));
+      @include gradient-horizontal(lighten($blue, 20%), lighten($blue, 15%));
       color: $white;
     }
   }
