@@ -30,6 +30,10 @@ $(window).on('beforeunload', function() {
 GCPlotCore.PROFILE_CHANGED_EVENT = "profile.changed.event";
 GCPlotCore.ANALYSES_CHANGED_EVENT = "analyses.changed.event";
 
+GCPlotCore.ACCOUNT_CONF_IDS = {
+  PRELOAD_ANALYSIS_ON_PAGE_OPEN: "1"
+};
+
 GCPlotCore.ERRORS = {
   '1': 'Undefined error',
   '291': 'Not authorized',
@@ -163,7 +167,7 @@ GCPlotCore.changeUsername = function(newUsername, callback, errorCallback) {
       if (r.hasOwnProperty('error')) {
         errorCallback(r.error, GCPlotCore.ERRORS[r.error], r.message);
       } else {
-        sessionStorage.removeItem(GCPlotCore.USER_INFO, JSON.stringify(r.result));
+        sessionStorage.removeItem(GCPlotCore.USER_INFO);
         GCPlotCore.trigger(GCPlotCore.PROFILE_CHANGED_EVENT);
         callback();
       }
@@ -355,6 +359,25 @@ GCPlotCore.newPassword = function(token, salt, newPass, callback, errorCallback)
   });
 }
 
+GCPlotCore.updateAccountConfig = function(id, value) {
+  var msg = { prop_id: id, value: value + "" };
+  $.ajax({
+    type: "POST",
+    url: GCPlotCore.authUrl("/user/config/update"),
+    data: JSON.stringify(msg),
+    contentType: "application/json",
+    success: function(data) {
+      var r = JSON.parse(data);
+      if (r.hasOwnProperty('error')) {
+        console.log(GCPlotCore.ERRORS[r.error] + " | " + r.message);
+      } else {
+        sessionStorage.removeItem(GCPlotCore.USER_INFO);
+        GCPlotCore.trigger(GCPlotCore.PROFILE_CHANGED_EVENT);
+      }
+    }
+  });
+}
+
 GCPlotCore.updateAnalyseBulk = function(msg, callback, errorCallback) {
   GCPlotCore.updateAnalyse(msg, callback, errorCallback, "/analyse/jvm/update/bulk");
 }
@@ -506,7 +529,7 @@ GCPlotCore.changeEmail = function(newEmail, callback, errorCallback) {
         errorCallback(r.error, GCPlotCore.ERRORS[r.error], r.message);
       } else if (!$.isEmptyObject(r)) {
         callback();
-        sessionStorage.removeItem(GCPlotCore.USER_INFO, JSON.stringify(r.result));
+        sessionStorage.removeItem(GCPlotCore.USER_INFO);
         GCPlotCore.trigger(GCPlotCore.PROFILE_CHANGED_EVENT);
       }
     }

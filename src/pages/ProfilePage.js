@@ -17,6 +17,9 @@ class ProfilePage extends React.Component {
       token: "",
       email: "",
       username: "",
+      config: {
+        preload_analysis: true
+      },
       updateUsernameDisabled: false,
       usernameErrorStyle: {
           display: "none",
@@ -44,7 +47,10 @@ class ProfilePage extends React.Component {
         fullname: {$set: userInfo.first_name + " " + userInfo.last_name},
         token: {$set: userInfo.token},
         email: {$set: userInfo.email},
-        username: {$set: userInfo.username}
+        username: {$set: userInfo.username},
+        config: {
+          preload_analysis: {$set: userInfo.config.preload_analysis}
+        }
       }));
     }.bind(this));
   }
@@ -200,6 +206,15 @@ class ProfilePage extends React.Component {
     }));
   }
 
+  handlePrAnChange(e) {
+    this.setState(update(this.state, {
+      config: {
+        preload_analysis: {$set: e.target.checked}
+      }
+    }));
+    GCPlotCore.updateAccountConfig(GCPlotCore.ACCOUNT_CONF_IDS.PRELOAD_ANALYSIS_ON_PAGE_OPEN, e.target.checked);
+  }
+
   render() {
     return <div className="content-wrapper">
     <section className="content-header">
@@ -259,8 +274,8 @@ class ProfilePage extends React.Component {
         </div>
         <div className={(this.state.activeTab == 'settings_tab' ? 'active ' : '') + "tab-pane"} id="settings_tab">
             <Panel>
-              <Checkbox checked readOnly>
-                  Pre-load analysis on page open?
+              <Checkbox checked={this.state.config.preload_analysis} onChange={this.handlePrAnChange.bind(this)}>
+                  Pre-load analysis on report open?
             </Checkbox>
             </Panel>
         </div>

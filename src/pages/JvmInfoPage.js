@@ -256,7 +256,7 @@ class JvmInfoPage extends React.Component {
             }
           } else {
             endDate = moment.tz({hour :23, minute :59, second :59, millisecond :999}, tz);
-            startDate = moment(endDate, tz).hour(0).minute(0).second(0).millisecond(0).subtract(1, 'days');
+            startDate = moment(endDate, tz).hour(0).minute(0).second(0).millisecond(0);
           }
           this.state.analyse = analyses[i];
           this.state.dateRangeState = {
@@ -268,7 +268,11 @@ class JvmInfoPage extends React.Component {
           break;
         }
       }
-      this.onReloadClick();
+      GCPlotCore.userInfo(userInfo => {
+        if (userInfo.config.preload_analysis) {
+          this.onReloadClick();
+        }
+      });
     }).bind(this), function(code, title, msg) {
       this.setState(update(this.state, {
         errorStyle: {
