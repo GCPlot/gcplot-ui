@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="">
+        <meta name="author" content="GCPlot">
+        <link rel="shortcut icon" href="https://gcplot.com/favicon.ico">
+
+        <title>GCPlot - all-in-one JVM GC Logs Analyzer</title>
+
+        <!-- Google fonts -->
+        <link href='http://fonts.googleapis.com/css?family=RobotoDraft:regular,bold,italic,thin,light,bolditalic,black,medium&lang=en' rel='stylesheet' type='text/css'>
+
+        <!-- Bootstrap core CSS -->
+        <link href="css/bootstrap.min.css" rel="stylesheet">
+
+        <!-- Animate -->
+        <link href="css/aos.css" rel="stylesheet">
+
+        <!-- Magnific-popup -->
+        <link rel="stylesheet" href="css/magnific-popup.css">
+        
+        <!-- Icon-font -->
+        <link rel="stylesheet" type="text/css" href="css/pe-icon-7-stroke.css">
+        <link rel="stylesheet" type="text/css" href="css/materialdesignicons.min.css">
+
+        <!-- Custom styles for this template -->
+        <link href="css/style.css" rel="stylesheet">
+
+        <!-- Color css -->
+        <link href="css/colors/default.css" rel="stylesheet">
+
+    </head>
+
+    <body>
+
+        <!-- Pre-loader -->
+        <div class="preloader">
+            <div class="status">&nbsp;</div>
+        </div>
+
+        <!-- Navbar -->
+        <div class="navbar navbar-custom sticky navbar-fixed-top menu-dark" role="navigation">
+            <div class="container">
+                <!-- Navbar-header -->
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                        <i class="mdi mdi-format-align-left"></i>
+                    </button>
+                    <!-- LOGO -->
+                    <a class="navbar-brand logo" href="index.html">
+                        <img src="images/GC_logo.png"   alt="GCPlot logo">
+                        <span>GCPlot</span>
+                    </a>
+                </div>
+                <!-- end navbar-header -->
+
+                <!-- menu -->
+                <div class="navbar-collapse collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="#faq" class="nav-link">FAQ</a>
+                        </li>
+                        <li>
+                            <a href="#started" class="nav-link">Features</a>
+                        </li>
+                        <li>
+                            <a href="https://docs.gcplot.com/" class="nav-link">Knowledgebase</a>
+                        </li>
+                        <li>
+                            <a href="login.html" class="nav-link">Log In</a>
+                        </li>
+                        <li>
+                            <a href="signup.html" class="nav-link signup-button">Sign up</a>
+                        </li>
+                    </ul>
+                </div>
+                <!--/Menu -->
+            </div>
+            <!-- end container -->
+        </div>
+        <!-- End navbar -->
+        <div class="clearfix"></div>
+
+
+        <!-- HOME -->
+        <section class="home home-gradient">
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm-6 col-xs-12 text-left">
+                        <div class="home-wrapper">
+                            <h1 data-aos="fade-up" data-aos-anchor-placement="bottom-bottom" class="text-white">All-in-one<br>JVM GC Logs Analyzer</h1>
+                            <h4 data-aos="fade-up" data-aos-anchor-placement="bottom-bottom" class="text-white">Give your Garbage Collector a voice.</h4>
+
+                            <form role="form" class="intro-form">
+                                <div class="form-group">
+                                    <input type="text" class="form-control" placeholder="User name" required="required">
+                                </div>
+                                <div class="form-group">
+                                    <input type="text" class="form-control" placeholder="Full name" required="required">
+                                </div>
+                                <div class="form-group">
+                                    <input type="email" class="form-control" placeholder="Email Address" required="required">
+                                </div>
+                                <div class="form-group">
+                                    <input type="password" class="form-control" placeholder="Password" required="required">
+                                </div>
+                                <div class="form-group text-center">
+                                    <button type="submit" class="btn btn-white btn-sm btn-block ">Create an Account</button>
+                                </div>
+                                <span class="help-block m-b-0 m-t-20 text-muted"><small class="terms">By registering you agree to the GCPlot <a href="terms.html">Terms of Use</a></small></span>
+                            </form>
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+
+
+                    <div class="col-sm-6 col-xs-12 text-center">
+                        <div class="home-wrapper">
+                            
+                            <div class="browser">
+                                <div class="browser-header text-left">
+                                    <i class="mdi mdi-brightness-1 browser-button"></i>
+                                    <i class="mdi mdi-brightness-1 browser-button"></i>
+                                    <i class="mdi mdi-brightness-1 browser-button"></i>
+                                </div>
+                                <div class="Browser-body">
+                                <img  class="img-responsive" src="images/GC_how_it_works.gif" alt="How it works" class="browser-img" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+        <!-- END HOME -->
+
+
+        <!-- Get Started -->
+        <section class="section" id="started">
+            <div class="container">
+                <div class="row">
+                    <div class="col-xs-12">
+                    <div class="text-center">
+                        <h2 class="font-primary faq-title" data-aos="fade-up">
+                            Title
+                        </h2>
+                    </div>
+                    </div>
+                </div>
+                <div class="space"></div>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <div class="features-box text-center" data-aos="fade-up" data-aos-anchor-placement="bottom-bottom">
+                            <div class="feature-icon">
+                                <i class="pe-7s-gleam"></i>
+                            </div>
+                            <h4><b>Simple yet Powerful</b></h4>
+                            <p>GCPlot makes your raw data to start telling a story. Numerous graphs, stats, and hints will help you to answer key questions and identify root cause issues in a matter of seconds.</p>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-4">
+                        <div class="features-box text-center" data-aos="fade-up" data-aos-anchor-placement="bottom-bottom">
+                            <div class="feature-icon">
+                                <i class="pe-7s-display1"></i>
+                            </div>
+                                <h4><b>Real-time</b></h4>
+                                <p>Install and configure our lightweight agent in a matter of seconds and begin to collect data. Visualize the work of the garbage collector up to the last minute.</p>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="features-box text-center" data-aos="fade-up" data-aos-anchor-placement="bottom-bottom">
+                            <div class="feature-icon">
+                                <i class="pe-7s-rocket"></i>
+                            </div>
+                            <h4><b>Fast. Accurate</b></h4>
+                            <p>Any analysis tool is useless unless it’s responsive. Speed and accuracy are our main priority - from building the reports to delivering your logs. We use only high-end technology to achieve that.</p>
+                        </div>
+                    </div>
+                </div> <!--end row--> 
+                <div class="space"></div>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <div class="features-box text-center" data-aos="fade-up" data-aos-anchor-placement="bottom-bottom">
+                            <div class="feature-icon">
+                                <i class="pe-7s-key"></i>
+                            </div>
+                            <h4><b>Secure</b></h4>
+                            <p>Any knowledge of the operation of your system is very sensitive information. That's why we secure all our traffic with end-to-end SSL encryption.</p>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="features-box text-center" data-aos="fade-up" data-aos-anchor-placement="bottom-bottom">
+                            <div class="feature-icon">
+                                <i class="pe-7s-link"></i>
+                            </div>
+                                <h4><b>Reliable</b></h4>
+                                <p>Clustering, Database backups, health checks, monitoring - everything make sure we are always ready to serve and never lose your data.</p>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-4">
+                        <div class="features-box text-center" data-aos="fade-up" data-aos-anchor-placement="bottom-bottom">
+                            <div class="feature-icon">
+                                <i class="pe-7s-help2"></i>
+                            </div>
+                            <h4><b>Human Support</b></h4>
+                            <p>As a developers we know the price of timely support. Have something to say or ask?<br>Just <a href="mailto:support@gcplot.com">write</a>.</p>
+                        </div>
+                    </div>
+                </div> <!--end row-->     
+            </div> <!--container-->
+        </section>
+
+        <!-- END SERVICES -->
+
+
+        <section class="section padding-b-0" id="features">
+            <div class="container">
+                <div class="row vertical-content">
+                    <div class="col-sm-6">
+                        <img src="images/graph.jpg" class="img-responsive" data-aos="fade-up" alt="img">
+                    </div>
+
+                    <div class="col-sm-6">
+                        <div class="features-alt">
+                                <h3 class="font-primary about-title" data-aos="fade-up">Without vision, problems have no solution.<br>
+                                We help to look inside.</h3>
+
+                                <p class="text-muted" data-aos="fade-up">For a long time, Java™ Garbage Collector work was a kind of black box, with dozens of different flags and parameters. Reading just their descriptions was like reading Airbus manual - you will know what each switch does, but you can’t fly.</p>
+
+                                <p class="text-muted" data-aos="fade-up">GCPlot aggregates all your GC logs into a centralized system in real-time. Our powerful and blazing-fast web UI visualizes them into clear reports and graphs, which talks in the same language with you or your team.</p>
+                        </div>
+                    </div>
+                </div> <!--end row-->
+            </div><!--end container-->
+        </section>
+        <!--end features-->
+
+        <!-- Companies -->
+        <section class="section bg-custom footer-cta">
+            <div class="container">
+                <div class="row text-center">
+                    <div class="col-sm-10 col-sm-offset-1">
+                        <h2 class="animated fadeInDown wow" data-aos="fade-up">Already in the toolbox of 100+ companies</h2>
+                        <a href="signup.html" class="btn btn-white" data-aos="fade-up">Get Started Now</a>
+                    </div>
+                </div><!--end row-->
+            </div> <!--end container-->
+        </section>
+        <!-- Companies -->
+  
+
+
+        <!-- FAQ -->
+        <section class="section bg-gray padding-b-0" id="faq">
+            <div class="container">
+                <div class="row vertical-content">
+
+                    <div class="col-sm-6">
+                        <h2 class="font-primary faq-title" data-aos="fade-up">
+                            FAQ
+                        </h2>
+                  
+    <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true" data-aos="fade-up">
+
+        <div class="panel panel-default">
+            <div class="panel-heading" role="tab" id="headingOne">
+                <h4 class="panel-title">
+                    <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                        <i class="more-less pe-7s-angle-down"></i>
+                        <b>Q: What JVMs does your analyzer support?</b>
+                    </a>
+                </h4>
+            </div>
+            <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+                <div class="panel-body">
+                      <p class="text-muted">A: Currently, we support all stable versions of the Hotspot JVM. The Java 9 support is coming soon as well.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel panel-default">
+            <div class="panel-heading" role="tab" id="headingTwo">
+                <h4 class="panel-title">
+                    <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                        <i class="more-less pe-7s-angle-down"></i>
+                        <b>Q: How can I deliver and analyze my GC logs?</b>
+                    </a>
+                </h4>
+            </div>
+            <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+                <div class="panel-body">
+                    <p class="text-muted">A: You can just upload them from our UI, as well as via API. You can also connect any number of VM(s) continuously via GCPlot Connector technology. Read more all the ways <a href="https://docs.gcplot.com/ways-of-sending-logs.html" title="gcplot documentation" class="gc-link" target="_blank">here</a>.</p> 
+                </div>
+            </div>
+        </div>
+
+        <div class="panel panel-default">
+            <div class="panel-heading" role="tab" id="headingThree">
+                <h4 class="panel-title">
+                    <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                        <i class="more-less pe-7s-angle-down"></i>
+                        <b>Q: Is it secure to use GCPlot?</b>
+                    </a>
+                </h4>
+            </div>
+            <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+                <div class="panel-body">
+                    <p class="text-muted">A: Absolutely. We use SSL everywhere, encrypted databases, making sure no single bit of your private information being transmitted openly.</p>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading" role="tab" id="headingFour">
+                <h4 class="panel-title">
+                    <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                        <i class="more-less pe-7s-angle-down"></i>
+                        <b>Q: Is GCPlot free to use?</b>
+                    </a>
+                </h4>
+            </div>
+            <div id="collapseFour" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFour">
+                <div class="panel-body">
+                    <p class="text-muted">A: Yes, cloud platform at the moment is in Beta stage and completely free respectively.</p>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading" role="tab" id="headingFive">
+                <h4 class="panel-title">
+                    <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
+                        <i class="more-less pe-7s-angle-down"></i>
+                        <b>Q: Can I have GCPlot privately installed?</b>
+                    </a>
+                </h4>
+            </div>
+            <div id="collapseFive" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFive">
+                <div class="panel-body">
+                    <p class="text-muted">A: Yes, this is possible, just contact us to <a href="mailto:sales@gcplot.com" class="gc-link" title="Mail to sales@gcplot.com">sales@gcplot.com</a> with such desire.</p> 
+                </div>
+            </div>
+        </div>
+    </div><!-- panel-group -->
+</div>
+<div class="col-sm-6">
+    <img src="images/graph2.jpg" class="img-responsive" data-aos="fade-up" alt="img">
+</div>
+</div> <!--end row-->
+</div><!--end container-->
+</section>
+
+
+
+<!--END FAQ-->
+
+        <!-- FOOTER -->
+        <footer class="footer">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-3 col-sm-6" data-aos="fade-up">
+                      <h5>Hublind</h5>
+                      <ul class="list-unstyled">
+                        <li><a href="">Home</a></li>
+                        <li><a href="">Features</a></li>
+                        <li><a href="">About Us</a></li>
+                        <li><a href="">FAQ</a></li>
+                      </ul>
+                    </div>
+
+                    <div class="col-md-3 col-sm-6" data-aos="fade-up">
+                      <h5>Social</h5>
+                      <ul class="list-unstyled">
+                        <li><a href="">Facebook</a></li>
+                        <li><a href="">Twitter</a></li>
+                        <li><a href="">Behance</a></li>
+                        <li><a href="">Dribbble</a></li>
+                      </ul>
+                    </div>
+
+                    <div class="col-md-3 col-sm-6" data-aos="fade-up">
+                      <h5>Support</h5>
+                      <ul class="list-unstyled">
+                        <li><a href="">Help & Support</a></li>
+                        <li><a href="">Privacy Policy</a></li>
+                        <li><a href="">Terms & Conditions</a></li>
+                      </ul>
+                    </div>
+
+                    <div class="col-md-3 col-sm-6" data-aos="fade-up">
+                      <h5>Contact</h5>
+                      <address>
+                        795 Folsom Ave, Suite 600<br>
+                        San Francisco, CA 94107<br>
+                        <abbr title="Phone">P:</abbr> (123) 456-7890<br/>
+                        E: <a href="mailto:your@email.com">your@email.com</a>
+                      </address>
+                    </div>
+                </div> <!--end row-->
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="footer-alt text-center" data-aos="fade-up">
+                            <p class="copyright-txt">2017 © GCPlot</p>
+                        </div>
+                    </div>
+                </div> <!--end row-->
+            </div><!--end container-->
+        </footer>
+
+        <!-- END FOOTER -->
+
+
+
+
+    <!-- js placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-2.1.4.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <!-- Jquery easing -->                                                      
+    <script type="text/javascript" src="js/jquery.easing.1.3.min.js"></script>
+    <script src="js/SmoothScroll.js"></script>
+    <script src="js/aos.js"></script>
+    <script type="text/javascript" src="js/jquery.magnific-popup.min.js"></script>
+    <!--sticky header-->
+    <script type="text/javascript" src="js/jquery.sticky.js"></script>
+        
+    <!--common script for all pages-->
+    <script src="js/jquery.app.js"></script>
+
+    
+  </body>
+</html>
