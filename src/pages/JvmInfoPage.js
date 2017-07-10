@@ -11,7 +11,6 @@ import moment from 'moment-timezone';
 import DatePicker from 'react-datepicker';
 import TimePicker from 'rc-time-picker';
 import {Chart} from 'react-google-charts';
-import { browserHistory } from 'react-router';
 import GenerationStats from '../components/Jvm/GenerationStats';
 
 require('../css/rc-tp-override.css');
@@ -885,7 +884,7 @@ class JvmInfoPage extends React.Component {
     }));
     GCPlotCore.deleteJvm(this.props.params.analyseId, this.props.params.jvmId, function() {
       this.setState(update(this.state, { show: {$set: false}}))
-      browserHistory.push("/dashboard");
+      GCPlotCore.history.push("/dashboard");
     }.bind(this), function(code, title, msg) {
       this.setState(update(this.state, {
         delete: {

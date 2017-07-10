@@ -2,7 +2,6 @@ import React from 'react';
 import {Navbar, Nav, NavDropdown, MenuItem} from 'react-bootstrap';
 import I from 'react-fontawesome';
 import GCPlotCore from '../../core'
-import { browserHistory } from 'react-router'
 
 var update = require('react-addons-update');
 
@@ -38,7 +37,7 @@ class Navigation extends React.Component {
   }
 
   profileClicked() {
-    browserHistory.push("/profile");
+    GCPlotCore.history.push("/profile");
     document.dispatchEvent(new MouseEvent('click'));
     return null;
   }

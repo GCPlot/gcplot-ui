@@ -1,6 +1,8 @@
 /*jshint -W109 */
 
 import $ from 'jquery';
+import { useBasename } from 'history'
+import { browserHistory } from 'react-router';
 var jsonpipe = require('jsonpipe');
 
 function GCPlotCore() {
@@ -12,11 +14,9 @@ GCPlotCore.TOKEN_KEY = "token";
 GCPlotCore.USER_INFO = "user_info";
 GCPlotCore.ANALYSES = "analyses";
 
-GCPlotCore.APP_SUFFIX = "app";
+GCPlotCore.APP_SUFFIX = "/app";
 
-GCPlotCore.appSuffix = function() {
-  return GCPlotCore.APP_SUFFIX;
-}
+GCPlotCore.history = useBasename(() => browserHistory)({ basename: GCPlotCore.APP_SUFFIX })
 
 GCPlotCore.INTERNAL_ERROR_HANDLER = function(status) {
   alert(status);

@@ -1,7 +1,6 @@
 'use strict';
 
 import React from 'react';
-import { browserHistory } from 'react-router'
 import I from 'react-fontawesome';
 import NavLink from '../NavLink/NavLink';
 import GCPlotCore from '../../core'
@@ -38,7 +37,7 @@ class SidebarLeft extends React.Component {
   }
 
   analyseEditClicked(analyse) {
-    browserHistory.push('/analyse/info/' + analyse.id);
+    GCPlotCore.history.push('/analyse/info/' + analyse.id);
   }
 
   componentDidMount () {

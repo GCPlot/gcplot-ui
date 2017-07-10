@@ -4,7 +4,6 @@ import $ from 'jquery';
 
 import React from 'react';
 import { Row, Col, Panel, Tabs, Tab, ButtonGroup, InputGroup, FormControl, FormGroup, Modal, Button } from 'react-bootstrap';
-import { browserHistory } from 'react-router'
 import I from 'react-fontawesome';
 import CreateJvm from '../components/Jvm/CreateJvm'
 import GCPlotCore from '../core'
@@ -194,7 +193,7 @@ class AnalyseInfoPage extends React.Component {
   onDeleteClick() {
     GCPlotCore.deleteAnalyse(this.props.params.analyseId, function() {
       this.setState(update(this.state, { show: {$set: false}}))
-      browserHistory.push("/dashboard");
+      GCPlotCore.history.push("/dashboard");
     }.bind(this), function(code, title, msg) {
       this.setState(update(this.state, {
         errorStyle: {
