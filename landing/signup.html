@@ -281,7 +281,7 @@
                 password: password,
                 email: email
               }, function() {
-                window.location.replace("https://" + GCPlotCore.appHost());
+                window.location.replace(GCPlotCore.appUrl());
               }, function(err, msg) {
                 $("#errorMsg").text("" + msg);
                 $("#errorMsgBox").css('display', 'block');

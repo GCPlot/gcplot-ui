@@ -265,7 +265,7 @@
           $("#errorMsgBox").css('display', 'block');
         } else {
           GCPlotCore.login(username, password, function() {
-            window.location.replace("https://" + GCPlotCore.appHost());
+            window.location.replace(GCPlotCore.appUrl());
           }, function(code, msg) {
             $("#errorMsg").text("" + msg);
             $("#errorMsgBox").css('display', 'block');
