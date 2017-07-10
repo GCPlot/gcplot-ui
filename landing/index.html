@@ -31,8 +31,27 @@
 
         <!-- Color css -->
         <link href="css/colors/default.css" rel="stylesheet">
+        <script src="js/gcplot.com"></script>
         <script>
+          var qs = (function(a) {
+            if (a == "") return {};
+            var b = {};
+            for (var i = 0; i < a.length; ++i)
+            {
+                var p=a[i].split('=', 2);
+                if (p.length == 1)
+                    b[p[0]] = "";
+                else
+                    b[p[0]] = decodeURIComponent(p[1].replace(/\+/g, " "));
+            }
+            return b;
+          })(window.location.search.substr(1).split('&'));
 
+          var token = localStorage.getItem(GCPlotCore.TOKEN);
+          var isLoggedIn = (typeof token != "undefined") && token != null;
+          if (isLoggedIn || typeof qs["cp"] != 'undefined') {
+            window.location.replace(window.location.href.replace(GCPlotCore.landingHost(), GCPlotCore.appHost()));
+          }
         </script>
 
     </head>

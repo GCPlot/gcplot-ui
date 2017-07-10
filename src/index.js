@@ -20,12 +20,15 @@ var qs = (function(a) {
     return b;
 })(window.location.search.substr(1).split('&'));
 
+var appHost = "[[APP_HOST]]";
+var landingHost = "[[LANDING_HOST]]"
+
 if (typeof qs["cp"] != 'undefined') {
   ReactDOM.render(<NewPasswordLayout token={qs["token"]} salt={qs["salt"]} />, document.getElementById('app'));
 } else {
   // Render the main component into the dom
   if (!GCPlotCore.isLoggedIn()) {
-    ReactDOM.render(<WelcomeLayout />, document.getElementById('app'));
+    window.location.replace(window.location.href.replace(appHost, landingHost));
   } else {
     ReactDOM.render(<RARoutes />, document.getElementById('app'));
   }
