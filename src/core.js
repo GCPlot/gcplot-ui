@@ -12,6 +12,8 @@ GCPlotCore.TOKEN_KEY = "token";
 GCPlotCore.USER_INFO = "user_info";
 GCPlotCore.ANALYSES = "analyses";
 
+GCPlotCore.APP_SUFFIX = "app";
+
 GCPlotCore.INTERNAL_ERROR_HANDLER = function(status) {
   alert(status);
 }

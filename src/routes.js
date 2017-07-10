@@ -10,6 +10,7 @@ import ProfilePage from './pages/ProfilePage'
 import TermsOfService from './pages/TermsOfService'
 import RealtimeConnection from './pages/RealtimeConnection'
 import FAQ from './pages/FAQ'
+import GCPlotCore from './core'
 var ReactGA = require('react-ga');
 ReactGA.initialize('UA-88807066-1');
 
@@ -20,7 +21,7 @@ export default () => {
   };
   return (
     <Router onUpdate={logPageView} history={browserHistory}>
-      <Route path="/" component={MainLayout}>
+      <Route path={"/" + GCPlotCore.APP_SUFFIX} component={MainLayout}>
         <IndexRoute component={DashboardPage} />
         <Route path="/dashboard" component={DashboardPage} />
         <Route path="/quick_process" component={QuickProcessPage} />
