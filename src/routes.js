@@ -1,5 +1,5 @@
 import React from 'react';
-import { Router, Route, browserHistory, IndexRoute } from 'react-router';
+import { Router, Route, browserHistory, useRouterHistory, IndexRoute } from 'react-router';
 import MainLayout from './layouts/MainLayout';
 import DashboardPage from './pages/DashboardPage';
 import NewAnalysePage from './pages/NewAnalysePage';
@@ -14,14 +14,19 @@ import GCPlotCore from './core'
 var ReactGA = require('react-ga');
 ReactGA.initialize('UA-88807066-1');
 
+import { createHistory } from 'history'
+
 export default () => {
   var logPageView = function() {
     ReactGA.set({ page: window.location.pathname });
     ReactGA.pageview(window.location.pathname);
   };
+  var history = useRouterHistory(createHistory)({
+    basename: '/' + GCPlotCore.appSuffix()
+  });
   return (
-    <Router onUpdate={logPageView} history={browserHistory}>
-      <Route path={"/" + GCPlotCore.APP_SUFFIX} component={MainLayout}>
+    <Router onUpdate={logPageView} history={history}>
+      <Route path={"/"} component={MainLayout}>
         <IndexRoute component={DashboardPage} />
         <Route path="/dashboard" component={DashboardPage} />
         <Route path="/quick_process" component={QuickProcessPage} />

@@ -12,7 +12,7 @@ class TermsOfService extends React.Component {
     return <div className="content-wrapper">
       <section className="content">
         <Panel>
-          <iframe src="assets/terms.html" width="100%" height="2000px" frameBorder="0">Browser not compatible.</iframe>
+          <iframe src="/assets/terms.html" width="100%" height="2000px" frameBorder="0">Browser not compatible.</iframe>
         </Panel>
       </section>
     </div>;
