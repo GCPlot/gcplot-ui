@@ -10,7 +10,7 @@
     <title>Error 404</title>
 
     <!-- Google fonts -->
-    <link href='http://fonts.googleapis.com/css?family=RobotoDraft:regular,bold,italic,thin,light,bolditalic,black,medium&lang=en' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=RobotoDraft:regular,bold,italic,thin,light,bolditalic,black,medium&lang=en' rel='stylesheet' type='text/css'>
 
     <!-- Bootstrap core CSS -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
@@ -30,7 +30,7 @@
 
     <!-- Color css -->
     <link href="css/colors/default.css" rel="stylesheet">
-    <script src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script src="js/jquery-2.1.4.min.js"></script>
     <script>
       (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
       (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
@@ -43,7 +43,7 @@
     </script>
   <script>
   $(function() {
-    var xhr = $.get("http://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC&tag=pug");
+    var xhr = $.get("https://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC&tag=pug");
     xhr.done(function(data) {
       $('.gif-bg').css('background-image', 'url(' + data.data.image_url + ')');
     });
@@ -203,7 +203,6 @@
 
 
     <!-- js placed at the end of the document so the pages load faster -->
-    <script src="js/jquery-2.1.4.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
     <!-- Jquery easing -->
     <script type="text/javascript" src="js/jquery.easing.1.3.min.js"></script>
