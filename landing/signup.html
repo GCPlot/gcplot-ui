@@ -30,7 +30,15 @@
 
         <!-- Color css -->
         <link href="css/colors/default.css" rel="stylesheet">
+        <script>
+          (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+          (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+          })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
 
+          ga('create', 'UA-88807066-1', 'auto');
+          ga('send', 'pageview');
+        </script>
     </head>
 
     <body>
@@ -110,44 +118,50 @@
                             <div class="form-group m-b-20">
                                 <div class="col-xs-12">
                                     <label for="username">User Name</label>
-                                    <input class="form-control" type="text" id="username" required/>
+                                    <input class="form-control" type="text" id="username"/>
                                 </div>
                             </div>
                             <div class="form-group m-b-20">
                                 <div class="col-xs-12">
                                     <label for="fullname">Full Name</label>
-                                    <input class="form-control" type="text" id="fullname" required>
+                                    <input class="form-control" type="text" id="fullname">
                                 </div>
                             </div>
 
                             <div class="form-group m-b-20">
                                 <div class="col-xs-12">
                                     <label for="emailaddress">Email Address</label>
-                                    <input class="form-control" type="email" id="emailaddress" required>
+                                    <input class="form-control" type="email" id="emailaddress">
                                 </div>
                             </div>
 
                             <div class="form-group m-b-20">
                                 <div class="col-xs-12">
                                     <label for="password">Password</label>
-                                    <input class="form-control" type="password" required id="password">
+                                    <input class="form-control" type="password" id="password">
                                 </div>
                             </div>
 
                             <div class="form-group m-b-20">
                                 <div class="col-xs-12">
                                     <div class="checkbox">
-                                        <label for="remember">
-                                            <input id="remember" required type="checkbox" checked="">
-                                            I accept <a href="terms.html" class="gc-link">Terms and Conditions</a>
+                                        <label for="accept">
+                                            <input id="accept" type="checkbox" checked="">
+                                            I accept <a target="_blank" href="terms.html" class="gc-link">Terms and Conditions</a>
                                         </label>
                                     </div>
                                 </div>
                             </div>
 
+                            <div id="errorMsgBox" class="form-group m-b-20" style="display: none">
+                                <div class="col-xs-12">
+                                    <p id="errorMsg" style="color: red;"></p>
+                                </div>
+                            </div>
+
                             <div class="form-group text-center m-t-10">
                                 <div class="col-xs-12">
-                                    <button class="btn btn-block btn-custom" type="submit">Create an Account</button>
+                                    <button id="signup" class="btn btn-block btn-custom" type="button">Create an Account</button>
                                 </div>
                             </div>
                         </form>
@@ -230,7 +244,51 @@
 
         <!--common script for all pages-->
         <script src="js/jquery.app.js"></script>
+        <script src="js/gcplot.js"></script>
 
+        <script>
+          $("#signup").click(function() {
+            $("#errorMsgBox").css('display', 'none');
+            $("#signup").attr('disabled','disabled');
+            setTimeout(function() {
+              $("#signup").removeAttr('disabled');
+            }, 2000);
+            var username = $("#username").val();
+            var fullname = $("#fullname").val();
+            var email = $("#emailaddress").val();
+            var password = $("#password").val();
+
+            if (username == "" || typeof username == 'undefined' || username == null) {
+              $("#errorMsg").text("Username can't be empty!");
+              $("#errorMsgBox").css('display', 'block');
+            } else if (fullname == "" || typeof fullname == 'undefined' || fullname == null) {
+              $("#errorMsg").text("Full Name can't be empty!");
+              $("#errorMsgBox").css('display', 'block');
+            } else if (email == "" || typeof email == 'undefined' || email == null) {
+              $("#errorMsg").text("E-mail can't be empty!");
+              $("#errorMsgBox").css('display', 'block');
+            } else if (password == "" || typeof password == 'undefined' || password == null) {
+              $("#errorMsg").text("Password can't be empty!");
+              $("#errorMsgBox").css('display', 'block');
+            } else if (!$("#accept").prop("checked")) {
+              $("#errorMsg").text("You must accept our Terms and Conditions in order to register.");
+              $("#errorMsgBox").css('display', 'block');
+            } else {
+              GCPlotCore.register({
+                username: username,
+                first_name: GCPlotCore.split(fullname)[0],
+                last_name: GCPlotCore.split(fullname)[1],
+                password: password,
+                email: email
+              }, function() {
+                window.location.replace("https://" + GCPlotCore.appHost());
+              }, function(err, msg) {
+                $("#errorMsg").text("" + msg);
+                $("#errorMsgBox").css('display', 'block');
+              });
+            }
+          });
+        </script>
 
     </body>
 </html>
