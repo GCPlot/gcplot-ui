@@ -15,7 +15,7 @@ GCPlotCore.ANALYSES = "analyses";
 GCPlotCore.APP_SUFFIX = "app";
 
 GCPlotCore.appSuffix = function() {
-  return window.api_host.indexOf('dev') > 0 ? "" : GCPlotCore.APP_SUFFIX;
+  return GCPlotCore.APP_SUFFIX;
 }
 
 GCPlotCore.INTERNAL_ERROR_HANDLER = function(status) {
