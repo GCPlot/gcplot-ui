@@ -19,7 +19,7 @@ export default () => {
     ReactGA.set({ page: window.location.pathname });
     ReactGA.pageview(window.location.pathname);
   };
-  console.log(GCPlotCore.history;
+  console.log(GCPlotCore.history);
   console.log(GCPlotCore.history.getCurrentLocation());
   return (
     <Router onUpdate={logPageView} history={GCPlotCore.history}>
