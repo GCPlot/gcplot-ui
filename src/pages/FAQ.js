@@ -37,10 +37,10 @@ class FAQ extends React.Component {
                 <p/>
                 <dt>6. What is Analysis Group?</dt>
                 <dd>Analysis Group helps you to organize your data sources in the best way you see it. The most common case is when you have different clusters, and create separate group for each:</dd>
-                <p><img width="180px" height="241px" src="/img/analysis_groups.png" /></p>
+                <p><img width="180px" height="241px" src="img/analysis_groups.png" /></p>
                 <dd>There might be a number of JVMs under each Analysis Group. Each JVM has its own unique ID, which is used by Realtime Connector to upload data from the appropriate machine.</dd>
                 <dd>There is also a default 'Files' Analysis Group, which contains all manually uploaded log files (via 'Quick Process' page):</dd>
-                <p><img width="180px" height="111px" src="/img/files-group.png" /></p>
+                <p><img width="180px" height="111px" src="img/files-group.png" /></p>
                 <p/>
                 <dt>7. Can I select a particular interval while building the report?</dt>
                 <dd>Of course. You can set the interval to the exact second, while the width of the interval can be started from the minute.</dd>

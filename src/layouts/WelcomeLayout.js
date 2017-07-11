@@ -230,15 +230,15 @@ class WelcomeLayout extends React.Component {
                             </h3>
                             <div className="value-props row">
                                 <div className="four columns value-prop">
-                                    <img className="value-img" src="/img/i11.png" height="150"/>
+                                    <img className="value-img" src="img/i11.png" height="150"/>
                                     Monitor how your Garbage Collector flies continuously - on the complex system or just a simple app.
                                 </div>
                                 <div className="four columns value-prop">
-                                    <img className="value-img" src="/img/i22.png" height="150"/>
+                                    <img className="value-img" src="img/i22.png" height="150"/>
                                     Decent amount of reports, charts and hints will help you to undertand all pitfalls in your GC configuration.
                                 </div>
                                 <div className="four columns value-prop">
-                                    <img className="value-img" src="/img/i33.png" height="150"/>
+                                    <img className="value-img" src="img/i33.png" height="150"/>
                                     Connect multiple JVMs in realtime or upload individual GC log files - all made as straightforward as possible.
                                 </div>
                             </div>
@@ -253,7 +253,7 @@ class WelcomeLayout extends React.Component {
                             </h2>
                             <h4>Build a detailed report about any single collection</h4>
                             <h4>Already in toolbox of <span style={{color: "blue"}}>60+</span> companies</h4>
-                            <img width="100%" src="/img/laptop.png"/>
+                            <img width="100%" src="img/laptop.png"/>
                             <p />
                         </section>
                     </div>

@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="Login to the GCPlot platform. GCPlot is capable to detect long STW pauses, allocation and promotion rate graphs, memory leak detection, tenuring stats, gc causes and gc phases, and other stats about your Garbage Collector work. It also supports real-time connection with your gc logs.">
+        <meta name="author" content="GCPlot">
+        <link rel="shortcut icon" href="https://gcplot.com/favicon.ico">
+
+        <title>GCPlot - all-in-one JVM GC Logs Analyzer</title>
+
+        <!-- Google fonts -->
+        <link href='https://fonts.googleapis.com/css?family=RobotoDraft:regular,bold,italic,thin,light,bolditalic,black,medium&lang=en' rel='stylesheet' type='text/css'>
+
+        <!-- Bootstrap core CSS -->
+        <link href="css/bootstrap.min.css" rel="stylesheet">
+
+        <!-- Animate -->
+        <link href="css/aos.css" rel="stylesheet">
+
+        <!-- Magnific-popup -->
+        <link rel="stylesheet" href="css/magnific-popup.css">
+
+        <!-- Icon-font -->
+        <link rel="stylesheet" type="text/css" href="css/pe-icon-7-stroke.css">
+        <link rel="stylesheet" type="text/css" href="css/materialdesignicons.min.css">
+
+        <!-- Custom styles for this template -->
+        <link href="css/style.css" rel="stylesheet">
+
+        <!-- Color css -->
+        <link href="css/colors/default.css" rel="stylesheet">
+        <script>
+          (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+          (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+          })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+          ga('create', 'UA-88807066-1', 'auto');
+          ga('send', 'pageview');
+
+        </script>
+    </head>
+
+    <body>
+
+            <!-- Pre-loader -->
+            <div class="preloader">
+                <div class="status">&nbsp;</div>
+            </div>
+
+            <!-- Navbar -->
+            <div class="navbar navbar-custom sticky navbar-fixed-top menu-dark" role="navigation">
+                <div class="container">
+                    <!-- Navbar-header -->
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                            <i class="mdi mdi-format-align-left"></i>
+                        </button>
+                        <!-- LOGO -->
+                        <a class="navbar-brand logo" href="index.html">
+                        <img src="images/GC_logo.png"   alt="GCPlot logo">
+                        <span>GCPlot</span>
+                    </a>                    </div>
+                    <!-- end navbar-header -->
+
+                    <!-- menu -->
+                    <div class="navbar-collapse collapse">
+                        <ul class="nav navbar-nav navbar-right">
+                          <li>
+                              <a href="index.html" class="nav-link">Home</a>
+                          </li>
+                          <li>
+                              <a href="#faq" class="nav-link">FAQ</a>
+                          </li>
+                          <li>
+                              <a href="#started" class="nav-link">Features</a>
+                          </li>
+                          <li>
+                              <a target="_blank" href="https://docs.gcplot.com/" class="nav-link">Knowledge Base</a>
+                          </li>
+                          <li>
+                              <a target="_blank" href="https://blog.gcplot.com" class="nav-link">Blog</a>
+                          </li>
+                          <li>
+                              <a href="signup.html" class="nav-link signup-button">Sign up</a>
+                          </li>
+                        </ul>
+                    </div>
+                    <!--/Menu -->
+                </div>
+                <!-- end container -->
+            </div>
+            <!-- End navbar -->
+            <div class="clearfix"></div>
+
+
+            <!-- HOME -->
+            <section class="title-box home-gradient">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="text-center">
+                                <h1 data-aos="fade-up" data-aos-anchor-placement="bottom-bottom" class="title-header">Log In</h1>
+                            </div>
+                        </div>
+                    </div><!-- end row -->
+                </div> <!-- end container -->
+            </section>
+            <!-- END HOME -->
+
+
+            <section class="section">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-sm-6 col-sm-offset-3">
+                            <form id="loginForm" class="form-horizontal" action="#" data-aos="fade-up">
+                                <div class="form-group m-b-20">
+                                    <div class="col-xs-12">
+                                        <label for="emailaddress">Username or Email</label>
+                                        <input id="emailaddress" class="form-control" type="text" required="">
+                                    </div>
+                                </div>
+
+                                <div class="form-group m-b-20">
+                                    <div class="col-xs-12">
+                                        <a id="recoverMe" href="#" class="text-muted pull-right"><small>Forgot your password?</small></a>
+                                        <label for="password">Password</label>
+                                        <input class="form-control" type="password" id="password">
+                                    </div>
+                                </div>
+
+                                <div id="errorMsgBox" class="form-group m-b-20" style="display: none">
+                                    <div class="col-xs-12">
+                                        <p id="errorMsg" style="color: red;"></p>
+                                    </div>
+                                </div>
+
+                                <div class="form-group text-center">
+                                    <div class="col-xs-12">
+                                        <button id="login" class="btn btn-block btn-custom" type="button">Sign In</button>
+                                    </div>
+                                </div>
+
+                            </form>
+                            <form id="recoverForm" class="form-horizontal" style="display: none" action="#" data-aos="fade-up">
+                                <div class="form-group m-b-20">
+                                    <div class="col-xs-12">
+                                        <label for="remailaddress">Your e-mail</label>
+                                        <input id="remailaddress" class="form-control" type="email" required="">
+                                    </div>
+                                </div>
+
+                                <div id="rerrorMsgBox" class="form-group m-b-20" style="display: none">
+                                    <div class="col-xs-12">
+                                        <p id="rerrorMsg" style="color: red;"></p>
+                                    </div>
+                                </div>
+
+                                <div class="form-group text-center">
+                                    <div class="col-xs-12">
+                                        <button id="recover" class="btn btn-block btn-custom" type="button">Recover</button>
+                                    </div>
+                                </div>
+
+                            </form>
+                        </div>
+                    </div><!-- end row -->
+
+                    <div class="row">
+                        <div class="col-sm-12 text-center" data-aos="fade-up">
+                            <p class="text-muted padding-t-30">Don't have an account? <a href="signup.html" class="text-dark m-l-5"><b>Sign Up</b></a></p>
+                        </div>
+                    </div> <!-- end row -->
+                </div> <!-- end container -->
+            </section>
+
+            <!-- FOOTER -->
+            <footer class="footer">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-3 col-sm-6">
+                          <h5>Resources</h5>
+                          <ul class="list-unstyled">
+                            <li><a href="index.html">Home</a></li>
+                            <li><a target="_blank" href="https://docs.gcplot.com">Knowledge Base</a></li>
+                            <li><a target="_blank" href="https://blog.gcplot.com">Blog</a></li>
+                            <li><a target="_blank" href="https://docs.gcplot.com/log-files-processing.html">Realtime Connector</a></li>
+                            <li><a target="_blank" href="https://docs.gcplot.com/faq.html">FAQ</a></li>
+                          </ul>
+                        </div>
+
+                        <div class="col-md-3 col-sm-6">
+                          <h5>Social</h5>
+                          <ul class="list-unstyled">
+                            <li><a target="_blank" href="https://www.facebook.com/gcplot">Facebook</a></li>
+                            <li><a target="_blank" href="https://twitter.com/GCPlot">Twitter</a></li>
+                            <li><a target="_blank" href="https://www.linkedin.com/company-beta/16250703/">LinkedIn</a></li>
+                            <li><a target="_blank" href="https://github.com/gcplot">Github</a></li>
+                          </ul>
+                        </div>
+
+                        <div class="col-md-3 col-sm-6">
+                          <h5>Support</h5>
+                          <ul class="list-unstyled">
+                            <li><a href="mailto:support@gcplot.com">Help & Support</a></li>
+                            <li><a target="_blank" href="https://groups.google.com/forum/#!forum/gcplot">Forum</a></li>
+                            <li><a href="terms.html">Terms & Conditions</a></li>
+                          </ul>
+                        </div>
+
+                        <div class="col-md-3 col-sm-6">
+                          <h5>Contact</h5>
+                          <address>
+                            <abbr title="Phone">P: </abbr>+7 (906) 407-6771<br/>
+                            E: <a href="mailto:support@gcplot.com">support@gcplot.com</a>
+                          </address>
+                        </div>
+                    </div> <!--end row-->
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="footer-alt text-center">
+                                <p class="copyright-txt">2017 © GCPlot</p>
+                            </div>
+                        </div>
+                    </div> <!--end row-->
+                </div><!--end container-->
+            </footer>
+
+            <!-- END FOOTER -->
+
+
+
+
+    <!-- js placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-2.1.4.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <!-- Jquery easing -->
+    <script type="text/javascript" src="js/jquery.easing.1.3.min.js"></script>
+    <script src="js/SmoothScroll.js"></script>
+    <script src="js/aos.js"></script>
+    <script type="text/javascript" src="js/jquery.magnific-popup.min.js"></script>
+    <!--sticky header-->
+    <script type="text/javascript" src="js/jquery.sticky.js"></script>
+
+    <!--common script for all pages-->
+    <script src="js/jquery.app.js"></script>
+    <script src="js/gcplot.js"></script>
+
+    <script>
+      var loginFunc = function() {
+        $("#login").attr('disabled','disabled');
+        setTimeout(function() {
+          $("#login").removeAttr('disabled');
+        }, 2000);
+        $("#errorMsgBox").css('display', 'none');
+        var username = $("#emailaddress").val();
+        var password = $("#password").val();
+
+        if (username == "" || typeof username == 'undefined' || username == null) {
+          $("#errorMsg").text("Username can't be empty!");
+          $("#errorMsgBox").css('display', 'block');
+        } else if (password == "" || typeof password == 'undefined' || password == null) {
+          $("#errorMsg").text("Password can't be empty!");
+          $("#errorMsgBox").css('display', 'block');
+        } else {
+          GCPlotCore.login(username, password, function() {
+            window.location.replace(GCPlotCore.appUrl());
+          }, function(code, msg) {
+            $("#errorMsg").text("" + msg);
+            $("#errorMsgBox").css('display', 'block');
+          });
+        }
+      };
+      $(document).keypress(function(e) {
+        if(e.which == 13) {
+          loginFunc();
+        }
+      });
+      $("#login").click(loginFunc);
+
+      $("#recoverMe").click(function() {
+        $("#recoverForm").css('display', 'block');
+        $("#loginForm").css('display', 'none');
+      });
+
+      $("#recover").click(function() {
+        $("#recover").attr('disabled','disabled');
+        setTimeout(function() {
+          $("#recover").removeAttr('disabled');
+        }, 3000);
+        $("#rerrorMsgBox").css('display', 'none');
+        var email = $("#remailaddress").val();
+
+        if (email == "" || typeof email == 'undefined' || email == null) {
+          $("#rerrorMsg").text("E-mail can't be empty!");
+          $("#rerrorMsgBox").css('display', 'block');
+        } else {
+          GCPlotCore.changePasswordMail(email, function() {
+            $("#rerrorMsgBox").css('display', 'block');
+            $("#rerrorMsg").text("We sent you a link for a new password generation at " + email);
+            $("#rerrorMsg").css('color', 'black');
+            setTimeout(function() {
+              $("#rerrorMsg").css('color', 'red');
+              $("#rerrorMsgBox").css('display', 'none');
+              $("#recoverForm").css('display', 'none');
+              $("#loginForm").css('display', 'block');
+            }, 5000);
+          }, function(err, msg) {
+            $("#rerrorMsg").text("" + msg);
+            $("#rerrorMsgBox").css('display', 'block');
+          });
+        }
+      });
+    </script>
+
+  </body>
+</html>

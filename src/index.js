@@ -25,7 +25,7 @@ if (typeof qs["cp"] != 'undefined') {
 } else {
   // Render the main component into the dom
   if (!GCPlotCore.isLoggedIn()) {
-    ReactDOM.render(<WelcomeLayout />, document.getElementById('app'));
+    window.location.replace("https://" + window.landingHost);
   } else {
     ReactDOM.render(<RARoutes />, document.getElementById('app'));
   }

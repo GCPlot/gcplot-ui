@@ -1,6 +1,8 @@
 /*jshint -W109 */
 
 import $ from 'jquery';
+import { useBasename } from 'history'
+import { browserHistory } from 'react-router';
 var jsonpipe = require('jsonpipe');
 
 function GCPlotCore() {
@@ -11,6 +13,10 @@ GCPlotCore.ANONYMOUS_ANALYSE_ID = "7acada7b-e109-4d11-ac01-b3521d9d58c3";
 GCPlotCore.TOKEN_KEY = "token";
 GCPlotCore.USER_INFO = "user_info";
 GCPlotCore.ANALYSES = "analyses";
+
+GCPlotCore.APP_SUFFIX = "/app";
+
+GCPlotCore.history = useBasename(() => browserHistory)({ basename: GCPlotCore.APP_SUFFIX })
 
 GCPlotCore.INTERNAL_ERROR_HANDLER = function(status) {
   alert(status);
@@ -140,7 +146,7 @@ GCPlotCore.currentProtocol = function() {
 };
 
 GCPlotCore.apiUrl = function() {
-  if (window.api_host.startsWith('[')) {
+  if (window.api_host.indexOf('[') == 0) {
     return this.currentProtocol() + 'gs-dev.gcplot.com';
   } else {
     return this.currentProtocol() + window.api_host;
@@ -203,8 +209,6 @@ GCPlotCore.userInfo = function(callback) {
       if (!r.hasOwnProperty('error')) {
         sessionStorage.setItem(GCPlotCore.USER_INFO, JSON.stringify(r.result));
         callback(r.result);
-      } else {
-        console.log("User Info fetch: " + data);
       }
     }));
   }
@@ -243,7 +247,6 @@ GCPlotCore.sendConfirmation = function(callback, errorCallback) {
 * }
 */
 GCPlotCore.register = function(userData, callback, errorCallback) {
-  console.log("registering " + JSON.stringify(userData));
   $.ajax({
     type: "POST",
     url: GCPlotCore.url("/user/register"),
@@ -251,12 +254,10 @@ GCPlotCore.register = function(userData, callback, errorCallback) {
     contentType: "application/json",
     success: function(data) {
       var r = JSON.parse(data);
-      console.log("register response " + data);
       if (r.hasOwnProperty('error')) {
         errorCallback(r.error, GCPlotCore.ERRORS[r.error], r.message);
       } else {
         GCPlotCore.login(userData.username, userData.password, function() {
-          console.log("login after register successful");
           callback();
         }, function(code, title, msg) {
           errorCallback(code, title, msg);
@@ -303,7 +304,6 @@ GCPlotCore.analyses = function(callback, errorCallback) {
             r.result.analyses[i].jvm_ids = sortedJvms;
           }
         } catch(ex) {
-          console.log(ex);
         }
         sessionStorage.setItem(GCPlotCore.ANALYSES, JSON.stringify(r.result));
         callback(r.result);
@@ -368,9 +368,7 @@ GCPlotCore.updateAccountConfig = function(id, value) {
     contentType: "application/json",
     success: function(data) {
       var r = JSON.parse(data);
-      if (r.hasOwnProperty('error')) {
-        console.log(GCPlotCore.ERRORS[r.error] + " | " + r.message);
-      } else {
+      if (!r.hasOwnProperty('error')) {
         sessionStorage.removeItem(GCPlotCore.USER_INFO);
         GCPlotCore.trigger(GCPlotCore.PROFILE_CHANGED_EVENT);
       }
@@ -409,7 +407,6 @@ GCPlotCore.addAnalyse = function(req, callback, errorCallback) {
     contentType: "application/json",
     success: function(data) {
       var r = JSON.parse(data);
-      console.log("add analyse response " + data);
       if (r.hasOwnProperty('error')) {
         errorCallback(r.error, GCPlotCore.ERRORS[r.error], r.message);
       } else {
@@ -446,7 +443,6 @@ GCPlotCore.deleteAnalyse = function(id, callback, errorCallback) {
     url: GCPlotCore.authUrl("/analyse/delete?id=" + id),
     success: function(data) {
       var r = JSON.parse(data);
-      console.log("delete analyse response " + data);
       if (r.hasOwnProperty('error')) {
         errorCallback(r.error, GCPlotCore.ERRORS[r.error], r.message);
       } else {

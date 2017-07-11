@@ -4,7 +4,6 @@ import $ from 'jquery';
 
 import React from 'react';
 import { Row, Col, Panel, Tabs, Tab, ButtonGroup, InputGroup, FormControl, FormGroup, Modal, Button } from 'react-bootstrap';
-import { browserHistory } from 'react-router'
 import I from 'react-fontawesome';
 import CreateJvm from '../components/Jvm/CreateJvm'
 import GCPlotCore from '../core'
@@ -194,7 +193,7 @@ class AnalyseInfoPage extends React.Component {
   onDeleteClick() {
     GCPlotCore.deleteAnalyse(this.props.params.analyseId, function() {
       this.setState(update(this.state, { show: {$set: false}}))
-      browserHistory.push("/dashboard");
+      GCPlotCore.history.push("/dashboard");
     }.bind(this), function(code, title, msg) {
       this.setState(update(this.state, {
         errorStyle: {
@@ -240,7 +239,6 @@ class AnalyseInfoPage extends React.Component {
       remove_jvms: this.state.jvmsRemoved,
       update_jvms: jvmsToUpdate
     }
-    console.log(JSON.stringify(msg));
     GCPlotCore.updateAnalyseBulk(msg, function() {
       this.setState(update(this.state, { showSave: {$set: false}, save: { message: {$set: ""}}}));
       this.updateAll();
@@ -505,7 +503,6 @@ class AnalyseInfoPage extends React.Component {
                      <Row>
                        {(function() {
                          return this.state.analyse.jvm_ids.map(function(r, i) {
-                           console.log(r + "|" + ($.inArray(r, this.state.initialJvmIds) >= 0));
                            return <CreateJvm md={3} cid={r} key={r} pp={this} title="JVM" versionValue={this.state.analyse.jvm_vers[r]}
                            collectorValue={this.state.analyse.jvm_gcts[r]} jvmName={this.state.analyse.jvm_names[r] || r} jvmId={r} closeClickHandler={this.jvmCloseClicked.bind(this,
                              r)}></CreateJvm>;

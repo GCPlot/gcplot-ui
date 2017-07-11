@@ -11,7 +11,6 @@ import moment from 'moment-timezone';
 import DatePicker from 'react-datepicker';
 import TimePicker from 'rc-time-picker';
 import {Chart} from 'react-google-charts';
-import { browserHistory } from 'react-router';
 import GenerationStats from '../components/Jvm/GenerationStats';
 
 require('../css/rc-tp-override.css');
@@ -244,7 +243,6 @@ class JvmInfoPage extends React.Component {
       var analyses = r.analyses;
       for (var i = 0; i < analyses.length; i++) {
         if (analyses[i].id == this.props.params.analyseId) {
-          console.log(analyses[i]);
           var lastEvent = analyses[i].last_utc[this.props.params.jvmId];
           var endDate, startDate;
           var tz = this.tz(analyses[i]);
@@ -360,13 +358,6 @@ class JvmInfoPage extends React.Component {
         start.hour(0).minute(0).second(0).millisecond(0);
         end.hour(23).minute(59).second(59).millisecond(999);
     }
-
-    console.log("start f: " + start.format());
-    console.log("end f: " + end.format());
-    console.log("start d: " + this.toDateTz(start));
-    console.log("end d: " + this.toDateTz(end));
-    console.log("start: " + start.valueOf());
-    console.log("end: " + end.valueOf());
 
     this.state.stats = null;
     this.setState(update(this.state, {
@@ -885,7 +876,7 @@ class JvmInfoPage extends React.Component {
     }));
     GCPlotCore.deleteJvm(this.props.params.analyseId, this.props.params.jvmId, function() {
       this.setState(update(this.state, { show: {$set: false}}))
-      browserHistory.push("/dashboard");
+      GCPlotCore.history.push("/dashboard");
     }.bind(this), function(code, title, msg) {
       this.setState(update(this.state, {
         delete: {

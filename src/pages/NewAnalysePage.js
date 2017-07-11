@@ -1,7 +1,6 @@
 'use strict';
 
 import React from 'react';
-import { browserHistory } from 'react-router'
 import { Row, Col, Panel, FormControl, FormGroup, ButtonInput, Popover, Modal, Button, DropdownButton, MenuItem } from 'react-bootstrap';
 import I from 'react-fontawesome';
 import CreateJvm from '../components/Jvm/CreateJvm'
@@ -81,7 +80,6 @@ class NewAnalysePage extends React.Component {
       var jvms = [];
       for (var i = 0; i < this.state.jvms.length; i++) {
         var jvm = this.state.cmps[this.state.jvms[i].props.cid + ""];
-        console.log(jvm);
         jvms.push({
           id: jvm.state.jvmId,
           an_id: "",
@@ -93,7 +91,7 @@ class NewAnalysePage extends React.Component {
       }
       req["jvms"] = jvms;
       GCPlotCore.addAnalyse(req, function() {
-        browserHistory.push("/dashboard");
+        GCPlotCore.history.push("/dashboard");
       }, (function(code, title, msg) {
         this.setState(update(this.state, {
           errorStyle: {
