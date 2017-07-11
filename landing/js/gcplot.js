@@ -77,7 +77,7 @@ GCPlotCore.url = function(path) {
 }
 
 GCPlotCore.landingHost = function() {
-  if (GCPlotCore.LANDING_HOST.startsWith("[")) {
+  if (GCPlotCore.LANDING_HOST.indexOf("[") == 0) {
     return "ui-dev.gcplot.com";
   } else {
     return GCPlotCore.LANDING_HOST;
@@ -89,7 +89,7 @@ GCPlotCore.appUrl = function() {
 }
 
 GCPlotCore.apiHost = function() {
-  if (GCPlotCore.API_HOST.startsWith("[")) {
+  if (GCPlotCore.API_HOST.indexOf("[") == 0) {
     return "gs-dev.gcplot.com";
   } else {
     return GCPlotCore.API_HOST;
