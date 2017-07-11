@@ -64,10 +64,10 @@
           if (typeof qs["cp"] != 'undefined') {
             window.location.replace(GCPlotCore.appUrl() + window.location.search);
           } else if (isLoggedIn) {
-            window.location.replace(GCPlotCore.appUrl());
+            //window.location.replace(GCPlotCore.appUrl());
           }
         </script>
-
+        <script src="js/echo.min.js"></script>
     </head>
 
     <body>
@@ -169,7 +169,15 @@
                                     <i class="mdi mdi-brightness-1 browser-button"></i>
                                 </div>
                                 <div class="Browser-body">
-                                <img  class="img-responsive" src="images/GC_how_it_works.gif" alt="How it works" class="browser-img" />
+                                <img class="img-responsive" src="images/blank.png" data-echo="images/GC_how_it_works.gif" alt="How it works" class="browser-img" />
+                                <script>
+                                  echo.init({
+                                    offset: 100,
+                                    throttle: 250,
+                                    unload: false,
+                                    callback: function (element, op) {}
+                                  });
+                                </script>
                                 </div>
                             </div>
                         </div>
