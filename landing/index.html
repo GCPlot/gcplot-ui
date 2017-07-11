@@ -73,7 +73,7 @@
     <body>
 
         <!-- Pre-loader -->
-        
+
 
         <!-- Navbar -->
         <div class="navbar navbar-custom sticky navbar-fixed-top menu-dark" role="navigation">
@@ -168,14 +168,6 @@
                                 </div>
                                 <div class="Browser-body">
                                 <img class="img-responsive" src="images/blank.png" data-echo="images/GC_how_it_works.gif" alt="How it works" class="browser-img" />
-                                <script>
-                                  echo.init({
-                                    offset: 100,
-                                    throttle: 250,
-                                    unload: false,
-                                    callback: function (element, op) {}
-                                  });
-                                </script>
                                 </div>
                             </div>
                         </div>
@@ -518,6 +510,11 @@
         }
       });
     </script>
-
+    <script>echo.init({
+      offset: 100,
+      throttle: 250,
+      unload: false,
+      callback: function (element, op) {}
+    });</script>
   </body>
 </html>
