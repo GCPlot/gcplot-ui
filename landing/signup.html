@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="description" content="">
+        <meta name="description" content="Sign up to the GCPlot platform. GCPlot is capable to detect long STW pauses, allocation and promotion rate graphs, memory leak detection, tenuring stats, gc causes and gc phases, and other stats about your Garbage Collector work. It also supports real-time connection with your gc logs.">
         <meta name="author" content="GCPlot">
         <link rel="shortcut icon" href="https://gcplot.com/favicon.ico">
 
@@ -247,7 +247,7 @@
         <script src="js/gcplot.js"></script>
 
         <script>
-          $("#signup").click(function() {
+          var registerFunc = function() {
             $("#errorMsgBox").css('display', 'none');
             $("#signup").attr('disabled','disabled');
             setTimeout(function() {
@@ -287,7 +287,14 @@
                 $("#errorMsgBox").css('display', 'block');
               });
             }
+          };
+
+          $(document).keypress(function(e) {
+            if(e.which == 13) {
+              registerFunc();
+            }
           });
+          $("#signup").click(registerFunc);
         </script>
 
     </body>
