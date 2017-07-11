@@ -510,11 +510,11 @@
         }
       });
     </script>
-    <script>echo.init({
+    <script>setTimeout(function() {echo.init({
       offset: 100,
       throttle: 250,
       unload: false,
       callback: function (element, op) {}
-    });</script>
+    });}, 1500);</script>
   </body>
 </html>
