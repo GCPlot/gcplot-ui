@@ -80,7 +80,6 @@ class NewAnalysePage extends React.Component {
       var jvms = [];
       for (var i = 0; i < this.state.jvms.length; i++) {
         var jvm = this.state.cmps[this.state.jvms[i].props.cid + ""];
-        console.log(jvm);
         jvms.push({
           id: jvm.state.jvmId,
           an_id: "",

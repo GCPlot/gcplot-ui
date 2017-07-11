@@ -239,7 +239,6 @@ class AnalyseInfoPage extends React.Component {
       remove_jvms: this.state.jvmsRemoved,
       update_jvms: jvmsToUpdate
     }
-    console.log(JSON.stringify(msg));
     GCPlotCore.updateAnalyseBulk(msg, function() {
       this.setState(update(this.state, { showSave: {$set: false}, save: { message: {$set: ""}}}));
       this.updateAll();
@@ -504,7 +503,6 @@ class AnalyseInfoPage extends React.Component {
                      <Row>
                        {(function() {
                          return this.state.analyse.jvm_ids.map(function(r, i) {
-                           console.log(r + "|" + ($.inArray(r, this.state.initialJvmIds) >= 0));
                            return <CreateJvm md={3} cid={r} key={r} pp={this} title="JVM" versionValue={this.state.analyse.jvm_vers[r]}
                            collectorValue={this.state.analyse.jvm_gcts[r]} jvmName={this.state.analyse.jvm_names[r] || r} jvmId={r} closeClickHandler={this.jvmCloseClicked.bind(this,
                              r)}></CreateJvm>;
