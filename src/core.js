@@ -37,7 +37,10 @@ GCPlotCore.PROFILE_CHANGED_EVENT = "profile.changed.event";
 GCPlotCore.ANALYSES_CHANGED_EVENT = "analyses.changed.event";
 
 GCPlotCore.ACCOUNT_CONF_IDS = {
-  PRELOAD_ANALYSIS_ON_PAGE_OPEN: "1"
+  PRELOAD_ANALYSIS_ON_PAGE_OPEN: "1",
+  NOTIFICATIONS_ENABLED: "2",
+  NOTIFY_REALTIME_AGENT_HEALTH: "3",
+  REALTIME_AGENT_INACTIVE_SECONDS: "4"
 };
 
 GCPlotCore.ERRORS = {
@@ -517,6 +520,28 @@ GCPlotCore.changeEmail = function(newEmail, callback, errorCallback) {
   $.ajax({
     type: "POST",
     url: GCPlotCore.authUrl("/user/change_email"),
+    data: JSON.stringify(msg),
+    contentType: "application/json",
+    success: function(data) {
+      var r = JSON.parse(data);
+      if (r.hasOwnProperty('error')) {
+        errorCallback(r.error, GCPlotCore.ERRORS[r.error], r.message);
+      } else if (!$.isEmptyObject(r)) {
+        callback();
+        sessionStorage.removeItem(GCPlotCore.USER_INFO);
+        GCPlotCore.trigger(GCPlotCore.PROFILE_CHANGED_EVENT);
+      }
+    }
+  });
+}
+
+GCPlotCore.changeNotificationEmail = function(newEmail, callback, errorCallback) {
+  var msg = {
+    new_email: newEmail
+  };
+  $.ajax({
+    type: "POST",
+    url: GCPlotCore.authUrl("/user/change_notification_email"),
     data: JSON.stringify(msg),
     contentType: "application/json",
     success: function(data) {

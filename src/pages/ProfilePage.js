@@ -16,9 +16,12 @@ class ProfilePage extends React.Component {
       fullname: "",
       token: "",
       email: "",
+      notification_email: "",
       username: "",
       config: {
-        preload_analysis: true
+        preload_analysis: true,
+        notifications_enabled: true,
+        notify_realtime_agent_health: true
       },
       updateUsernameDisabled: false,
       usernameErrorStyle: {
@@ -37,6 +40,11 @@ class ProfilePage extends React.Component {
           value: ""
       },
       updateEmailDisabled: false,
+      notificationEmailErrorStyle: {
+          display: "none",
+          value: ""
+      },
+      updateNotificationEmailDisabled: false,
       activeTab: "profile_tab"
     }
   }
@@ -47,9 +55,12 @@ class ProfilePage extends React.Component {
         fullname: {$set: userInfo.first_name + " " + userInfo.last_name},
         token: {$set: userInfo.token},
         email: {$set: userInfo.email},
+        notification_email: {$set: userInfo.notification_email},
         username: {$set: userInfo.username},
         config: {
-          preload_analysis: {$set: userInfo.config.preload_analysis}
+          preload_analysis: {$set: userInfo.config.preload_analysis},
+          notifications_enabled: {$set: userInfo.config.notifications_enabled},
+          notify_realtime_agent_health: {$set: userInfo.config.notify_realtime_agent_health}
         }
       }));
     }.bind(this));
@@ -61,6 +72,10 @@ class ProfilePage extends React.Component {
 
   copyEmailClick() {
     clipboard.copy(this.state.email);
+  }
+
+  copyNotificationEmailClick() {
+    clipboard.copy(this.state.notification_email);
   }
 
   handleUsernameChange(event) {
@@ -144,16 +159,6 @@ class ProfilePage extends React.Component {
   }
 
   onUpdateEmailClick() {
-    if (this.state.email != this.oldEmailText.value) {
-      this.setState(update(this.state, {
-        updateEmailDisabled: {$set: false},
-        emailErrorStyle: {
-            display: {$set: "block"},
-            value: {$set: "Old e-mail is incorrect."}
-        }
-      }));
-    } else {
-      if (this.newEmailText.value == this.newEmailRepeatText.value) {
         this.setState(update(this.state, {
           updateEmailDisabled: {$set: true},
           emailErrorStyle: {
@@ -188,16 +193,43 @@ class ProfilePage extends React.Component {
             }
           }));
         });
-      } else {
-        this.setState(update(this.state, {
-          updateEmailDisabled: {$set: false},
-          emailErrorStyle: {
-              display: {$set: "block"},
-              value: {$set: "E-mail values mismatch. Try entering again."}
+  }
+
+  onUpdateNotificationEmailClick() {
+    this.setState(update(this.state, {
+          updateNotificationEmailDisabled: {$set: true},
+          notificationEmailErrorStyle: {
+              display: {$set: "none"},
+              value: {$set: ""}
           }
         }));
-      }
-    }
+        GCPlotCore.changeNotificationEmail(this.newNotificationEmailText.value, () => {
+          this.setState(update(this.state, {
+            notificationEmailErrorStyle: {
+                display: {$set: "block"},
+                value: {$set: "Notification e-mail successfully changed"},
+                color: {$set: 'black'}
+            },
+            notification_email: {$set: this.newNotificationEmailText.value}
+          }));
+          setTimeout(function() {
+            this.setState(update(this.state, {
+              updateNotificationEmailDisabled: {$set: false},
+              notificationEmailErrorStyle: {
+                  display: {$set: "none"},
+                  value: {$set: ""}
+              }
+            }));
+          }.bind(this), 1000);
+        }, (code, title, msg) => {
+          this.setState(update(this.state, {
+            updateNotificationEmailDisabled: {$set: false},
+            notificationEmailErrorStyle: {
+                display: {$set: "block"},
+                value: {$set: msg}
+            }
+          }));
+        });
   }
 
   onTabClick(e) {
@@ -213,6 +245,24 @@ class ProfilePage extends React.Component {
       }
     }));
     GCPlotCore.updateAccountConfig(GCPlotCore.ACCOUNT_CONF_IDS.PRELOAD_ANALYSIS_ON_PAGE_OPEN, e.target.checked);
+  }
+
+  handleNotificationsChange(e) {
+    this.setState(update(this.state, {
+      config: {
+        notifications_enabled: {$set: e.target.checked}
+      }
+    }));
+    GCPlotCore.updateAccountConfig(GCPlotCore.ACCOUNT_CONF_IDS.NOTIFICATIONS_ENABLED, e.target.checked);
+  }
+
+  handleRTNotificationsChange(e) {
+    this.setState(update(this.state, {
+      config: {
+        notify_realtime_agent_health: {$set: e.target.checked}
+      }
+    }));
+    GCPlotCore.updateAccountConfig(GCPlotCore.ACCOUNT_CONF_IDS.NOTIFY_REALTIME_AGENT_HEALTH, e.target.checked);
   }
 
   render() {
@@ -240,6 +290,12 @@ class ProfilePage extends React.Component {
                           this.copyEmailClick.bind(this)
                       } /></InputGroup.Addon>
                     </InputGroup></FormGroup>
+                    <FormGroup>Notification e-mail:<InputGroup>
+                      <FormControl type="text" label="Notification e-mail" disabled={true} value={this.state.notification_email} />
+                      <InputGroup.Addon><I name = "clipboard" style = {{cursor: "pointer"}} onClick = {
+                          this.copyNotificationEmailClick.bind(this)
+                      } /></InputGroup.Addon>
+                    </InputGroup></FormGroup>
                     <hr />
                     <Row>
                     <Col md={4}>
@@ -251,11 +307,16 @@ class ProfilePage extends React.Component {
                     </Col>
                     <Col md={4}>
                       <Panel header="Change E-mail">
-                          <FormGroup><FormControl type="email" placeholder="Old E-mail" inputRef={(r) => this.oldEmailText = r}/></FormGroup>
                           <FormGroup><FormControl type="email" placeholder="New E-mail" inputRef={(r) => this.newEmailText = r}/></FormGroup>
-                          <FormGroup><FormControl type="email" placeholder="Repeat New E-mail" inputRef={(r) => this.newEmailRepeatText = r}/></FormGroup>
                           <p style={this.state.emailErrorStyle}>{this.state.emailErrorStyle.value}</p>
                           <button className="btn btn-block btn-primary" onClick={this.onUpdateEmailClick.bind(this)} disabled={this.state.updateEmailDisabled}>Update</button>
+                      </Panel>
+                    </Col>
+                    <Col md={4}>
+                      <Panel header="Change Notification E-mail">
+                          <FormGroup><FormControl type="email" placeholder="Notification E-mail" inputRef={(r) => this.newNotificationEmailText = r}/></FormGroup>
+                          <p style={this.state.notificationEmailErrorStyle}>{this.state.notificationEmailErrorStyle.value}</p>
+                          <button className="btn btn-block btn-primary" onClick={this.onUpdateNotificationEmailClick.bind(this)} disabled={this.state.updateNotificationEmailDisabled}>Update</button>
                       </Panel>
                     </Col>
                     <Col md={4}>
@@ -276,7 +337,13 @@ class ProfilePage extends React.Component {
             <Panel>
               <Checkbox checked={this.state.config.preload_analysis} onChange={this.handlePrAnChange.bind(this)}>
                   Pre-load analysis on report open?
-            </Checkbox>
+              </Checkbox>
+              <Checkbox checked={this.state.config.notifications_enabled} onChange={this.handleNotificationsChange.bind(this)}>
+                  Notifications enabled?
+              </Checkbox>
+              <Checkbox checked={this.state.config.notify_realtime_agent_health} onChange={this.handleRTNotificationsChange.bind(this)}>
+                  Real-time agent health notifications enabled?
+              </Checkbox>
             </Panel>
         </div>
         <div className={(this.state.activeTab == 'api_tab' ? 'active ' : '') + "tab-pane"} id="api_tab">
