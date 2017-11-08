@@ -440,6 +440,25 @@ GCPlotCore.updateAnalyzeSource = function(req, callback, errorCallback) {
   });
 }
 
+GCPlotCore.updateAnalyzeConfig = function(analyseId, req, callback, errorCallback) {
+  $.ajax({
+    type: "POST",
+    url: GCPlotCore.authUrl("/analyse/update/config?analyse_id=" + analyseId),
+    data: JSON.stringify(req),
+    contentType: "application/json",
+    success: function(data) {
+      var r = JSON.parse(data);
+      if (r.hasOwnProperty('error')) {
+        errorCallback(r.error, GCPlotCore.ERRORS[r.error], r.message);
+      } else {
+        sessionStorage.removeItem(GCPlotCore.ANALYSES);
+        GCPlotCore.trigger(GCPlotCore.ANALYSES_CHANGED_EVENT);
+        callback();
+      }
+    }
+  });
+}
+
 GCPlotCore.deleteAnalyse = function(id, callback, errorCallback) {
   $.ajax({
     type: "DELETE",

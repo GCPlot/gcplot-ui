@@ -25,7 +25,16 @@ class AnalyseInfoPage extends React.Component {
           jvm_ids: [],
           jvm_vers: {},
           jvm_names: {},
-          jvm_gcts: {}
+          jvm_gcts: {},
+          configs: {
+            graphite_urls: "",
+            graphite_prefix: "",
+            graphite_proxy_type: 0,
+            graphite_proxy_host: "",
+            graphite_proxy_port: 0,
+            graphite_proxy_username: "",
+            graphite_proxy_password: ""
+          }
         },
         updateDisabled: false,
         errorStyle: {
@@ -42,6 +51,13 @@ class AnalyseInfoPage extends React.Component {
         updateSourceCaption: "Update",
         updateSourceDisabled: false,
         updateSourceError: {
+          display: "none",
+          value: "",
+          color: 'red'
+        },
+        updateConnectionCaption: "Update",
+        updateConnectionDisabled: false,
+        updateConnectionError: {
           display: "none",
           value: "",
           color: 'red'
@@ -334,6 +350,54 @@ class AnalyseInfoPage extends React.Component {
     });
   }
 
+  onConnectionSaveClick() {
+    this.setState(update(this.state, {
+      updateConnectionError: {
+        display: {$set: "none"},
+        value: {$set: ""},
+      },
+      updateConnectionDisabled: {$set: true},
+      updateConnectionCaption: {$set: "Updating ..."}
+    }));
+
+    var configs = [];
+    if (this.state.analyse.configs.graphite_prefix !== "" && typeof this.state.analyse.configs.graphite_prefix != undefined) {
+      configs.push({
+        prop_id: "2",
+        value: this.state.analyse.configs.graphite_prefix
+      });
+    } else {
+      configs.push({
+        prop_id: "2",
+        value: "${jvm_name}.gc."
+      });
+    }
+    configs.push({
+      prop_id: "1",
+      value: this.state.analyse.configs.graphite_urls
+    });
+
+    GCPlotCore.updateAnalyzeConfig(this.state.analyse.id, {
+      configs: configs
+    }, () => {
+      setTimeout(() => {
+        this.setState(update(this.state, {
+          updateConnectionDisabled: {$set: false},
+          updateConnectionCaption: {$set: "Update"}
+        }));
+      }, 2000);
+    }, (code, title, msg) => {
+      this.setState(update(this.state, {
+        updateConnectionError: {
+          display: {$set: "inline"},
+          value: {$set: msg},
+        },
+        updateConnectionDisabled: {$set: false},
+        updateConnectionCaption: {$set: "Update"}
+      }));
+    });
+  }
+
   buildSourceConfig() {
     var cfg = '';
     if (this.state.analyse.source_type == "S3") {
@@ -447,7 +511,23 @@ class AnalyseInfoPage extends React.Component {
               })()}
               {(() => {
                 if (this.props.params.analyseId != GCPlotCore.ANONYMOUS_ANALYSE_ID) {
-                return <Tab eventKey={3} title="Manage">
+                  return <Tab eventKey={3} title="Connections">
+                      <Panel footer={<Button type="submit" disabled={this.state.updateConnectionDisabled} onClick={this.onConnectionSaveClick.bind(this)} bsStyle="primary">{this.state.updateConnectionCaption}</Button>}>
+                        <h4>Graphite Integration</h4>
+                        <hr/>
+                        <label htmlFor="graphUrls">Graphite URLs</label>
+                        <FormGroup><FormControl type="text" id="graphUrls" value={this.state.analyse.configs.graphite_urls} onChange={(e) => {this.setState(update(this.state, {analyse:{configs:{graphite_urls:{$set:e.target.value}}}}))}} placeholder="Comma-separated hosts, for example graphite.com:2003"/></FormGroup>
+                        <label htmlFor="graphPrefix">Graphite Prefix</label>
+                        <p>{'Graphite canonical dot-separated path. You can use ${jvm_name} variable to distinguish different JVMs.'}</p>
+                        <p>Leave empty for the default value to be applied.</p>
+                        <FormGroup><FormControl id="graphPrefix" type="text" value={this.state.analyse.configs.graphite_prefix === "${jvm_name}.gc." ? "" : this.state.analyse.configs.graphite_prefix} onChange={(e) => {this.setState(update(this.state, {analyse:{configs:{graphite_prefix:{$set:e.target.value}}}}))}} placeholder="${jvm_name}.gc."/></FormGroup>
+                      </Panel>
+                    </Tab>
+                }
+              })()}
+              {(() => {
+                if (this.props.params.analyseId != GCPlotCore.ANONYMOUS_ANALYSE_ID) {
+                return <Tab eventKey={4} title="Manage">
                 <Panel header="Danger Zone">
                 <form role="form">
                    <Button className="btn btn-block btn-danger" style={{color: "white"}} onClick={() => this.setState(update(this.state, { show: {$set: true}}))}>Delete Analysis Group</Button>
@@ -472,7 +552,7 @@ class AnalyseInfoPage extends React.Component {
               })()}
               {(() => {
                 if (this.props.params.analyseId != GCPlotCore.ANONYMOUS_ANALYSE_ID) {
-                  return <Tab eventKey={4} title="JVMs">
+                  return <Tab eventKey={5} title="JVMs">
                   <div className="static-modal">
                     <Modal container={this} show={this.state.showSave} onHide={closeSave}>
                       <Modal.Header closeButton>
