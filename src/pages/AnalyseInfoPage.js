@@ -100,7 +100,16 @@ class AnalyseInfoPage extends React.Component {
         jvm_ids: {$set: []},
         jvm_vers: {$set: {}},
         jvm_names: {$set: {}},
-        jvm_gcts: {$set: {}}
+        jvm_gcts: {$set: {}},
+        configs: {
+          graphite_urls: {$set: ""},
+          graphite_prefix: {$set: ""},
+          graphite_proxy_type: {$set: 0},
+          graphite_proxy_host: {$set: ""},
+          graphite_proxy_port: {$set: 0},
+          graphite_proxy_username: {$set: ""},
+          graphite_proxy_password: {$set: ""}
+        }
       },
       sources: {
         s3: {
