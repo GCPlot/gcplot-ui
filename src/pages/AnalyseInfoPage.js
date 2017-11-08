@@ -525,7 +525,7 @@ class AnalyseInfoPage extends React.Component {
                         <h4>Graphite Integration</h4>
                         <hr/>
                         <label htmlFor="graphUrls">Graphite URLs</label>
-                        <FormGroup><FormControl type="text" id="graphUrls" value={this.state.analyse.configs.graphite_urls} onChange={(e) => {this.setState(update(this.state, {analyse:{configs:{graphite_urls:{$set:e.target.value}}}}))}} placeholder="Comma-separated hosts, for example graphite.com:2003"/></FormGroup>
+                        <FormGroup><FormControl type="text" id="graphUrls" value={this.state.analyse.configs.graphite_urls == null ? "" : this.state.analyse.configs.graphite_urls} onChange={(e) => {this.setState(update(this.state, {analyse:{configs:{graphite_urls:{$set:e.target.value}}}}))}} placeholder="Comma-separated hosts, for example graphite.com:2003"/></FormGroup>
                         <label htmlFor="graphPrefix">Graphite Prefix</label>
                         <p>{'Graphite canonical dot-separated path. You can use ${jvm_name} variable to distinguish different JVMs.'}</p>
                         <p>Leave empty for the default value to be applied.</p>
