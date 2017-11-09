@@ -45,7 +45,7 @@
         </script>
         <script src="js/gcplot.js"></script>
         <script>
-          var qs = (function(a) {
+          /*var qs = (function(a) {
               if (a == "") return {};
               var b = {};
               for (var i = 0; i < a.length; ++i)
@@ -65,7 +65,7 @@
             window.location.replace(GCPlotCore.appUrl() + window.location.search);
           } else if (isLoggedIn) {
             window.location.replace(GCPlotCore.appUrl());
-          }
+          }*/
         </script>
         <script src="js/echo.min.js"></script>
     </head>
@@ -475,7 +475,8 @@
 
     <script>
       $("#signup").click(function() {
-        $("#errorMsgBox").css('display', 'none');
+        alert('We are currently disabled our public cloud platform. GCPlot is switching to Open Source and free private installations. Stay tuned and sorry for the inconvenience.');
+        /*$("#errorMsgBox").css('display', 'none');
         $("#signup").attr('disabled','disabled');
         setTimeout(function() {
           $("#signup").removeAttr('disabled');
@@ -510,7 +511,7 @@
             $("#errorMsg").text("" + msg);
             $("#errorMsgBox").css('display', 'block');
           });
-        }
+        }*/
       });
     </script>
     <script>setTimeout(function() {echo.init({
