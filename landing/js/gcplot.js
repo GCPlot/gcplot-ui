@@ -2,8 +2,8 @@
 function GCPlotCore() {
 }
 
-GCPlotCore.LANDING_HOST = "[[LANDING_HOST]]";
-GCPlotCore.API_HOST = "[[API_HOST]]";
+GCPlotCore.LANDING_HOST = "${LANDING_HOST}";
+GCPlotCore.API_HOST = "${API_HOST}";
 GCPlotCore.TOKEN = "token";
 
 GCPlotCore.INTERNAL_ERROR_HANDLER = function(status) {
@@ -77,8 +77,8 @@ GCPlotCore.url = function(path) {
 }
 
 GCPlotCore.landingHost = function() {
-  if (GCPlotCore.LANDING_HOST.indexOf("[") == 0) {
-    return "ui-dev.gcplot.com";
+  if (GCPlotCore.LANDING_HOST.indexOf("$") == 0) {
+    return "localhost";
   } else {
     return GCPlotCore.LANDING_HOST;
   }
@@ -89,8 +89,8 @@ GCPlotCore.appUrl = function() {
 }
 
 GCPlotCore.apiHost = function() {
-  if (GCPlotCore.API_HOST.indexOf("[") == 0) {
-    return "gs-dev.gcplot.com";
+  if (GCPlotCore.API_HOST.indexOf("$") == 0) {
+    return "localhost";
   } else {
     return GCPlotCore.API_HOST;
   }
