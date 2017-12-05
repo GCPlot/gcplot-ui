@@ -58,8 +58,8 @@ class DashboardPage extends React.Component {
     </section>
       <section className="content">
         <Panel>
-          <p>We are currently at a <i>βeta</i> stage, so this page will be filling with something useful continuously.</p>
-          <p>You can already upload and process your Hotspot GC logs. There is no limitations on the amount of transmitted data at the moment, so do not miss this moment and go to <NavLink to="/quick_process">Quick Process</NavLink> page. We also have a <a href="https://docs.gcplot.com/log-files-processing.html" target="_blank">Realtime Connection</a> feature, which allows you to continuously connect your JVM GC logs with our platform.</p>
+          <p>Welcom to GCPlot!.</p>
+          <p>You can already upload and process your Hotspot GC logs by navigating to <NavLink to="/quick_process">Quick Process</NavLink> page. We also have a <a href="https://docs.gcplot.com/log-files-processing.html" target="_blank">Realtime Connection</a> feature, which allows you to continuously connect your JVM GC logs with our platform.</p>
           <p>We would be glad to hear your questions and suggestions, as well as receive bug reports, at our <a href="https://groups.google.com/forum/#!forum/gcplot" target="_blank">Google Forum</a>. Alternatively, you can contact us directly at <a href="mailto:support@gcplot.com">support@gcplot.com</a></p>
       </Panel>
       {(() => {

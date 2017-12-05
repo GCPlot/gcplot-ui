@@ -21,19 +21,19 @@ class FAQ extends React.Component {
             <Panel>
               <dl>
                 <dt>1. What JVMs does your analyzer support?</dt>
-                <dd>Currently, we support all stable versions of the Hotspot JVM. We are also planning to start supporting Java 9 logs at Q2 2017.</dd>
+                <dd>Currently, we support all stable versions of the Hotspot JVM (except Java 9)</dd>
                 <p/>
                 <dt>2. Is GCPlot free to use?</dt>
-                <dd>Yes, at the moment it's in beta stage and completely free.</dd>
+                <dd>Yes, it is open source and completely free.</dd>
                 <p/>
                 <dt>3. Can I install and use it in my private environment?</dt>
                 <dd>Yes, we can offer such option. For now, contact us at <a href="mailto:sales@gcplot.com">sales@gcplot.com</a> with such an inquiry.</dd>
                 <p/>
-                <dt>4. The report you generate isn't correct. What should I do?</dt>
+                <dt>4. The report you generate is not correct. What should I do?</dt>
                 <dd>You should contact us directly by <a href="mailto:support@gcplot.com">support@gcplot.com</a> or use <a href="https://groups.google.com/forum/#!forum/gcplot" target="_blank">Google Forum</a>. We will make sure that any bug will be fixed.</dd>
                 <p/>
                 <dt>5. How can I analyze my GC logs?</dt>
-                <dd>For now, you can simply upload your file in <a href="/quick_process">Quick Process</a> section. After that, the complete analysis will be available under 'Files' analysis group. There is also <a href="/realtime-connection">Realtime Connection</a>, which allows you to upload your GC files continuously and automatically from multiple machines. Its release planned for Q1 2017.</dd>
+                <dd>For now, you can simply upload your file in <a href="/quick_process">Quick Process</a> section. After that, the complete analysis will be available under 'Files' analysis group. There is also <a href="/realtime-connection">Realtime Connection</a>, which allows you to upload your GC files continuously and automatically from multiple machines.</dd>
                 <p/>
                 <dt>6. What is Analysis Group?</dt>
                 <dd>Analysis Group helps you to organize your data sources in the best way you see it. The most common case is when you have different clusters, and create separate group for each:</dd>
