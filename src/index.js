@@ -25,7 +25,11 @@ if (typeof qs["cp"] != 'undefined') {
 } else {
   // Render the main component into the dom
   if (!GCPlotCore.isLoggedIn()) {
-    window.location.replace("https://" + window.landingHost);
+    var url ='http' + (document.location.protocol === 'https:' ? 's://' : '://') + window.gcplotHost;
+    if (window.gcplotPort != null) {
+      url += ":" + window.gcplotPort;
+    }
+    window.location.replace(url);
   } else {
     ReactDOM.render(<RARoutes />, document.getElementById('app'));
   }

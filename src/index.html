@@ -67,8 +67,13 @@
 
   <script>__REACT_DEVTOOLS_GLOBAL_HOOK__ = parent.__REACT_DEVTOOLS_GLOBAL_HOOK__</script>
   <script>
-    window.landingHost = "${LANDING_HOST}";
-    window.api_host = "${API_HOST}";
+    window.gcplotHost = window.location.hostname;
+    if (typeof location.port === undefined || location.port == "" || location.port == 0 || location.port == "0") {
+      window.gcplotPort = null;
+    } else {
+      window.gcplotPort = location.port;
+    }
+
   </script>
 
   <!-- App -->

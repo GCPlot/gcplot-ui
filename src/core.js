@@ -149,11 +149,7 @@ GCPlotCore.currentProtocol = function() {
 };
 
 GCPlotCore.apiUrl = function() {
-  if (window.api_host.indexOf('$') == 0) {
-    return this.currentProtocol() + 'localhost';
-  } else {
-    return this.currentProtocol() + window.api_host;
-  }
+  return GCPlotCore.currentProtocol() + window.gcplotHost + (window.gcplotPort == null ? "" : ":" + window.gcplotPort) + "/rest"
 };
 
 GCPlotCore.getToken = function() {
