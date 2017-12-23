@@ -30,6 +30,28 @@
 
         <!-- Color css -->
         <link href="css/colors/default.css" rel="stylesheet">
+        <script>
+          var qs = (function(a) {
+              if (a == "") return {};
+              var b = {};
+              for (var i = 0; i < a.length; ++i)
+              {
+                  var p=a[i].split('=', 2);
+                  if (p.length == 1)
+                      b[p[0]] = "";
+                    else
+                      b[p[0]] = decodeURIComponent(p[1].replace(/\+/g, " "));
+                    }
+              return b;
+          })(window.location.search.substr(1).split('&'));
+          var token = localStorage.getItem(GCPlotCore.TOKEN);
+          var isLoggedIn = (typeof token != "undefined") && token != null;
+          if (typeof qs["cp"] != 'undefined') {
+            window.location.replace(GCPlotCore.appUrl() + window.location.search);
+          } else if (isLoggedIn) {
+            window.location.replace(GCPlotCore.appUrl());
+          }
+        </script>
     </head>
 
     <body>
@@ -142,7 +164,7 @@
                                     <div class="col-xs-12">
                                         <button id="recover" class="btn btn-block btn-custom" type="button">Recover</button>
                                     </div>
-                                </div>-->
+                                </div>
 
                             </form>
                         </div>
