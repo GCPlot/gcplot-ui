@@ -162,7 +162,7 @@ GCPlotCore.setToken = function(token) {
 }
 
 GCPlotCore.removeToken = function() {
-  localStorage.removeItem((GCPlotCore.TOKEN_KEY);
+  localStorage.removeItem(GCPlotCore.TOKEN_KEY);
 }
 
 GCPlotCore.changeUsername = function(newUsername, callback, errorCallback) {
