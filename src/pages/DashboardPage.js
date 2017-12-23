@@ -58,27 +58,10 @@ class DashboardPage extends React.Component {
     </section>
       <section className="content">
         <Panel>
-          <p>Welcom to GCPlot!.</p>
+          <p>Welcome to GCPlot!</p>
           <p>You can already upload and process your Hotspot GC logs by navigating to <NavLink to="/quick_process">Quick Process</NavLink> page. We also have a <a href="https://docs.gcplot.com/log-files-processing.html" target="_blank">Realtime Connection</a> feature, which allows you to continuously connect your JVM GC logs with our platform.</p>
           <p>We would be glad to hear your questions and suggestions, as well as receive bug reports, at our <a href="https://groups.google.com/forum/#!forum/gcplot" target="_blank">Google Forum</a>. Alternatively, you can contact us directly at <a href="mailto:support@gcplot.com">support@gcplot.com</a></p>
       </Panel>
-      {(() => {
-        if (!this.state.confirmed) {
-          return <Row>
-            <Col md={12}>
-              <div className="callout callout-info">
-                <h4>Your account is not verified</h4>
-                <p>In order to have full access to all features, you must verify your account. The instructions were sent to the e-mail provided during registration.</p>
-                <Row>
-                  <Col md={2}>
-                    <button className="btn btn-block btn-primary" onClick={this.onResendClick.bind(this)} disabled={this.state.resendDisabled}>{this.state.resendCaption}</button>
-                  </Col>
-                </Row>
-              </div>
-            </Col>
-          </Row>;
-        }
-      })()}
       </section>
     </div>
   }
