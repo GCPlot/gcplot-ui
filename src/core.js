@@ -25,6 +25,7 @@ GCPlotCore.INTERNAL_ERROR_HANDLER = function(status) {
 GCPlotCore.errorHandler = function(code, title, msg) {
   if (code != 292) {
     alert("(" + code + ") " + title + " | " + msg);
+    GCPlotCore.removeToken();
   }
 }
 
@@ -158,6 +159,10 @@ GCPlotCore.getToken = function() {
 
 GCPlotCore.setToken = function(token) {
   localStorage.setItem(GCPlotCore.TOKEN_KEY, token);
+}
+
+GCPlotCore.removeToken = function() {
+  localStorage.removeItem((GCPlotCore.TOKEN_KEY);
 }
 
 GCPlotCore.changeUsername = function(newUsername, callback, errorCallback) {
