@@ -38,7 +38,7 @@
     "json-loader": "^0.5.4",
     "glob": "^6.0.0",
     "isparta-instrumenter-loader": "^1.0.0",
-    "minimist": "^1.2.0",
+    "minimist": "^1.2.6",
     "mocha": "^2.2.5",
     "node-sass": "^4.12.0",
     "null-loader": "^0.1.1",
