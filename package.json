@@ -87,7 +87,7 @@
     "react-router": "^3.0.2",
     "react-spinkit": "^3.0.0",
     "script-loader": "^0.7.0",
-    "select2": "^4.0.2",
+    "select2": "^4.0.6",
     "timepicker": "^1.11.9",
     "react-bootstrap-timezone-picker": "^1.0.10",
     "rc-time-picker": "^2.3.3",
